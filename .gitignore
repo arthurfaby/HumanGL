@@ -36,4 +36,8 @@
 
 # Build directories
 cmake-build-debug/
-build/
+build/CMakeFiles
+build/cmake_install.cmake
+build/CMakeCache.txt
+build/humangl
+build/Makefile
