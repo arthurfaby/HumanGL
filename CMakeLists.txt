@@ -14,6 +14,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(SOURCE_FILES
         src/main.cpp
         src/test.cpp
+        include/main.hpp
 )
 
 find_package(SDL2 REQUIRED)
