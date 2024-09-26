@@ -1,8 +1,4 @@
-//
-// Created by afaby on 9/25/24.
-//
-#include <cstdio>
-#include "test.hpp"
+#include "main.hpp"
 
 int main()
 {
@@ -23,7 +19,7 @@ int main()
     if( pWindow )
     {
         SDL_Renderer* renderer = SDL_CreateRenderer(pWindow, -1, SDL_RENDERER_ACCELERATED);
-        while(1)
+        while(true)
         {
             SDL_Event e;
             if (SDL_PollEvent(&e))
