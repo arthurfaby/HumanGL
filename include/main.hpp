@@ -3,5 +3,6 @@
 
 # include "SDL2/SDL.h"
 # include <cstdio>
+# include <iostream>
 
 #endif //MAIN_HPP
