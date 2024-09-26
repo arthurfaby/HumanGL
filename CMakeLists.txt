@@ -21,6 +21,8 @@ set(SOURCE_FILES
         src/render/Color.hpp
         src/render/Point2.cpp
         src/render/Point2.hpp
+        src/render/Renderer.cpp
+        src/render/Renderer.hpp
 )
 
 find_package(SDL2 REQUIRED)
