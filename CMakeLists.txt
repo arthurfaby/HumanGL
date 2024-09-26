@@ -17,10 +17,11 @@ set(SOURCE_FILES
         include/main.hpp
         src/render/Point3.cpp
         src/render/Point3.hpp
+        src/render/Color.cpp
+        src/render/Color.hpp
 )
 
 find_package(SDL2 REQUIRED)
-
 
 
 # Add an executable target
