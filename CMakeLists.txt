@@ -15,6 +15,8 @@ set(SOURCE_FILES
         src/main.cpp
         src/test.cpp
         include/main.hpp
+        src/render/Point3.cpp
+        src/render/Point3.hpp
 )
 
 find_package(SDL2 REQUIRED)
