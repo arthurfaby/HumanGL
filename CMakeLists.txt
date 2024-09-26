@@ -16,8 +16,15 @@ set(SOURCE_FILES
         src/test.cpp
 )
 
+find_package(SDL2 REQUIRED)
+
+
+
 # Add an executable target
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+
+target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_LIBRARIES})
 
 # Manually specify the source files from directory1
 #set(SOURCE_FILES_1
