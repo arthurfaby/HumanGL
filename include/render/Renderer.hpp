@@ -1,15 +1,15 @@
 #ifndef RENDERER_HPP
 #define RENDERER_HPP
 #include "Color.hpp"
-# include "main.hpp"
-#include "Point2.hpp"
+# include "Point2.hpp"
+# include "SDL2/SDL.h"
 
 class Renderer
 {
 public:
     // Constructors
     Renderer() = delete;
-    explicit Renderer(SDL_Renderer* renderer);
+    explicit Renderer(SDL_Renderer *renderer);
 
     // Destructor
     ~Renderer();

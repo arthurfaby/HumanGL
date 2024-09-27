@@ -1,4 +1,3 @@
-#include "main.hpp"
 #include "Point3.hpp"
 #include "Renderer.hpp"
 
