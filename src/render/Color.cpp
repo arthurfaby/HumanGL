@@ -1,9 +1,7 @@
 #include "Color.hpp"
 
 // Constructors
-Color::Color() = default;
-
-Color::Color(const int red, const int green, const int blue):
+Color::Color(const unsigned char red, const unsigned char green, const unsigned char blue):
     _red(red),
     _green(green),
     _blue(blue)
@@ -16,52 +14,36 @@ Color::Color(const Color& other) = default;
 Color::~Color() = default;
 
 // Getters
-[[nodiscard]] int Color::getRed() const
+[[nodiscard]] unsigned char Color::getRed() const
 {
     return _red;
 }
 
-[[nodiscard]] int Color::getGreen() const
+[[nodiscard]] unsigned char Color::getGreen() const
 {
     return _green;
 }
 
-[[nodiscard]] int Color::getBlue() const
+[[nodiscard]] unsigned char Color::getBlue() const
 {
     return _blue;
 }
 
 // Setters
-void Color::setRed(const int red)
+void Color::setRed(const unsigned char red)
 {
     _red = red;
-    _validateColor(_red);
 }
 
-void Color::setGreen(const int green)
+void Color::setGreen(const unsigned char green)
 {
     _green = green;
-    _validateColor(_green);
 }
 
-void Color::setBlue(const int blue)
+void Color::setBlue(const unsigned char blue)
 {
     _blue = blue;
-    _validateColor(_blue);
 }
 
 // Operator overloads
 Color& Color::operator=(const Color& other) = default;
-
-// Private methods
-void Color::_validateColor(int& color)
-{
-    if (color > 255)
-    {
-        color = 255;
-    }
-    else if (color < 0)
-    {
-        color = 0;
-    }
-}

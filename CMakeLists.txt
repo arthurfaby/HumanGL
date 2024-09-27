@@ -14,15 +14,10 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(SOURCE_FILES
         src/main.cpp
         src/test.cpp
-        include/main.hpp
         src/render/Point3.cpp
-        src/render/Point3.hpp
         src/render/Color.cpp
-        src/render/Color.hpp
         src/render/Point2.cpp
-        src/render/Point2.hpp
         src/render/Renderer.cpp
-        src/render/Renderer.hpp
 )
 
 find_package(SDL2 REQUIRED)
@@ -31,7 +26,11 @@ find_package(SDL2 REQUIRED)
 # Add an executable target
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME}
+        PRIVATE ${SDL2_INCLUDE_DIRS}
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/render
+)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_LIBRARIES})
 
 # Manually specify the source files from directory1

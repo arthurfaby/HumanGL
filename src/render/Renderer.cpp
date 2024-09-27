@@ -28,7 +28,7 @@ void Renderer::setRenderer(SDL_Renderer* renderer)
 // Methods
 void Renderer::clear() const
 {
-    _setDrawColor(Color());
+    _setDrawColor(Color(0, 0, 0));
     SDL_RenderClear(_renderer);
 }
 
@@ -47,16 +47,20 @@ void Renderer::present() const
 void Renderer::drawPoint(const Point2& point, const Color& color) const
 {
     _setDrawColor(color);
-    SDL_RenderDrawPoint(_renderer, static_cast<int>(point.getX()),
-                        static_cast<int>(point.getY()));
+    SDL_RenderDrawPoint(_renderer,
+                        point.getX(),
+                        point.getY()
+    );
 }
 
 void Renderer::drawLine(const Point2& start, const Point2& end, const Color& color) const
 {
     _setDrawColor(color);
-    SDL_RenderDrawLine(_renderer, static_cast<int>(start.getX()),
-                       static_cast<int>(start.getY()), static_cast<int>(end.getX()),
-                       static_cast<int>(end.getY()));
+    SDL_RenderDrawLine(_renderer,
+                       start.getX(),
+                       start.getY(),
+                       end.getX(),
+                       end.getY());
 }
 
 void Renderer::drawEmptyRect(const Point2& topLeft, const Point2& bottomRight,
@@ -64,23 +68,24 @@ void Renderer::drawEmptyRect(const Point2& topLeft, const Point2& bottomRight,
 {
     SDL_Rect rect;
 
-    rect.x = static_cast<int>(topLeft.getX());
-    rect.y = static_cast<int>(topLeft.getY());
-    rect.w = static_cast<int>(bottomRight.getX() - topLeft.getX());
-    rect.h = static_cast<int>(bottomRight.getY() - topLeft.getY());
+    rect.x = topLeft.getX();
+    rect.y = topLeft.getY();
+    rect.w = bottomRight.getX() - topLeft.getX();
+    rect.h = bottomRight.getY() - topLeft.getY();
     _setDrawColor(color);
     SDL_RenderDrawRect(_renderer, &rect);
 }
 
-void Renderer::drawFillRect(const Point2& topLeft, const Point2& bottomRight,
+void Renderer::drawFillRect(const Point2& topLeft,
+                            const Point2& bottomRight,
                             const Color& color) const
 {
     SDL_Rect rect;
 
-    rect.x = static_cast<int>(topLeft.getX());
-    rect.y = static_cast<int>(topLeft.getY());
-    rect.w = static_cast<int>(bottomRight.getX() - topLeft.getX());
-    rect.h = static_cast<int>(bottomRight.getY() - topLeft.getY());
+    rect.x = topLeft.getX();
+    rect.y = topLeft.getY();
+    rect.w = bottomRight.getX() - topLeft.getX();
+    rect.h = bottomRight.getY() - topLeft.getY();
     _setDrawColor(color);
     SDL_RenderFillRect(_renderer, &rect);
 }
@@ -89,6 +94,9 @@ void Renderer::drawFillRect(const Point2& topLeft, const Point2& bottomRight,
 // Private methods
 void Renderer::_setDrawColor(const Color& color) const
 {
-    SDL_SetRenderDrawColor(_renderer, color.getRed(), color.getGreen(),
-                           color.getBlue(), SDL_ALPHA_OPAQUE);
+    SDL_SetRenderDrawColor(_renderer,
+                           color.getRed(),
+                           color.getGreen(),
+                           color.getBlue(),
+                           SDL_ALPHA_OPAQUE);
 }
