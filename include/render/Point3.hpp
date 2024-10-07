@@ -28,9 +28,19 @@ public:
     Point3& operator=(const Point3& other);
 
 private:
-    // Properties
+    /**
+     * The x component of the point.
+     */
     float _x;
+
+    /**
+     * The y component of the point.
+     */
     float _y;
+
+    /**
+     * The z component of the point.
+     */
     float _z;
 };
 
