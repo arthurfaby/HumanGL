@@ -1,7 +1,6 @@
 #ifndef POINT2_HPP
 #define POINT2_HPP
 
-
 class Point2
 {
 public:
@@ -29,10 +28,15 @@ public:
     Point2& operator=(const Point2& other);
 
 private:
-    // Properties
+    /**
+     * The x component of the point.
+     */
     float _x;
+
+    /**
+     * The y component of the point.
+     */
     float _y;
 };
-
 
 #endif //POINT2_HPP
