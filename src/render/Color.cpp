@@ -100,8 +100,8 @@ Color& Color::setBlue(const unsigned char blue)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Equal operator overload
- * @param other Other color to add
- * @return New color
+ * Assignation operator overload
+ * @param other The other color to assign
+ * @return itself
  */
 Color& Color::operator=(const Color& other) = default;
