@@ -13,7 +13,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 # Manually specify the source files from directory1
 set(SOURCE_FILES
         src/main.cpp
-        src/test.cpp
         src/render/Point3.cpp
         src/render/Color.cpp
         src/render/Point2.cpp
