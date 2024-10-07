@@ -1,7 +1,8 @@
+#include "Logger.hpp"
 #include "Point3.hpp"
 #include "Renderer.hpp"
 
-auto perspectiveProjection(const int zoom, const Point3& point3)
+auto perspectiveProjection(const int zoom, const Point3 &point3)
 {
     float z = point3.getZ();
     if (z == 0)
@@ -19,11 +20,11 @@ int main()
     /* Initialisation simple */
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
     {
-        fprintf(stdout, "Échec de l'initialisation de la SDL (%s)\n", SDL_GetError());
+        Logger::error("Échec de l'initialisation de la SDL (%s)\n", SDL_GetError());
         return -1;
     }
     /* Création de la fenêtre */
-    SDL_Window* pWindow = NULL;
+    SDL_Window *pWindow = NULL;
     pWindow = SDL_CreateWindow("HumanGL",
                                SDL_WINDOWPOS_UNDEFINED,
                                SDL_WINDOWPOS_UNDEFINED,
@@ -33,7 +34,7 @@ int main()
 
     if (pWindow)
     {
-        SDL_Renderer* sdlRenderer = SDL_CreateRenderer(pWindow, -1, SDL_RENDERER_ACCELERATED);
+        SDL_Renderer *sdlRenderer = SDL_CreateRenderer(pWindow, -1, SDL_RENDERER_ACCELERATED);
         const auto renderer = Renderer(sdlRenderer);
         int zoom = 100;
 
@@ -126,7 +127,7 @@ int main()
     }
     else
     {
-        fprintf(stderr, "Erreur de création de la fenêtre: %s\n", SDL_GetError());
+        Logger::error("Erreur de création de la fenêtre: %s\n", SDL_GetError());
     }
 
     SDL_Quit();

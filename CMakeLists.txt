@@ -17,16 +17,22 @@ set(SOURCE_FILES
 
 # Contain all cpp files within src/render
 set(RENDER_SOURCE_FILES
-        src/render/Point3.cpp
         src/render/Color.cpp
         src/render/Point2.cpp
+        src/render/Point3.cpp
         src/render/Renderer.cpp
+)
+
+# Contain all cpp files within src/utils
+set(UTILS_SOURCE_FILES
+        src/utils/Logger.cpp
 )
 
 # Contain all source files
 set(ALL_SOURCE_FILES
         ${SOURCE_FILES}
         ${RENDER_SOURCE_FILES}
+        ${UTILS_SOURCE_FILES}
 )
 
 find_package(SDL2 REQUIRED)
@@ -36,7 +42,7 @@ add_executable(${PROJECT_NAME} ${ALL_SOURCE_FILES})
 
 target_include_directories(${PROJECT_NAME}
         PRIVATE ${SDL2_INCLUDE_DIRS}
-        PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include
+        PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/render
 )
 
