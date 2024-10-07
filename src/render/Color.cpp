@@ -65,28 +65,34 @@ Color::~Color() = default;
 /**
  * Set the red color value
  * @param red Red color value
+ * @return itself
  */
-void Color::setRed(const unsigned char red)
+Color& Color::setRed(const unsigned char red)
 {
     _red = red;
+    return *this;
 }
 
 /**
  * Set the green color value
  * @param green Green color value
+ * @return itself
  */
-void Color::setGreen(const unsigned char green)
+Color& Color::setGreen(const unsigned char green)
 {
     _green = green;
+    return *this;
 }
 
 /**
  * Set the blue color value
  * @param blue Blue color value
+ * @return itself
  */
-void Color::setBlue(const unsigned char blue)
+Color& Color::setBlue(const unsigned char blue)
 {
     _blue = blue;
+    return *this;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

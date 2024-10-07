@@ -18,9 +18,9 @@ public:
     [[nodiscard]] unsigned char getBlue() const;
 
     // Setters
-    void setRed(unsigned char red);
-    void setGreen(unsigned char green);
-    void setBlue(unsigned char blue);
+    Color& setRed(unsigned char red);
+    Color& setGreen(unsigned char green);
+    Color& setBlue(unsigned char blue);
 
     // Operator overloads
     Color& operator=(const Color& other);
