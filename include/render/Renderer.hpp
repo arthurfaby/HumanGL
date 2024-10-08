@@ -3,8 +3,8 @@
 
 #include <vector>
 #include "Color.hpp"
-#include "main.hpp"
 #include "Point2.hpp"
+#include "SDL2/SDL.h"
 
 class Renderer
 {

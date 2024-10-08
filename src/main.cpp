@@ -1,7 +1,7 @@
 #include "main.hpp"
-
 #include <algorithm>
 #include <vector>
+#include "Logger.hpp"
 #include "Point3.hpp"
 #include "Renderer.hpp"
 
@@ -23,7 +23,7 @@ int main()
     /* Initialisation simple */
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
     {
-        fprintf(stdout, "Échec de l'initialisation de la SDL (%s)\n", SDL_GetError());
+        Logger::error("Échec de l'initialisation de la SDL (%s)\n", SDL_GetError());
         return -1;
     }
     /* Création de la fenêtre */
@@ -124,7 +124,7 @@ int main()
     }
     else
     {
-        fprintf(stderr, "Erreur de création de la fenêtre: %s\n", SDL_GetError());
+        Logger::error("Erreur de création de la fenêtre: %s\n", SDL_GetError());
     }
 
     SDL_Quit();
