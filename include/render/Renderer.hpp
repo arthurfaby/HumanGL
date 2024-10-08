@@ -22,8 +22,6 @@ public:
     // Setters
     void setRenderer(SDL_Renderer* renderer);
 
-    // Operator overloads
-
     // Methods
     void clear() const;
     void clear(const Color& color) const;

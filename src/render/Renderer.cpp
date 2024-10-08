@@ -1,12 +1,14 @@
 #include "Renderer.hpp"
+#include "triangulatePolygon.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Constructors
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Constructor
- * \param renderer Instance of the SDL renderer
+ * Constructor.
+ *
+ * @param renderer Instance of the SDL renderer
  */
 Renderer::Renderer(SDL_Renderer* renderer): _renderer(renderer)
 {
@@ -17,7 +19,7 @@ Renderer::Renderer(SDL_Renderer* renderer): _renderer(renderer)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Destructor
+ * Destructor.
  */
 Renderer::~Renderer()
 {
@@ -29,7 +31,7 @@ Renderer::~Renderer()
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * \return The instance of the SDL renderer
+ * @return The instance of the SDL renderer
  */
 [[nodiscard]] SDL_Renderer* Renderer::getRenderer() const
 {
@@ -41,8 +43,9 @@ Renderer::~Renderer()
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Set the instance of the SDL renderer
- * \param renderer Instance of the SDL renderer
+ * Set the instance of the SDL renderer.
+ *
+ * @param renderer Instance of the SDL renderer
  */
 void Renderer::setRenderer(SDL_Renderer* renderer)
 {
@@ -50,15 +53,11 @@ void Renderer::setRenderer(SDL_Renderer* renderer)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Operator overloads
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Methods
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Clear the renderer with a black color
+ * Clear the renderer with a black color.
  */
 void Renderer::clear() const
 {
@@ -67,8 +66,9 @@ void Renderer::clear() const
 }
 
 /**
- * Clear the renderer with a specific color
- * \param color The color to clear the renderer with
+ * Clear the renderer with a specific color.
+ *
+ * @param color The color to clear the renderer with
  */
 void Renderer::clear(const Color& color) const
 {
@@ -77,7 +77,7 @@ void Renderer::clear(const Color& color) const
 }
 
 /**
- * Present the renderer
+ * Present the renderer.
  */
 void Renderer::present() const
 {
@@ -85,9 +85,10 @@ void Renderer::present() const
 }
 
 /**
- * Draw a point on the renderer
- * \param point The point to draw
- * \param color The color of the point
+ * Draw a point on the renderer.
+ *
+ * @param point The point to draw
+ * @param color The color of the point
  */
 void Renderer::drawPoint(const Point2& point, const Color& color) const
 {
@@ -96,10 +97,11 @@ void Renderer::drawPoint(const Point2& point, const Color& color) const
 }
 
 /**
- * Draw a line on the renderer
- * \param start The start point of the line
- * \param end The end point of the line
- * \param color The color of the line
+ * Draw a line on the renderer.
+ *
+ * @param start The start point of the line
+ * @param end The end point of the line
+ * @param color The color of the line
  */
 void Renderer::drawLine(const Point2& start, const Point2& end, const Color& color) const
 {
@@ -108,10 +110,11 @@ void Renderer::drawLine(const Point2& start, const Point2& end, const Color& col
 }
 
 /**
- * Draw an empty rectangle on the renderer
- * \param topLeft The top left point of the rect
- * \param bottomRight The bottom right point of the rect
- * \param color The color of the rect
+ * Draw an empty rectangle on the renderer.
+ *
+ * @param topLeft The top left point of the rect
+ * @param bottomRight The bottom right point of the rect
+ * @param color The color of the rect
  */
 void Renderer::drawEmptyRect(const Point2& topLeft, const Point2& bottomRight, const Color& color) const
 {
@@ -126,10 +129,11 @@ void Renderer::drawEmptyRect(const Point2& topLeft, const Point2& bottomRight, c
 }
 
 /**
- * Draw a filled rectangle on the renderer
- * \param topLeft The top left point of the rect
- * \param bottomRight The bottom right point of the rect
- * \param color The color of the rect
+ * Draw a filled rectangle on the renderer.
+ *
+ * @param topLeft The top left point of the rect
+ * @param bottomRight The bottom right point of the rect
+ * @param color The color of the rect
  */
 void Renderer::drawFillRect(const Point2& topLeft, const Point2& bottomRight, const Color& color) const
 {
@@ -144,29 +148,35 @@ void Renderer::drawFillRect(const Point2& topLeft, const Point2& bottomRight, co
 }
 
 /**
- * Draw a polygon on the renderer
- * \param points The points of the polygon
- * \param color The color of the polygon
+ * Draw a polygon on the renderer.
+ *
+ * @param points The points of the polygon
+ * @param color The color of the polygon
  */
 void Renderer::drawPolygon(const std::vector<Point2>& points, const Color& color) const
 {
+    std::vector<Point2> verticesPoints = triangulatePolygon(points);
     std::vector<SDL_Vertex> verts;
-    for (const auto& point: points)
+
+    for (const auto& verticesPoint: verticesPoints)
     {
         verts.push_back(SDL_Vertex{
-            SDL_FPoint{static_cast<float>(point.getX()), static_cast<float>(point.getY())},
-            SDL_Color{color.getRed(), color.getBlue(), color.getGreen(), 255},
+            SDL_FPoint{static_cast<float>(verticesPoint.getX()), static_cast<float>(verticesPoint.getY())},
+            SDL_Color{color.getRed(), color.getGreen(), color.getBlue(), 255},
             SDL_FPoint{0}
         });
     }
     SDL_RenderGeometry(_renderer, nullptr, verts.data(), static_cast<int>(verts.size()), nullptr, 0);
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Private methods
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Set the draw color of the renderer
- * \param color The color to set the renderer to
+ * Set the draw color of the renderer.
+ *
+ * @param color The color to set the renderer to
  */
 void Renderer::_setDrawColor(const Color& color) const
 {

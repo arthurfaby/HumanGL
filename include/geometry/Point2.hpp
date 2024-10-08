@@ -23,8 +23,8 @@ public:
     Point2& setY(float y);
 
     // Operator overloads
-    auto operator+(const Point2& other) const;
-    auto operator-(const Point2& other) const;
+    Point2 operator+(const Point2& other) const;
+    Point2 operator-(const Point2& other) const;
     Point2& operator=(const Point2& other);
 
 private:
