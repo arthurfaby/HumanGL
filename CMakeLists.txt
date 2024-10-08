@@ -18,9 +18,15 @@ set(SOURCE_FILES
 # Contain all cpp files within src/render
 set(RENDER_SOURCE_FILES
         src/render/Color.cpp
-        src/render/Point2.cpp
-        src/render/Point3.cpp
         src/render/Renderer.cpp
+)
+
+set(GEOMETRY_SOURCE_FILES
+        src/geometry/Point2.cpp
+        src/geometry/Point3.cpp
+        src/geometry/utils/crossProduct.cpp
+        src/geometry/utils/isPointInTriangle.cpp
+        src/geometry/utils/triangulatePolygon.cpp
 )
 
 # Contain all cpp files within src/utils
@@ -32,6 +38,7 @@ set(UTILS_SOURCE_FILES
 set(ALL_SOURCE_FILES
         ${SOURCE_FILES}
         ${RENDER_SOURCE_FILES}
+        ${GEOMETRY_SOURCE_FILES}
         ${UTILS_SOURCE_FILES}
 )
 
@@ -42,7 +49,9 @@ add_executable(${PROJECT_NAME} ${ALL_SOURCE_FILES})
 
 target_include_directories(${PROJECT_NAME}
         PRIVATE ${SDL2_INCLUDE_DIRS}
-        PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/
+        PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include
+        PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/geometry
+        PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/geometry/utils
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/render
 )
 

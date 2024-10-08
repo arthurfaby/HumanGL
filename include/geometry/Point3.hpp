@@ -23,14 +23,24 @@ public:
     Point3& setZ(float z);
 
     // Operator overloads
-    auto operator+(const Point3& other) const;
-    auto operator-(const Point3& other) const;
+    Point3 operator+(const Point3& other) const;
+    Point3 operator-(const Point3& other) const;
     Point3& operator=(const Point3& other);
 
 private:
-    // Properties
+    /**
+     * The x component of the point.
+     */
     float _x;
+
+    /**
+     * The y component of the point.
+     */
     float _y;
+
+    /**
+     * The z component of the point.
+     */
     float _z;
 };
 

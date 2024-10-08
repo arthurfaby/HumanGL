@@ -18,17 +18,27 @@ public:
     [[nodiscard]] unsigned char getBlue() const;
 
     // Setters
-    void setRed(unsigned char red);
-    void setGreen(unsigned char green);
-    void setBlue(unsigned char blue);
+    Color& setRed(unsigned char red);
+    Color& setGreen(unsigned char green);
+    Color& setBlue(unsigned char blue);
 
     // Operator overloads
     Color& operator=(const Color& other);
 
 private:
-    // Properties
+    /**
+     * The red component of the color. (0-255)
+     */
     unsigned char _red;
+
+    /**
+     * The green component of the color. (0-255)
+     */
     unsigned char _green;
+
+    /**
+     * The blue component of the color. (0-255)
+     */
     unsigned char _blue;
 };
 
