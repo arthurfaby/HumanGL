@@ -12,11 +12,14 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 # Manually specify the source files from directory1
 set(SOURCE_FILES
-        src/main.cpp
-        src/render/Point3.cpp
+        src/geometry/Point2.cpp
+        src/geometry/Point3.cpp
+        src/geometry/utils/crossProduct.cpp
+        src/geometry/utils/isPointInTriangle.cpp
+        src/geometry/utils/triangulatePolygon.cpp
         src/render/Color.cpp
-        src/render/Point2.cpp
         src/render/Renderer.cpp
+        src/main.cpp
 )
 
 find_package(SDL2 REQUIRED)
@@ -28,6 +31,8 @@ add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 target_include_directories(${PROJECT_NAME}
         PRIVATE ${SDL2_INCLUDE_DIRS}
         ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/geometry
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/geometry/utils
         ${CMAKE_CURRENT_SOURCE_DIR}/include/render
 )
 target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_LIBRARIES})
