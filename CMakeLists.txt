@@ -10,23 +10,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+set(LIBS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/libs)
+
 # Contain all cpp files within src/
 set(SOURCE_FILES
         src/main.cpp
-)
-
-# Contain all cpp files within src/render
-set(RENDER_SOURCE_FILES
-        src/render/Color.cpp
-        src/render/Renderer.cpp
-)
-
-set(GEOMETRY_SOURCE_FILES
-        src/geometry/Point2.cpp
-        src/geometry/Point3.cpp
-        src/geometry/utils/crossProduct.cpp
-        src/geometry/utils/isPointInTriangle.cpp
-        src/geometry/utils/triangulatePolygon.cpp
 )
 
 # Contain all cpp files within src/utils
@@ -37,22 +25,17 @@ set(UTILS_SOURCE_FILES
 # Contain all source files
 set(ALL_SOURCE_FILES
         ${SOURCE_FILES}
-        ${RENDER_SOURCE_FILES}
-        ${GEOMETRY_SOURCE_FILES}
         ${UTILS_SOURCE_FILES}
 )
 
-find_package(SDL2 REQUIRED)
+find_package(OpenGL REQUIRED)
 
 # Add an executable target
 add_executable(${PROJECT_NAME} ${ALL_SOURCE_FILES})
 
 target_include_directories(${PROJECT_NAME}
-        PRIVATE ${SDL2_INCLUDE_DIRS}
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include
-        PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/geometry
-        PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/geometry/utils
-        PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/render
+        PRIVATE ${LIBS_DIRECTORY}/glfw/include/GLFW
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${LIBS_DIRECTORY}/glfw/build/src/libglfw3.a OpenGL::GL)

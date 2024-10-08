@@ -2,4 +2,4 @@
 
 # Execute the project
 
-cd build; ./humangl
+cd build && ./humangl

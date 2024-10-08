@@ -1,107 +1,54 @@
-#include <algorithm>
-#include <cstdio>
-#include <iostream>
-#include <vector>
+#include "glfw3.h"
 #include "Logger.hpp"
-#include "Point3.hpp"
-#include "Renderer.hpp"
-#include "SDL2/SDL.h"
 
-Point2 perspectiveProjection(const int zoom, const Point3& point3)
+static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    float z = point3.getZ();
-    if (z == 0)
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     {
-        z = 1;
+        glfwSetWindowShouldClose(window, GLFW_TRUE);
     }
-    return Point2(
-        point3.getX() * zoom / z + 1000 / 2,
-        point3.getY() * zoom / z + 600 / 2
-    );
 }
 
 int main()
 {
-    /* Initialisation simple */
-    if (SDL_Init(SDL_INIT_VIDEO) != 0)
+    // Initialize the library
+    if (!glfwInit())
     {
-        Logger::error("Échec de l'initialisation de la SDL (%s)\n", SDL_GetError());
         return -1;
     }
-    /* Création de la fenêtre */
-    SDL_Window* pWindow = nullptr;
-    pWindow = SDL_CreateWindow("HumanGL",
-                               SDL_WINDOWPOS_UNDEFINED,
-                               SDL_WINDOWPOS_UNDEFINED,
-                               1000,
-                               600,
-                               SDL_WINDOW_SHOWN);
 
-    if (pWindow)
+    // Create a windowed mode window and its OpenGL context
+    GLFWwindow* window = glfwCreateWindow(640, 480, "Hello World", nullptr, nullptr);
+    if (!window)
     {
-        SDL_Renderer* sdlRenderer = SDL_CreateRenderer(pWindow, -1, SDL_RENDERER_ACCELERATED);
-        const auto renderer = Renderer(sdlRenderer);
-        int zoom = 100;
-
-        auto topColor = Color(255, 0, 0);
-        auto baseColor = Color(0, 0, 255);
-        auto verticalColor = Color(0, 255, 0);
-
-        // Handle alpha
-        SDL_SetRenderDrawBlendMode(renderer.getRenderer(), SDL_BLENDMODE_BLEND);
-
-        while (true)
-        {
-            SDL_Event event;
-            if (SDL_PollEvent(&event))
-            {
-                if (event.type == SDL_QUIT)
-                {
-                    break;
-                }
-                if (event.type == SDL_KEYDOWN)
-                {
-                    if (event.key.keysym.sym == SDLK_ESCAPE)
-                    {
-                        break;
-                    }
-                    if (event.key.keysym.sym == SDLK_KP_PLUS)
-                    {
-                        zoom += 1;
-                    }
-                    if (event.key.keysym.sym == SDLK_KP_MINUS)
-                    {
-                        zoom -= 1;
-                    }
-                }
-            }
-
-            renderer.clear(Color(255, 255, 255));
-
-            std::vector<Point2> polygon = {
-                {200, 200},
-                {300, 150},
-                {250, 400},
-                {100, 200},
-                {100, 100}
-            };
-            renderer.drawPolygon(polygon, topColor);
-
-            renderer.drawLine({200, 200}, {300, 150}, verticalColor);
-            renderer.drawLine({300, 150}, {250, 400}, verticalColor);
-            renderer.drawLine({250, 400}, {100, 200}, verticalColor);
-            renderer.drawLine({100, 200}, {100, 100}, verticalColor);
-            renderer.drawLine({100, 100}, {200, 200}, verticalColor);
-
-            renderer.present();
-        }
+        Logger::error("main::glfwCreateWindow(): Window creation failed %s. Terminating GLFW.", window);
+        glfwTerminate();
+        return -1;
     }
-    else
+    Logger::info("main.cpp::main(): Window created successfully.");
+
+    // Make the window's context current
+    glfwMakeContextCurrent(window);
+    Logger::info("main.cpp::main(): Window context made current.");
+
+    glfwSetKeyCallback(window, key_callback);
+    Logger::info("main.cpp::main(): Key callback set.");
+
+    // Loop until the user closes the window
+    while (!glfwWindowShouldClose(window))
     {
-        Logger::error("Erreur de création de la fenêtre: %s\n", SDL_GetError());
+        // Render here
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        // Swap front and back buffers
+        glfwSwapBuffers(window);
+
+        // Poll for and process events
+        glfwPollEvents();
     }
-
-    SDL_Quit();
-
+    Logger::info("main.cpp::main(): Window closed. Terminating GLFW.");
+    glfwTerminate();
+    glfwDestroyWindow(window);
+    Logger::info("main.cpp::main(): GLFW terminated.");
     return 0;
 }
