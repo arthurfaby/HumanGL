@@ -20,13 +20,14 @@ void Logger::log(const LogLevel level, const char* format, va_list args)
     char buffer[1024];
     vsnprintf(buffer, sizeof(buffer), format, args);
 
-    output << textColor + currentTime() + " [" + levelToString + "]\t"
+    output << textColor + currentTime() // timestamp : HH:MM:SS
+            + " [" + levelToString + "]\t" // level of log : [DEBUG] - [ERROR] - [INFO] - [WARNING]
             + (levelToString == "INFO" ? "\t" : "") // extra tab for alignment
-            + buffer + RESET_COLOR << std::endl;
+            + buffer + RESET_COLOR << std::endl; // actual message
 }
 
 /**
-* Convert the appropriate text color depending on the log level.
+* @return The appropriate text color depending on the log level.
 */
 std::string Logger::getTextColor(const LogLevel level)
 {
@@ -41,7 +42,7 @@ std::string Logger::getTextColor(const LogLevel level)
 }
 
 /**
- * Convert the appropriate std::ostream depending on the log level.
+ * @return The appropriate std::ostream depending on the log level.
  */
 std::ostream& Logger::getOutput(const LogLevel level)
 {
@@ -53,7 +54,7 @@ std::ostream& Logger::getOutput(const LogLevel level)
 }
 
 /**
-* Get the current timestamp.
+* @return The current timestamp.
 */
 std::string Logger::currentTime()
 {
@@ -64,7 +65,9 @@ std::string Logger::currentTime()
 }
 
 /**
-* Convert the log level into a string.
+* Convert the log level enum value into a string.
+*
+* @return A string representing the log level
 */
 std::string Logger::logLevelToString(const LogLevel level)
 {
@@ -78,6 +81,12 @@ std::string Logger::logLevelToString(const LogLevel level)
     }
 }
 
+/**
+ * Detailed information, typically of interest only when diagnosing problems.
+ *
+ * @param message   C string that contains a format string that follows the same specifications as format in <a href="https://cplusplus.com/reference/cstdio/printf/">printf</a>
+ * @param ...       Any amount of variables to replace the placeholders contained in the message
+ */
 void Logger::debug(const std::string& message, ...)
 {
     va_list args;
@@ -86,6 +95,12 @@ void Logger::debug(const std::string& message, ...)
     va_end(args);
 }
 
+/**
+ * A serious issue, indicating that the program may not be able to continue running correctly.
+ *
+ * @param message   C string that contains a format string that follows the same specifications as format in <a href="https://cplusplus.com/reference/cstdio/printf/">printf</a>
+ * @param ...       Any amount of variables to replace the placeholders contained in the message
+ */
 void Logger::error(const std::string& message, ...)
 {
     va_list args;
@@ -94,6 +109,12 @@ void Logger::error(const std::string& message, ...)
     va_end(args);
 }
 
+/**
+ * Confirmation that things are working as expected.
+ *
+ * @param message   C string that contains a format string that follows the same specifications as format in <a href="https://cplusplus.com/reference/cstdio/printf/">printf</a>
+ * @param ...       Any amount of variables to replace the placeholders contained in the message
+ */
 void Logger::info(const std::string& message, ...)
 {
     va_list args;
@@ -102,6 +123,12 @@ void Logger::info(const std::string& message, ...)
     va_end(args);
 }
 
+/**
+ * An indication that something unexpected happened, but the application can still function.
+ *
+ * @param message   C string that contains a format string that follows the same specifications as format in <a href="https://cplusplus.com/reference/cstdio/printf/">printf</a>
+ * @param ...       Any amount of variables to replace the placeholders contained in the message
+ */
 void Logger::warning(const std::string& message, ...)
 {
     va_list args;
