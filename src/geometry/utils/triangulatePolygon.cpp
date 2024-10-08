@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <iostream>
 #include "triangulatePolygon.hpp"
 #include "crossProduct.hpp"
 #include "isPointInTriangle.hpp"
@@ -44,7 +43,9 @@ bool isEar(const std::vector<Point2>& polygon, const int i, const int j, const i
     const Point2& v3 = polygon[k];
 
     if (crossProduct(v1, v2, v3) <= 0)
+    {
         return false;
+    }
 
     for (size_t n = 0; n < polygon.size(); ++n)
     {
@@ -69,7 +70,6 @@ std::vector<Point2> triangulatePolygon(std::vector<Point2> polygon)
 
     if (polygon.size() < 3)
     {
-        std::cerr << "Polygon has less than 3 points" << std::endl;
         return triangles;
     }
 
