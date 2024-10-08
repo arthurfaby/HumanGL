@@ -1,8 +1,11 @@
 #include "main.hpp"
+
+#include <algorithm>
+#include <vector>
 #include "Point3.hpp"
 #include "Renderer.hpp"
 
-auto perspectiveProjection(const int zoom, const Point3& point3)
+Point2 perspectiveProjection(const int zoom, const Point3& point3)
 {
     float z = point3.getZ();
     if (z == 0)
@@ -10,8 +13,8 @@ auto perspectiveProjection(const int zoom, const Point3& point3)
         z = 1;
     }
     return Point2(
-        point3.getX() * zoom / z + 1920 / 2,
-        point3.getY() * zoom / z + 1080 / 2
+        point3.getX() * zoom / z + 1000 / 2,
+        point3.getY() * zoom / z + 600 / 2
     );
 }
 
@@ -24,12 +27,12 @@ int main()
         return -1;
     }
     /* Création de la fenêtre */
-    SDL_Window* pWindow = NULL;
+    SDL_Window* pWindow = nullptr;
     pWindow = SDL_CreateWindow("HumanGL",
                                SDL_WINDOWPOS_UNDEFINED,
                                SDL_WINDOWPOS_UNDEFINED,
-                               1920,
-                               1080,
+                               1000,
+                               600,
                                SDL_WINDOW_SHOWN);
 
     if (pWindow)
@@ -38,18 +41,12 @@ int main()
         const auto renderer = Renderer(sdlRenderer);
         int zoom = 100;
 
-        // Cube points
-        auto a = Point3(-50, -50, 100);
-        auto b = Point3(50, -50, 100);
-        auto c = Point3(50, -50, 200);
-        auto d = Point3(-50, -50, 200);
-        auto e = Point3(-50, 50, 100);
-        auto f = Point3(50, 50, 100);
-        auto g = Point3(50, 50, 200);
-        auto h = Point3(-50, 50, 200);
         auto topColor = Color(255, 0, 0);
         auto baseColor = Color(0, 0, 255);
         auto verticalColor = Color(0, 255, 0);
+
+        // Handle alpha
+        SDL_SetRenderDrawBlendMode(renderer.getRenderer(), SDL_BLENDMODE_BLEND);
 
         while (true)
         {
@@ -105,22 +102,22 @@ int main()
                     }
                 }
             }
+
             renderer.clear(Color(255, 255, 255));
 
-            renderer.drawLine(perspectiveProjection(zoom, a), perspectiveProjection(zoom, b), topColor);
-            renderer.drawLine(perspectiveProjection(zoom, b), perspectiveProjection(zoom, c), topColor);
-            renderer.drawLine(perspectiveProjection(zoom, c), perspectiveProjection(zoom, d), topColor);
-            renderer.drawLine(perspectiveProjection(zoom, d), perspectiveProjection(zoom, a), topColor);
-
-            renderer.drawLine(perspectiveProjection(zoom, e), perspectiveProjection(zoom, f), baseColor);
-            renderer.drawLine(perspectiveProjection(zoom, f), perspectiveProjection(zoom, g), baseColor);
-            renderer.drawLine(perspectiveProjection(zoom, g), perspectiveProjection(zoom, h), baseColor);
-            renderer.drawLine(perspectiveProjection(zoom, h), perspectiveProjection(zoom, e), baseColor);
-
-            renderer.drawLine(perspectiveProjection(zoom, a), perspectiveProjection(zoom, e), verticalColor);
-            renderer.drawLine(perspectiveProjection(zoom, b), perspectiveProjection(zoom, f), verticalColor);
-            renderer.drawLine(perspectiveProjection(zoom, c), perspectiveProjection(zoom, g), verticalColor);
-            renderer.drawLine(perspectiveProjection(zoom, d), perspectiveProjection(zoom, h), verticalColor);
+            std::vector<Point2> polygon = {
+                {200, 200},
+                {300, 150},
+                {250, 400},
+                {100, 200},
+                {100, 100}
+            };
+            renderer.drawPolygon(polygon, topColor);
+            renderer.drawLine({200, 200}, {300, 150}, verticalColor);
+            renderer.drawLine({300, 150}, {250, 400}, verticalColor);
+            renderer.drawLine({250, 400}, {100, 200}, verticalColor);
+            renderer.drawLine({100, 200}, {100, 100}, verticalColor);
+            renderer.drawLine({100, 100}, {200, 200}, verticalColor);
 
             renderer.present();
         }
