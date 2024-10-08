@@ -1,9 +1,11 @@
-#include "main.hpp"
 #include <algorithm>
+#include <cstdio>
+#include <iostream>
 #include <vector>
 #include "Logger.hpp"
 #include "Point3.hpp"
 #include "Renderer.hpp"
+#include "SDL2/SDL.h"
 
 Point2 perspectiveProjection(const int zoom, const Point3& point3)
 {
@@ -63,35 +65,6 @@ int main()
                     {
                         break;
                     }
-                    if (event.key.keysym.sym == SDLK_RIGHT)
-                    {
-                        a.setX(a.getX() + 1);
-                    }
-                    if (event.key.keysym.sym == SDLK_LEFT)
-                    {
-                        a.setX(a.getX() - 1);
-                    }
-
-                    if (event.key.keysym.sym == SDLK_UP)
-                    {
-                        a.setY(a.getY() - 1);
-                    }
-                    if (event.key.keysym.sym == SDLK_DOWN)
-                    {
-                        a.setY(a.getY() + 1);
-                    }
-                    if (event.key.keysym.sym == SDLK_PAGEUP)
-                    {
-                        a.setZ(a.getZ() + 1);
-                    }
-                    if (event.key.keysym.sym == SDLK_PAGEDOWN)
-                    {
-                        a.setZ(a.getZ() - 1);
-                    }
-                    if (event.key.keysym.sym == SDLK_r)
-                    {
-                        a = Point3(-50, -50, 100);
-                    }
                     if (event.key.keysym.sym == SDLK_KP_PLUS)
                     {
                         zoom += 1;
@@ -113,6 +86,7 @@ int main()
                 {100, 100}
             };
             renderer.drawPolygon(polygon, topColor);
+
             renderer.drawLine({200, 200}, {300, 150}, verticalColor);
             renderer.drawLine({300, 150}, {250, 400}, verticalColor);
             renderer.drawLine({250, 400}, {100, 200}, verticalColor);
