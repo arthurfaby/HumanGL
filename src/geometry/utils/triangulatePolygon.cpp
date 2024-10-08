@@ -90,8 +90,8 @@ std::vector<Point2> triangulatePolygon(std::vector<Point2> polygon)
         bool earFound = false;
         for (int i = 0; i < indices.size(); ++i)
         {
-            int prev = (i == 0) ? indices.size() - 1 : i - 1;
-            int next = (i == indices.size() - 1) ? 0 : i + 1;
+            const int prev = (i == 0) ? indices.size() - 1 : i - 1;
+            const int next = (i == indices.size() - 1) ? 0 : i + 1;
 
             if (isEar(polygon, indices[prev], indices[i], indices[next]))
             {
