@@ -6,8 +6,8 @@
 
 /**
  * Constructor
- * @param x The x component of the point
- * @param y The y component of the point
+ * \param x The x component of the point
+ * \param y The y component of the point
  */
 Point2::Point2(const float x, const float y): _x(x), _y(y)
 {
@@ -15,7 +15,7 @@ Point2::Point2(const float x, const float y): _x(x), _y(y)
 
 /**
  * Copy constructor
- * @param other The other point to copy
+ * \param other The other point to copy
  */
 Point2::Point2(const Point2& other) = default;
 
@@ -33,7 +33,7 @@ Point2::~Point2() = default;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @return The x component of the point as an integer
+ * \return The x component of the point as an integer
  */
 [[nodiscard]] int Point2::getX() const
 {
@@ -41,7 +41,7 @@ Point2::~Point2() = default;
 }
 
 /**
- * @return The y component of the point as an integer
+ * \return The y component of the point as an integer
  */
 [[nodiscard]] int Point2::getY() const
 {
@@ -49,7 +49,7 @@ Point2::~Point2() = default;
 }
 
 /**
- * @return The x component of the point as a float
+ * \return The x component of the point as a float
  */
 [[nodiscard]] float Point2::getRawX() const
 {
@@ -57,7 +57,7 @@ Point2::~Point2() = default;
 }
 
 /**
- * @return The y component of the point as a float
+ * \return The y component of the point as a float
  */
 [[nodiscard]] float Point2::getRawY() const
 {
@@ -70,8 +70,8 @@ Point2::~Point2() = default;
 
 /**
  * Set the x component of the point
- * @param x The new x component of the point
- * @return itself
+ * \param x The new x component of the point
+ * \return itself
  */
 Point2& Point2::setX(const float x)
 {
@@ -81,8 +81,8 @@ Point2& Point2::setX(const float x)
 
 /**
  * Set the y component of the point
- * @param y The new y component of the point
- * @return itself
+ * \param y The new y component of the point
+ * \return itself
  */
 Point2& Point2::setY(const float y)
 {
@@ -96,8 +96,8 @@ Point2& Point2::setY(const float y)
 
 /**
  * Add two points together
- * @param other The other point to add
- * @return A new point which is the sum of the two points
+ * \param other The other point to add
+ * \return A new point which is the sum of the two points
  */
 auto Point2::operator+(const Point2& other) const
 {
@@ -106,8 +106,8 @@ auto Point2::operator+(const Point2& other) const
 
 /**
  * Subtract one point from another
- * @param other The other point to subtract
- * @return A new point which is the difference of the two points
+ * \param other The other point to subtract
+ * \return A new point which is the difference of the two points
  */
 auto Point2::operator-(const Point2& other) const
 {
@@ -116,8 +116,8 @@ auto Point2::operator-(const Point2& other) const
 
 /**
  * Assignation operator overload
- * @param other The other point to assign
- * @return itself
+ * \param other The other point to assign
+ * \return itself
  */
 Point2& Point2::operator=(const Point2& other) = default;
 

@@ -6,7 +6,7 @@
 
 /**
  * Constructor
- * @param renderer Instance of the SDL renderer
+ * \param renderer Instance of the SDL renderer
  */
 Renderer::Renderer(SDL_Renderer* renderer): _renderer(renderer)
 {
@@ -29,7 +29,7 @@ Renderer::~Renderer()
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @return The instance of the SDL renderer
+ * \return The instance of the SDL renderer
  */
 [[nodiscard]] SDL_Renderer* Renderer::getRenderer() const
 {
@@ -42,7 +42,7 @@ Renderer::~Renderer()
 
 /**
  * Set the instance of the SDL renderer
- * @param renderer Instance of the SDL renderer
+ * \param renderer Instance of the SDL renderer
  */
 void Renderer::setRenderer(SDL_Renderer* renderer)
 {
@@ -68,7 +68,7 @@ void Renderer::clear() const
 
 /**
  * Clear the renderer with a specific color
- * @param color The color to clear the renderer with
+ * \param color The color to clear the renderer with
  */
 void Renderer::clear(const Color& color) const
 {
@@ -86,8 +86,8 @@ void Renderer::present() const
 
 /**
  * Draw a point on the renderer
- * @param point The point to draw
- * @param color The color of the point
+ * \param point The point to draw
+ * \param color The color of the point
  */
 void Renderer::drawPoint(const Point2& point, const Color& color) const
 {
@@ -97,9 +97,9 @@ void Renderer::drawPoint(const Point2& point, const Color& color) const
 
 /**
  * Draw a line on the renderer
- * @param start The start point of the line
- * @param end The end point of the line
- * @param color The color of the line
+ * \param start The start point of the line
+ * \param end The end point of the line
+ * \param color The color of the line
  */
 void Renderer::drawLine(const Point2& start, const Point2& end, const Color& color) const
 {
@@ -109,9 +109,9 @@ void Renderer::drawLine(const Point2& start, const Point2& end, const Color& col
 
 /**
  * Draw an empty rectangle on the renderer
- * @param topLeft The top left point of the rect
- * @param bottomRight The bottom right point of the rect
- * @param color The color of the rect
+ * \param topLeft The top left point of the rect
+ * \param bottomRight The bottom right point of the rect
+ * \param color The color of the rect
  */
 void Renderer::drawEmptyRect(const Point2& topLeft, const Point2& bottomRight, const Color& color) const
 {
@@ -127,9 +127,9 @@ void Renderer::drawEmptyRect(const Point2& topLeft, const Point2& bottomRight, c
 
 /**
  * Draw a filled rectangle on the renderer
- * @param topLeft The top left point of the rect
- * @param bottomRight The bottom right point of the rect
- * @param color The color of the rect
+ * \param topLeft The top left point of the rect
+ * \param bottomRight The bottom right point of the rect
+ * \param color The color of the rect
  */
 void Renderer::drawFillRect(const Point2& topLeft, const Point2& bottomRight, const Color& color) const
 {
@@ -145,8 +145,8 @@ void Renderer::drawFillRect(const Point2& topLeft, const Point2& bottomRight, co
 
 /**
  * Draw a polygon on the renderer
- * @param points The points of the polygon
- * @param color The color of the polygon
+ * \param points The points of the polygon
+ * \param color The color of the polygon
  */
 void Renderer::drawPolygon(const std::vector<Point2>& points, const Color& color) const
 {
@@ -166,10 +166,9 @@ void Renderer::drawPolygon(const std::vector<Point2>& points, const Color& color
 
 /**
  * Set the draw color of the renderer
- * @param color The color to set the renderer to
+ * \param color The color to set the renderer to
  */
 void Renderer::_setDrawColor(const Color& color) const
 {
     SDL_SetRenderDrawColor(_renderer, color.getRed(), color.getGreen(), color.getBlue(),SDL_ALPHA_OPAQUE);
 }
-

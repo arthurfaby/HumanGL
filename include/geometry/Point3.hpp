@@ -23,8 +23,8 @@ public:
     Point3& setZ(float z);
 
     // Operator overloads
-    auto operator+(const Point3& other) const;
-    auto operator-(const Point3& other) const;
+    Point3 operator+(const Point3& other) const;
+    Point3 operator-(const Point3& other) const;
     Point3& operator=(const Point3& other);
 
 private:

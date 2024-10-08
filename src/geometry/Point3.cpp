@@ -6,9 +6,9 @@
 
 /**
  * Constructor
- * @param x The x component of the point
- * @param y The y component of the point
- * @param z The z component of the point
+ * \param x The x component of the point
+ * \param y The y component of the point
+ * \param z The z component of the point
  */
 Point3::Point3(const float x, const float y, const float z): _x(x), _y(y), _z(z)
 {
@@ -16,7 +16,7 @@ Point3::Point3(const float x, const float y, const float z): _x(x), _y(y), _z(z)
 
 /**
  * Copy constructor
- * @param other The other point to copy
+ * \param other The other point to copy
  */
 Point3::Point3(const Point3& other) = default;
 
@@ -34,7 +34,7 @@ Point3::~Point3() = default;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @return The x component of the point
+ * \return The x component of the point
  */
 [[nodiscard]] float Point3::getX() const
 {
@@ -42,7 +42,7 @@ Point3::~Point3() = default;
 }
 
 /**
- * @return The y component of the point
+ * \return The y component of the point
  */
 [[nodiscard]] float Point3::getY() const
 {
@@ -50,7 +50,7 @@ Point3::~Point3() = default;
 }
 
 /**
- * @return The z component of the point
+ * \return The z component of the point
  */
 [[nodiscard]] float Point3::getZ() const
 {
@@ -63,8 +63,8 @@ Point3::~Point3() = default;
 
 /**
  * Set the x component of the point
- * @param x The new x component of the point
- * @return itself
+ * \param x The new x component of the point
+ * \return itself
  */
 Point3& Point3::setX(const float x)
 {
@@ -74,8 +74,8 @@ Point3& Point3::setX(const float x)
 
 /**
  * Set the y component of the point
- * @param y The new y component of the point
- * @return itself
+ * \param y The new y component of the point
+ * \return itself
  */
 Point3& Point3::setY(const float y)
 {
@@ -85,8 +85,8 @@ Point3& Point3::setY(const float y)
 
 /**
  * Set the z component of the point
- * @param z The new z component of the point
- * @return itself
+ * \param z The new z component of the point
+ * \return itself
  */
 Point3& Point3::setZ(const float z)
 {
@@ -100,27 +100,27 @@ Point3& Point3::setZ(const float z)
 
 /**
  * Addition operator overload
- * @param other The other point to add
- * @return A new point which is the sum of the two points
+ * \param other The other point to add
+ * \return A new point which is the sum of the two points
  */
-auto Point3::operator+(const Point3& other) const
+Point3 Point3::operator+(const Point3& other) const
 {
  return Point3(_x + other._x, _y + other._y, _z + other._z);
 }
 
 /**
  * Subtraction operator overload
- * @param other The other point to subtract
- * @return A new point which is the difference of the two points
+ * \param other The other point to subtract
+ * \return A new point which is the difference of the two points
  */
-auto Point3::operator-(const Point3& other) const
+Point3 Point3::operator-(const Point3& other) const
 {
  return Point3(_x - other._x, _y - other._y, _z - other._z);
 }
 
 /**
  * Assignation operator overload
- * @param other The other point to assign
- * @return itself
+ * \param other The other point to assign
+ * \return itself
  */
 Point3& Point3::operator=(const Point3& other) = default;

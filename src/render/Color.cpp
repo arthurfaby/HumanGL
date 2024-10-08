@@ -6,9 +6,9 @@
 
 /**
  * Constructor
- * @param red Red color value
- * @param green Green color value
- * @param blue Blue color value
+ * \param red Red color value
+ * \param green Green color value
+ * \param blue Blue color value
  */
 Color::Color(const unsigned char red, const unsigned char green, const unsigned char blue): _red(red),
     _green(green),
@@ -18,7 +18,7 @@ Color::Color(const unsigned char red, const unsigned char green, const unsigned 
 
 /**
  * Copy constructor
- * @param other Other color to copy from
+ * \param other Other color to copy from
  */
 Color::Color(const Color& other) = default;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -35,7 +35,7 @@ Color::~Color() = default;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @return Red color value
+ * \return Red color value
  */
 [[nodiscard]] unsigned char Color::getRed() const
 {
@@ -43,7 +43,7 @@ Color::~Color() = default;
 }
 
 /**
- * @return Green color value
+ * \return Green color value
  */
 [[nodiscard]] unsigned char Color::getGreen() const
 {
@@ -51,7 +51,7 @@ Color::~Color() = default;
 }
 
 /**
- * @return Blue color value
+ * \return Blue color value
  */
 [[nodiscard]] unsigned char Color::getBlue() const
 {
@@ -64,8 +64,8 @@ Color::~Color() = default;
 
 /**
  * Set the red color value
- * @param red Red color value
- * @return itself
+ * \param red Red color value
+ * \return itself
  */
 Color& Color::setRed(const unsigned char red)
 {
@@ -75,8 +75,8 @@ Color& Color::setRed(const unsigned char red)
 
 /**
  * Set the green color value
- * @param green Green color value
- * @return itself
+ * \param green Green color value
+ * \return itself
  */
 Color& Color::setGreen(const unsigned char green)
 {
@@ -86,8 +86,8 @@ Color& Color::setGreen(const unsigned char green)
 
 /**
  * Set the blue color value
- * @param blue Blue color value
- * @return itself
+ * \param blue Blue color value
+ * \return itself
  */
 Color& Color::setBlue(const unsigned char blue)
 {
@@ -101,7 +101,7 @@ Color& Color::setBlue(const unsigned char blue)
 
 /**
  * Assignation operator overload
- * @param other The other color to assign
- * @return itself
+ * \param other The other color to assign
+ * \return itself
  */
 Color& Color::operator=(const Color& other) = default;
