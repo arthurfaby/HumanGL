@@ -35,7 +35,7 @@ add_executable(${PROJECT_NAME} ${ALL_SOURCE_FILES})
 
 target_include_directories(${PROJECT_NAME}
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include
-        PRIVATE ${LIBS_DIRECTORY}/glfw/include/GLFW
+        PRIVATE ${LIBS_DIRECTORY}/glfw/include
 )
 
-target_link_libraries(${PROJECT_NAME} ${LIBS_DIRECTORY}/glfw/build/src/libglfw3.a OpenGL::GL)
+target_link_libraries(${PROJECT_NAME} ${LIBS_DIRECTORY}/glfw/libglfw3.a OpenGL::GL)
