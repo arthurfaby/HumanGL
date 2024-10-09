@@ -8,14 +8,15 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Default constructor
+ * Default constructor.
  */
 Vector4::Vector4(): Vector4(0.0f, 0.0f, 0.0f, 1.0f)
 {
 }
 
 /**
- * Constructor
+ * Constructor.
+ *
  * @param x The x component of the vector
  * @param y The y component of the vector
  * @param z The z component of the vector
@@ -30,7 +31,8 @@ Vector4::Vector4(const float x, const float y, const float z, const float w)
 }
 
 /**
- * Copy constructor
+ * Copy constructor.
+ *
  * @param other The vector to copy
  */
 Vector4::Vector4(const Vector4& other)
@@ -46,7 +48,7 @@ Vector4::Vector4(const Vector4& other)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Destructor
+ * Destructor.
  */
 Vector4::~Vector4() = default;
 
@@ -99,8 +101,10 @@ Vector4::~Vector4() = default;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Set the x component of the vector
+ * Set the x component of the vector.
+ *
  * @param x The new x component
+ *
  * @return itself
  */
 Vector4& Vector4::setX(const float x)
@@ -110,8 +114,10 @@ Vector4& Vector4::setX(const float x)
 }
 
 /**
- * Set the y component of the vector
+ * Set the y component of the vector.
+ *
  * @param y The new y component
+ *
  * @return itself
  */
 Vector4& Vector4::setY(const float y)
@@ -121,8 +127,10 @@ Vector4& Vector4::setY(const float y)
 }
 
 /**
- * Set the z component of the vector
+ * Set the z component of the vector.
+ *
  * @param z The new z component
+ *
  * @return itself
  */
 Vector4& Vector4::setZ(const float z)
@@ -132,8 +140,10 @@ Vector4& Vector4::setZ(const float z)
 }
 
 /**
- * Set the w component of the vector
+ * Set the w component of the vector.
+ *
  * @param w The new w component
+ *
  * @return itself
  */
 Vector4& Vector4::setW(const float w)
@@ -147,8 +157,10 @@ Vector4& Vector4::setW(const float w)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Assignation operator overload. Assign the values of the other vector to this vector
+ * Assignation operator overload. Assign the values of the other vector to this vector.
+ *
  * @param other The vector to assign
+ *
  * @return itself
  */
 Vector4& Vector4::operator=(const Vector4& other)
@@ -161,8 +173,10 @@ Vector4& Vector4::operator=(const Vector4& other)
 }
 
 /**
- * Addition operator overload. Add the values of the other vector to this vector
+ * Addition operator overload. Add the values of the other vector to this vector.
+ *
  * @param other The vector to add
+ *
  * @return itself
  */
 Vector4& Vector4::operator+(const Vector4& other)
@@ -175,8 +189,10 @@ Vector4& Vector4::operator+(const Vector4& other)
 }
 
 /**
- * Addition assignment operator overload. Add the values of the other vector to this vector
+ * Addition assignment operator overload. Add the values of the other vector to this vector.
+ *
  * @param other The vector to add
+ *
  * @return itself
  */
 Vector4& Vector4::operator+=(const Vector4& other)
@@ -185,8 +201,10 @@ Vector4& Vector4::operator+=(const Vector4& other)
 }
 
 /**
- * Subtraction operator overload. Subtract the values of the other vector to this vector
+ * Subtraction operator overload. Subtract the values of the other vector to this vector.
+ *
  * @param other The vector to subtract
+ *
  * @return itself
  */
 Vector4& Vector4::operator-(const Vector4& other)
@@ -199,8 +217,10 @@ Vector4& Vector4::operator-(const Vector4& other)
 }
 
 /**
- * Subtraction assignment operator overload. Subtract the values of the other vector to this vector
+ * Subtraction assignment operator overload. Subtract the values of the other vector to this vector.
+ *
  * @param other The vector to subtract
+ *
  * @return itself
  */
 Vector4& Vector4::operator-=(const Vector4& other)
@@ -209,8 +229,10 @@ Vector4& Vector4::operator-=(const Vector4& other)
 }
 
 /**
- * Multiplication operator overload. Multiply the values of the other vector to this vector
+ * Multiplication operator overload. Multiply the values of the other vector to this vector.
+ *
  * @param other The vector to multiply
+ *
  * @return itself
  */
 Vector4& Vector4::operator*(const Vector4& other)
@@ -223,8 +245,10 @@ Vector4& Vector4::operator*(const Vector4& other)
 }
 
 /**
- * Multiplication assignment operator overload. Multiply the values of the other vector to this vector
+ * Multiplication assignment operator overload. Multiply the values of the other vector to this vector.
+ *
  * @param other The vector to multiply
+ *
  * @return itself
  */
 Vector4& Vector4::operator*=(const Vector4& other)
@@ -233,12 +257,22 @@ Vector4& Vector4::operator*=(const Vector4& other)
 }
 
 /**
- * Division operator overload. Divide the values of the other vector to this vector
+ * Division operator overload. Divide the values of the other vector to this vector.
+ *
  * @param other The vector to divide
+ *
  * @return itself
  */
 Vector4& Vector4::operator/(const Vector4& other)
 {
+    for (const float componentValue: other._data)
+    {
+        if (componentValue == 0.0f)
+        {
+            Logger::warning("Vector4::operator/(Vector4): Division by zero on a component. Operation aborted.");
+            return *this;
+        }
+    }
     _data[0] /= other._data[0];
     _data[1] /= other._data[1];
     _data[2] /= other._data[2];
@@ -247,8 +281,10 @@ Vector4& Vector4::operator/(const Vector4& other)
 }
 
 /**
- * Division assignment operator overload. Divide the values of the other vector to this vector
+ * Division assignment operator overload. Divide the values of the other vector to this vector.
+ *
  * @param other The vector to divide
+ *
  * @return itself
  */
 Vector4& Vector4::operator/=(const Vector4& other)
@@ -257,8 +293,10 @@ Vector4& Vector4::operator/=(const Vector4& other)
 }
 
 /**
- * Addition operator overload. Add the value to all the components of the vector
+ * Addition operator overload. Add the value to all the components of the vector.
+ *
  * @param other The value to add
+ *
  * @return itself
  */
 Vector4& Vector4::operator+(const float other)
@@ -271,8 +309,10 @@ Vector4& Vector4::operator+(const float other)
 }
 
 /**
- * Addition assignment operator overload. Add the value to all the components of the vector
+ * Addition assignment operator overload. Add the value to all the components of the vector.
+ *
  * @param other The value to add
+ *
  * @return itself
  */
 Vector4& Vector4::operator+=(const float other)
@@ -281,8 +321,10 @@ Vector4& Vector4::operator+=(const float other)
 }
 
 /**
- * Subtraction operator overload. Subtract the value to all the components of the vector
+ * Subtraction operator overload. Subtract the value to all the components of the vector.
+ *
  * @param other The value to subtract
+ *
  * @return itself
  */
 Vector4& Vector4::operator-(const float other)
@@ -295,8 +337,10 @@ Vector4& Vector4::operator-(const float other)
 }
 
 /**
- * Subtraction assignment operator overload. Subtract the value to all the components of the vector
+ * Subtraction assignment operator overload. Subtract the value to all the components of the vector.
+ *
  * @param other The value to subtract
+ *
  * @return itself
  */
 Vector4& Vector4::operator-=(const float other)
@@ -305,8 +349,10 @@ Vector4& Vector4::operator-=(const float other)
 }
 
 /**
- * Multiplication operator overload. Multiply the value to all the components of the vector
+ * Multiplication operator overload. Multiply the value to all the components of the vector.
+ *
  * @param other The value to multiply
+ *
  * @return itself
  */
 Vector4& Vector4::operator*(const float other)
@@ -319,8 +365,10 @@ Vector4& Vector4::operator*(const float other)
 }
 
 /**
- * Multiplication assignment operator overload. Multiply the value to all the components of the vector
+ * Multiplication assignment operator overload. Multiply the value to all the components of the vector.
+ *
  * @param other The value to multiply
+ *
  * @return itself
  */
 Vector4& Vector4::operator*=(const float other)
@@ -329,12 +377,19 @@ Vector4& Vector4::operator*=(const float other)
 }
 
 /**
- * Division operator overload. Divide the value to all the components of the vector
+ * Division operator overload. Divide the value to all the components of the vector.
+ *
  * @param other The value to divide
+ *
  * @return itself
  */
 Vector4& Vector4::operator/(const float other)
 {
+    if (other == 0)
+    {
+        Logger::warning("Vector4::operator/(float): Division by zero. Operation aborted.");
+        return *this;
+    }
     _data[0] /= other;
     _data[1] /= other;
     _data[2] /= other;
@@ -343,8 +398,10 @@ Vector4& Vector4::operator/(const float other)
 }
 
 /**
- * Division assignment operator overload. Divide the value to all the components of the vector
+ * Division assignment operator overload. Divide the value to all the components of the vector.
+ *
  * @param other The value to divide
+ *
  * @return itself
  */
 Vector4& Vector4::operator/=(const float other)
@@ -353,8 +410,10 @@ Vector4& Vector4::operator/=(const float other)
 }
 
 /**
- * Equality operator overload. Check if the other vector is equal to this vector
+ * Equality operator overload. Check if the other vector is equal to this vector.
+ *
  * @param other The vector to compare
+ *
  * @return true if the vectors are equal, false otherwise
  */
 bool Vector4::operator==(const Vector4& other) const
@@ -364,8 +423,10 @@ bool Vector4::operator==(const Vector4& other) const
 }
 
 /**
- * Inequality operator overload. Check if the other vector is not equal to this vector
+ * Inequality operator overload. Check if the other vector is not equal to this vector.
+ *
  * @param other The vector to compare
+ *
  * @return true if the vectors are not equal, false otherwise
  */
 bool Vector4::operator!=(const Vector4& other) const
@@ -374,8 +435,10 @@ bool Vector4::operator!=(const Vector4& other) const
 }
 
 /**
- * Output stream operator overload. Print the vector to the output stream
+ * Output stream operator overload. Print the vector to the output stream.
+ *
  * @param os The output stream
+ *
  * @return The output stream
  */
 std::ostream& Vector4::operator<<(std::ostream& os) const
@@ -386,9 +449,11 @@ std::ostream& Vector4::operator<<(std::ostream& os) const
 
 [[nodiscard]] std::string Vector4::toString() const
 {
-    return "Vector4(" + std::to_string(_data[0]) + ", " + std::to_string(_data[1]) + ", " +
-           std::to_string(_data[2]) +
-           ", " + std::to_string(_data[3]) + ")";
+    return "Vector4(" +
+           std::to_string(_data[0]) + ", " +
+           std::to_string(_data[1]) + ", " +
+           std::to_string(_data[2]) + ", " +
+           std::to_string(_data[3]) + ")";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -396,16 +461,18 @@ std::ostream& Vector4::operator<<(std::ostream& os) const
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Calculate the magnitude of the vector (the length of the vector)
+ * Calculate the magnitude of the vector (the length of the vector).
+ *
  * @return The magnitude of the vector
  */
 [[nodiscard]] float Vector4::magnitude() const
 {
-    return sqrtf(_data[0] * _data[0] + _data[1] * _data[1] + _data[2] * _data[2] + _data[3] * _data[3]);
+    return sqrtf(powf(_data[0], 2) + powf(_data[1], 2) + powf(_data[2], 2) + powf(_data[3], 2));
 }
 
 /**
- * Normalize the vector (make the vector have a magnitude of 1)
+ * Normalize the vector (make the vector have a magnitude of 1).
+ *
  * @return itself
  */
 Vector4& Vector4::normalize()
@@ -415,10 +482,11 @@ Vector4& Vector4::normalize()
 }
 
 /**
- * Check if the vector is normalized (has a magnitude of 1) with a precision of 1.e-6
+ * Check if the vector is normalized (has a magnitude of 1) with a precision of 1.e-6.
+ *
  * @return true if the vector is normalized, false otherwise
  */
 [[nodiscard]] bool Vector4::isNormalized() const
 {
-    return abs(magnitude() - 1.0f) < 1.e-6f;
+    return fabsf(magnitude() - 1.0f) < 1.e-6f;
 }

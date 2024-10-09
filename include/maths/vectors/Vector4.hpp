@@ -58,7 +58,14 @@ public:
     [[nodiscard]] bool isNormalized() const;
 
 private:
-    float _data[4];
+    /**
+    * The data of the vector.
+    * [0] = x -- The x component of the vector.
+    * [1] = y -- The y component of the vector.
+    * [2] = z -- The z component of the vector.
+    * [3] = w -- The w component of the vector (used for homogenous coordinates).
+    */
+    float _data[4]{};
 };
 
 #endif //VECTOR4_HPP
