@@ -29,13 +29,15 @@ set(ALL_SOURCE_FILES
 )
 
 find_package(OpenGL REQUIRED)
+find_package(glfw3 REQUIRED)
+find_package(GLEW REQUIRED)
+
 
 # Add an executable target
 add_executable(${PROJECT_NAME} ${ALL_SOURCE_FILES})
 
 target_include_directories(${PROJECT_NAME}
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include
-        PRIVATE ${LIBS_DIRECTORY}/glfw/include
 )
 
-target_link_libraries(${PROJECT_NAME} ${LIBS_DIRECTORY}/glfw/libglfw3.a OpenGL::GL)
+target_link_libraries(${PROJECT_NAME} OpenGL::GL glfw GLEW)
