@@ -22,7 +22,7 @@ set(UTILS_SOURCE_FILES
         src/utils/Logger.cpp
 )
 
-# Contain all cpp files within src/utils
+# Contain all cpp files within src/maths
 set(MATHS_SOURCE_FILES
         src/maths/vectors/Vector4.cpp
 )
@@ -30,8 +30,8 @@ set(MATHS_SOURCE_FILES
 # Contain all source files
 set(ALL_SOURCE_FILES
         ${SOURCE_FILES}
-        ${UTILS_SOURCE_FILES}
         ${MATHS_SOURCE_FILES}
+        ${UTILS_SOURCE_FILES}
 )
 
 find_package(OpenGL REQUIRED)
@@ -44,8 +44,8 @@ add_executable(${PROJECT_NAME} ${ALL_SOURCE_FILES})
 
 target_include_directories(${PROJECT_NAME}
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include
-        PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/utils
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/maths/vectors
+        PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/utils
 )
 
 target_link_libraries(${PROJECT_NAME} OpenGL::GL glfw GLEW)
