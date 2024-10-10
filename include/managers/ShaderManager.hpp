@@ -21,7 +21,7 @@ public:
     ShaderManager& operator=(const ShaderManager&) = delete;
 
     // Methods
-  	static void init();
+    static GLuint init();
 
 private:
     // Private methods
