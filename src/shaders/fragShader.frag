@@ -1,9 +1,9 @@
 #version 450 core
 
-in vec3 fragmentColor;// Correspond à la sortie du geometry shader
+in vec3 fragmentColor;// Vertex shader output
 
-out vec3 finalColor;// La couleur finale à afficher
+out vec3 finalColor;// Final color of the fragment
 
 void main() {
-    finalColor = fragmentColor;// Attribue la couleur reçue à la couleur finale
+    finalColor = fragmentColor;
 }
