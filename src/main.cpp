@@ -58,16 +58,31 @@ int main(const int argc, char** argv)
     const GLfloat polygonVertices[] = {
         -0.5f, 0.0f, 0.0f,
         0.0f, 0.0f, 0.0f,
-        -0.5f, -0.25f, 0.0f,
-        -0.5f, -0.25f, 0.0f,
+        -0.33f, 0.33f, 0.0f,
+        -0.33f, 0.33f, 0.0f,
         0.0f, 0.0f, 0.0f,
-        0.0f, -0.5f, 0.0f,
-        0.0f, -0.5f, 0.0f,
+        0.0f, 0.5f, 0.0f,
+        0.0f, 0.5f, 0.0f,
         0.0f, 0.0f, 0.0f,
-        0.25f, -0.25f, 0.0f,
-        0.25f, -0.25f, 0.0f,
+        0.33f, 0.33f, 0.0f,
+        0.33f, 0.33f, 0.0f,
         0.0f, 0.0f, 0.0f,
         0.5f, 0.0f, 0.0f
+    };
+
+    const GLfloat colors[] = {
+        1.0f, 0.0f, 0.0f,
+        1.0f, 0.0f, 0.0f,
+        1.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, 1.0f,
+        1.0f, 0.5f, 0.0f,
+        1.0f, 0.5f, 0.0f,
+        1.0f, 0.5f, 0.0f,
     };
     // @formatter:on
 
@@ -79,6 +94,15 @@ int main(const int argc, char** argv)
     glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
     // Give our vertices to OpenGL.
     glBufferData(GL_ARRAY_BUFFER, sizeof(polygonVertices), polygonVertices, GL_STATIC_DRAW);
+    // This will identify our vertex buffer
+
+    GLuint colorBuffer;
+    // Generate 1 buffer, put the resulting identifier in colorBuffer
+    glGenBuffers(1, &colorBuffer);
+    // The following commands will talk about our 'colorBuffer' buffer
+    glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
+    // Give our vertices to OpenGL.
+    glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
     // This will identify our vertex buffer
 
     ShaderManager::init();
@@ -98,6 +122,10 @@ int main(const int argc, char** argv)
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
         glVertexAttribPointer(0, 3,GL_FLOAT,GL_FALSE, 0, (void*) 0);
+
+        glEnableVertexAttribArray(1);
+        glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
+        glVertexAttribPointer(1, 3,GL_FLOAT,GL_FALSE, 0, (void*) 0);
 
         glDrawArrays(GL_TRIANGLES, 0, 4 * 3);
         glDisableVertexAttribArray(0);
