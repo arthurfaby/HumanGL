@@ -1,7 +1,8 @@
 #include "Logger.hpp"
 #include <cstdarg>
 
-std::mutex Logger::logMutex;
+std::mutex Logger::_logMutex;
+bool Logger::_isDebug = false;
 
 const std::string DEBUG_COLOR = "\e[96m";
 const std::string ERROR_COLOR = "\e[91m";
@@ -9,9 +10,31 @@ const std::string INFO_COLOR = "\e[97m";
 const std::string WARNING_COLOR = "\e[93m";
 const std::string RESET_COLOR = "\e[0m";
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Getters
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @return The state of the logger
+ */
+[[nodiscard]] bool Logger::isDebug()
+{
+    return _isDebug;
+}
+
+/**
+ * Set the state of the logger.
+ *
+ * @param isDebug The new state of the logger
+ */
+void Logger::setDebug(const bool isDebug)
+{
+    _isDebug = isDebug;
+}
+
 void Logger::log(const LogLevel level, const char* format, va_list args)
 {
-    std::lock_guard guard(logMutex);
+    std::lock_guard guard(_logMutex);
 
     const std::string textColor = getTextColor(level);
     std::ostream& output = getOutput(level);
@@ -89,6 +112,11 @@ std::string Logger::logLevelToString(const LogLevel level)
  */
 void Logger::debug(const std::string& message, ...)
 {
+    if (!_isDebug)
+    {
+        return;
+    }
+
     va_list args;
     va_start(args, message);
     log(LogLevel::DEBUG, message.c_str(), args);

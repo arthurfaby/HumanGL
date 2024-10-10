@@ -10,8 +10,16 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     }
 }
 
-int main()
+int main(const int argc, char **argv)
 {
+    for (int i = 0; i < argc; ++i)
+    {
+        if (std::string(argv[i]) == "--debug")
+        {
+            Logger::setDebug(true);
+        }
+    }
+
     // Initialize the library
     if (!glfwInit())
     {

@@ -22,6 +22,12 @@ public:
     // Destructor
     ~Logger() = delete;
 
+    // Getters
+    [[nodiscard]] static bool isDebug();
+
+    // Setters
+    static void setDebug(bool isDebug);
+
     // Operator overloads
     Logger& operator=(const Logger& other) = delete;
 
@@ -35,7 +41,12 @@ private:
     /**
     * Mutex dedicated to logging.
     */
-    static std::mutex logMutex;
+    static std::mutex _logMutex;
+
+    /**
+    * State of the logger.
+    */
+    static bool _isDebug;
 
     // Methods
     static void log(LogLevel level, const char* format, va_list args);
