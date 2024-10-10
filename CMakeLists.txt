@@ -44,6 +44,7 @@ add_executable(${PROJECT_NAME} ${ALL_SOURCE_FILES})
 
 target_include_directories(${PROJECT_NAME}
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include
+        PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/exceptions
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/maths/vectors
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/utils
 )
