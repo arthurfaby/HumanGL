@@ -27,10 +27,16 @@ set(MATHS_SOURCE_FILES
         src/maths/vectors/Vector4.cpp
 )
 
+# Contain all cpp files within src/managers
+set(MANAGERS_SOURCE_FILES
+        src/managers/ShaderManager.cpp
+)
+
 # Contain all source files
 set(ALL_SOURCE_FILES
         ${SOURCE_FILES}
         ${MATHS_SOURCE_FILES}
+        ${MANAGERS_SOURCE_FILES}
         ${UTILS_SOURCE_FILES}
 )
 

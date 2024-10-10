@@ -81,6 +81,8 @@ int main(const int argc, char** argv)
     glBufferData(GL_ARRAY_BUFFER, sizeof(polygonVertices), polygonVertices, GL_STATIC_DRAW);
     // This will identify our vertex buffer
 
+    ShaderManager::init();
+
     glfwSetKeyCallback(window, key_callback);
     Logger::info("main.cpp::main(): Key callback set.");
 
