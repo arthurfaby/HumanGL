@@ -25,6 +25,7 @@ set(UTILS_SOURCE_FILES
 # Contain all cpp files within src/utils
 set(MATHS_SOURCE_FILES
         src/maths/vectors/Vector4.cpp
+        src/maths/matrices/Matrix4.cpp
 )
 
 # Contain all source files
@@ -46,6 +47,7 @@ target_include_directories(${PROJECT_NAME}
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/utils
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/maths/vectors
+        PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/maths/matrices
 )
 
 target_link_libraries(${PROJECT_NAME} OpenGL::GL glfw GLEW)
