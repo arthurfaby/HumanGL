@@ -1,3 +1,4 @@
+#include <BodyPart.hpp>
 #include <BufferManager.hpp>
 #include <ShaderManager.hpp>
 #include <GL/glew.h>
@@ -16,9 +17,10 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 void render(GLFWwindow* window, const double& now, double& lastRenderTime, unsigned int& frameCount)
 {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     // Render here
-    glClear(GL_COLOR_BUFFER_BIT);
-    BufferManager::drawBuffers();
+    BufferManager::drawAll();
     glfwSwapBuffers(window);
     frameCount++;
     lastRenderTime = now;
@@ -66,42 +68,68 @@ int main(const int argc, char** argv)
         return -1;
     }
 
+    // Set the clear color to a grey blue color
+    glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
+
+    // Enable depth test
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+
     // Init VAO
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
 
     // @formatter:off
-    float polygonVertices[] = {
-        -0.5f, 0.0f, 0.0f,
-        0.0f, 0.0f, 0.0f,
-        -0.33f, 0.33f, 0.0f,
-        -0.33f, 0.33f, 0.0f,
-        0.0f, 0.0f, 0.0f,
-        0.5f, 0.0f, 0.0f
+    std::vector<float> vertices = {
+        0.3f, 0.3f, 0.0f,
+        0.3f, -0.3f, 0.0f,
+        -0.3f, -0.3f, 0.0f,
     };
 
+    std::vector<float> verticesColors = {
+        1.0f, 0.0f, 0.0f,
+        1.0f, 0.0f, 0.0f,
+        1.0f, 0.0f, 0.0f,
+    };
 
-    float colors[] = {
-        1.0f, 0.0f, 0.0f,
-        1.0f, 0.0f, 0.0f,
-        1.0f, 0.0f, 0.0f,
+    std::vector<float> vertices2 = {
+        0.5f, 0.5f, 0,
+        0.5f, -0.5f, 0,
+        -0.5f, -0.5f, 0,
+    };
+
+    std::vector<float> vertices2Colors = {
         0.0f, 1.0f, 0.0f,
         0.0f, 1.0f, 0.0f,
         0.0f, 1.0f, 0.0f,
+    };
+
+    std::vector<float> lines = {
+        -1.0f, 0.0f, -1.0f,
+        1.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f
+    };
+
+    std::vector<float> linesColors = {
+        0.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, 1.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 1.0f, 0.0f
     };
     // @formatter:on
 
     ShaderManager::init();
     BufferManager::init();
-    BufferManager::setColorBuffer(colors, sizeof(colors) / sizeof(float));
-    BufferManager::setVertexBuffer(polygonVertices, sizeof(polygonVertices) / sizeof(float));
-
+    BufferManager::addTrianglesVertices(vertices);
+    BufferManager::addTrianglesColors(verticesColors);
+    BufferManager::addTrianglesVertices(vertices2);
+    BufferManager::addTrianglesColors(vertices2Colors);
+    BufferManager::addLinesVertices(lines);
+    BufferManager::addLinesColors(linesColors);
     glfwSetKeyCallback(window, key_callback);
     Logger::info("main.cpp::main(): Key callback set.");
-
-    // Set the clear color to a grey blue color
-    glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
 
     double lastRenderTime = glfwGetTime();
     double lastFpsCountTime = glfwGetTime();
