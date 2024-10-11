@@ -1,5 +1,6 @@
 #ifndef BUFFER_MANAGER_HPP
 #define BUFFER_MANAGER_HPP
+#include <vector>
 #include <GL/glew.h>
 
 class BufferManager
@@ -11,58 +12,67 @@ public:
  // Destructor
  ~BufferManager() = delete;
 
- // Getters
- [[nodiscard]] static float* getVertexBuffer();
- [[nodiscard]] static float* getColorBuffer();
-
- // Setters
- static void setVertexBuffer(float* verticesBuffer, unsigned int verticesBufferSize);
- static void setColorBuffer(float* colorsBuffer, unsigned int colorsBufferSize);
-
  // Methods
  static void init();
- static void clearBuffers();
- static void drawBuffers();
+ static void drawAll();
+ static void drawTriangles();
+ static void drawLines();
+
+ static unsigned int addTrianglesVertices(const std::vector<float>& trianglesVertices);
+ static unsigned int addTrianglesColors(const std::vector<float>& trianglesColors);
+ static unsigned int addLinesVertices(const std::vector<float>& linesVertices);
+ static unsigned int addLinesColors(const std::vector<float>& linesColors);
+
+ static void modifyTrianglesVertices(unsigned int startIndex, const std::vector<float>& trianglesVertices);
+ static void modifyTrianglesColors(unsigned int startIndex, const std::vector<float>& trianglesColors);
+ static void modifyLinesVertices(unsigned int startIndex, const std::vector<float>& linesVertices);
+ static void modifyLinesColors(unsigned int startIndex, const std::vector<float>& linesColors);
 
 private:
- /**
-  * The OpenGL vertex buffer.
-  */
- static GLuint _glVertexBuffer;
-
- /**
-  * The OpenGL color buffer.
-  */
- static GLuint _glColorBuffer;
-
  /**
   * Whether the buffer manager has been initialized.
   */
  static bool _initialized;
 
  /**
-  * The buffer for the vertices.
+  * The buffer for the triangles.
   */
- static float* _vertexBuffer;
+ static std::vector<float> _trianglesVerticesBuffer;
 
  /**
-  * The buffer for the colors.
+  * The buffer for the triangles colors.
   */
- static float* _colorBuffer;
+ static std::vector<float> _trianglesColorsBuffer;
 
  /**
-  * The size of the vertices buffer.
+  * The buffer for the lines.
   */
- static unsigned int _verticesBufferSize;
+ static std::vector<float> _linesVerticesBuffer;
 
  /**
-  * The size of the colors buffer.
+  * The buffer for the lines colors.
   */
- static unsigned int _colorsBufferSize;
+ static std::vector<float> _linesColorsBuffer;
 
- // Private methods
- static void _drawVertices();
- static void _drawColors();
+ /**
+  * The OpenGL triangles buffer.
+  */
+ static GLuint _glTrianglesVerticesBuffer;
+
+ /**
+  * The OpenGL triangles colors buffer.
+  */
+ static GLuint _glTrianglesColorsBuffer;
+
+ /**
+  * The OpenGL lines buffer.
+  */
+ static GLuint _glLinesVerticesBuffer;
+
+ /**
+  * The OpenGL lines buffer.
+  */
+ static GLuint _glLinesColorsBuffer;
 };
 
 #endif //BUFFER_MANAGER_HPP
