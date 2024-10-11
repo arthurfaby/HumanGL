@@ -43,9 +43,9 @@ Matrix4::Matrix4(const std::array<float, 16>& list)
  *
  * @return The row of the matrix at the index
  */
-Vector4 Vector4::getRow(const int index) const
+Vector4 Vector4::getRow(const unsigned int index) const
 {
-    if (index < 0 || index > 3)
+    if (index > 3)
     {
         throw std::out_of_range("The index must be between 0 and 3");
     }
