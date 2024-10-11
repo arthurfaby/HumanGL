@@ -28,28 +28,29 @@ public:
 
     // Operator overloads
     Vector4& operator=(const Vector4& other);
-    Vector4& operator+(const Vector4& other);
+    Vector4 operator+(const Vector4& other) const;
     Vector4& operator+=(const Vector4& other);
-    Vector4& operator-(const Vector4& other);
+    Vector4 operator-(const Vector4& other) const;
     Vector4& operator-=(const Vector4& other);
-    Vector4& operator*(const Vector4& other);
+    Vector4 operator*(const Vector4& other) const;
     Vector4& operator*=(const Vector4& other);
-    Vector4& operator/(const Vector4& other);
+    Vector4 operator/(const Vector4& other) const;
     Vector4& operator/=(const Vector4& other);
 
-    Vector4& operator+(float other);
+    Vector4 operator+(float other) const;
     Vector4& operator+=(float other);
-    Vector4& operator-(float other);
+    Vector4 operator-(float other) const;
     Vector4& operator-=(float other);
-    Vector4& operator*(float other);
+    Vector4 operator*(float other) const;
     Vector4& operator*=(float other);
-    Vector4& operator/(float other);
+    Vector4 operator/(float other) const;
     Vector4& operator/=(float other);
 
     bool operator==(const Vector4& other) const;
     bool operator!=(const Vector4& other) const;
 
-    std::ostream& operator<<(std::ostream& os) const;
+    [[nodiscard]] const float& operator[](int index) const;
+
     [[nodiscard]] std::string toString() const;
 
     // Methods
@@ -67,5 +68,7 @@ private:
     */
     float _data[4]{};
 };
+
+std::ostream& operator<<(std::ostream& os, const Vector4&);
 
 #endif //VECTOR4_HPP

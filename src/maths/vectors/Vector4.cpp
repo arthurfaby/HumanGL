@@ -157,7 +157,8 @@ Vector4& Vector4::setW(const float w)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Assignation operator overload. Assign the values of the other vector to this vector.
+ * Assignation operator overload.<br>
+ * Assign the values of the other vector to this vector.
  *
  * @param other The vector to assign
  *
@@ -165,31 +166,37 @@ Vector4& Vector4::setW(const float w)
  */
 Vector4& Vector4::operator=(const Vector4& other)
 {
-    _data[0] = other._data[0];
-    _data[1] = other._data[1];
-    _data[2] = other._data[2];
-    _data[3] = other._data[3];
+    if (this != &other)
+    {
+        _data[0] = other._data[0];
+        _data[1] = other._data[1];
+        _data[2] = other._data[2];
+        _data[3] = other._data[3];
+    }
     return *this;
 }
 
 /**
- * Addition operator overload. Add the values of the other vector to this vector.
+ * Addition operator overload.<br>
+ * Create a new Vector4 initialized with the sum of the left and right vectors.
  *
  * @param other The vector to add
  *
- * @return itself
+ * @return A copy of the created Vector4
  */
-Vector4& Vector4::operator+(const Vector4& other)
+Vector4 Vector4::operator+(const Vector4& other) const
 {
-    _data[0] += other._data[0];
-    _data[1] += other._data[1];
-    _data[2] += other._data[2];
-    _data[3] += other._data[3];
-    return *this;
+    return Vector4(
+        _data[0] + other._data[0],
+        _data[1] + other._data[1],
+        _data[2] + other._data[2],
+        _data[3] + other._data[3]
+    );
 }
 
 /**
- * Addition assignment operator overload. Add the values of the other vector to this vector.
+ * Addition assignment operator overload.<br>
+ * Add the values of the other vector to this vector.
  *
  * @param other The vector to add
  *
@@ -197,17 +204,37 @@ Vector4& Vector4::operator+(const Vector4& other)
  */
 Vector4& Vector4::operator+=(const Vector4& other)
 {
-    return *this + other;
+    *this = *this + other;
+    return *this;
 }
 
 /**
- * Subtraction operator overload. Subtract the values of the other vector to this vector.
+ * Subtraction operator overload.<br>
+ * Create a new Vector4 initialized with the difference between the left and right vectors.
+ *
+ * @param other The vector to subtract
+ *
+ * @return A copy of the created Vector4
+ */
+Vector4 Vector4::operator-(const Vector4& other) const
+{
+    return Vector4(
+        _data[0] - other._data[0],
+        _data[1] - other._data[1],
+        _data[2] - other._data[2],
+        _data[3] - other._data[3]
+    );
+}
+
+/**
+ * Subtraction assignment operator overload.<br>
+ * Subtract the values of the other vector to this vector.
  *
  * @param other The vector to subtract
  *
  * @return itself
  */
-Vector4& Vector4::operator-(const Vector4& other)
+Vector4& Vector4::operator-=(const Vector4& other)
 {
     _data[0] -= other._data[0];
     _data[1] -= other._data[1];
@@ -217,25 +244,32 @@ Vector4& Vector4::operator-(const Vector4& other)
 }
 
 /**
- * Subtraction assignment operator overload. Subtract the values of the other vector to this vector.
+ * Multiplication operator overload.<br>
+ * Create a new Vector4 initialized with the product of the left and right vectors.
  *
- * @param other The vector to subtract
+ * @param other The vector to multiply
  *
- * @return itself
+ * @return A copy of the created Vector4
  */
-Vector4& Vector4::operator-=(const Vector4& other)
+Vector4 Vector4::operator*(const Vector4& other) const
 {
-    return *this - other;
+    return Vector4(
+        _data[0] * other._data[0],
+        _data[1] * other._data[1],
+        _data[2] * other._data[2],
+        _data[3] * other._data[3]
+    );
 }
 
 /**
- * Multiplication operator overload. Multiply the values of the other vector to this vector.
+ * Multiplication assignment operator overload.<br>
+ * Multiply the values of the other vector to this vector.
  *
  * @param other The vector to multiply
  *
  * @return itself
  */
-Vector4& Vector4::operator*(const Vector4& other)
+Vector4& Vector4::operator*=(const Vector4& other)
 {
     _data[0] *= other._data[0];
     _data[1] *= other._data[1];
@@ -245,43 +279,35 @@ Vector4& Vector4::operator*(const Vector4& other)
 }
 
 /**
- * Multiplication assignment operator overload. Multiply the values of the other vector to this vector.
+ * Division operator overload.<br>
+ * Create a new Vector4 initialized with the quotient of the left vector divided by the right vector.
+ * If one of the values of the right vector is 0, return a copy of the left vector.
  *
  * @param other The vector to multiply
  *
- * @return itself
+ * @return A copy of the created Vector4 on success. Otherwise, the non-modified left vector
  */
-Vector4& Vector4::operator*=(const Vector4& other)
-{
-    return *this * other;
-}
-
-/**
- * Division operator overload. Divide the values of the other vector to this vector.
- *
- * @param other The vector to divide
- *
- * @return itself
- */
-Vector4& Vector4::operator/(const Vector4& other)
+Vector4 Vector4::operator/(const Vector4& other) const
 {
     for (const float componentValue: other._data)
     {
         if (componentValue == 0.0f)
         {
             Logger::warning("Vector4::operator/(Vector4): Division by zero on a component. Operation aborted.");
-            return *this;
+            return Vector4(*this);
         }
     }
-    _data[0] /= other._data[0];
-    _data[1] /= other._data[1];
-    _data[2] /= other._data[2];
-    _data[3] /= other._data[3];
-    return *this;
+    return Vector4(
+        _data[0] / other._data[0],
+        _data[1] / other._data[1],
+        _data[2] / other._data[2],
+        _data[3] / other._data[3]
+    );
 }
 
 /**
- * Division assignment operator overload. Divide the values of the other vector to this vector.
+ * Division assignment operator overload.<br>
+ * Divide the values of the other vector to this vector.
  *
  * @param other The vector to divide
  *
@@ -289,27 +315,31 @@ Vector4& Vector4::operator/(const Vector4& other)
  */
 Vector4& Vector4::operator/=(const Vector4& other)
 {
-    return *this / other;
-}
-
-/**
- * Addition operator overload. Add the value to all the components of the vector.
- *
- * @param other The value to add
- *
- * @return itself
- */
-Vector4& Vector4::operator+(const float other)
-{
-    _data[0] += other;
-    _data[1] += other;
-    _data[2] += other;
-    _data[3] += other;
+    *this = *this / other;
     return *this;
 }
 
 /**
- * Addition assignment operator overload. Add the value to all the components of the vector.
+ * Addition operator overload.<br>
+ * Create a new Vector4 initialized with the sum of the left vector and the right value.
+ *
+ * @param other The value to add
+ *
+ * @return A copy of the created Vector4
+ */
+Vector4 Vector4::operator+(const float other) const
+{
+    return Vector4(
+        _data[0] + other,
+        _data[1] + other,
+        _data[2] + other,
+        _data[3] + other
+    );
+}
+
+/**
+ * Addition assignment operator overload.<>
+ * Add the value to all components of the vector.
  *
  * @param other The value to add
  *
@@ -317,27 +347,31 @@ Vector4& Vector4::operator+(const float other)
  */
 Vector4& Vector4::operator+=(const float other)
 {
-    return *this + other;
+    *this = *this + other;
+    return *this;
 }
 
 /**
- * Subtraction operator overload. Subtract the value to all the components of the vector.
+ * Subtraction assignment operator overload.<br>
+ * Subtract all components of the vector by the value.
  *
  * @param other The value to subtract
  *
  * @return itself
  */
-Vector4& Vector4::operator-(const float other)
+Vector4 Vector4::operator-(const float other) const
 {
-    _data[0] -= other;
-    _data[1] -= other;
-    _data[2] -= other;
-    _data[3] -= other;
-    return *this;
+    return Vector4(
+        _data[0] - other,
+        _data[1] - other,
+        _data[2] - other,
+        _data[3] - other
+    );
 }
 
 /**
- * Subtraction assignment operator overload. Subtract the value to all the components of the vector.
+ * Subtraction assignment operator overload.<br>
+ * Subtract all components of the vector by the value.
  *
  * @param other The value to subtract
  *
@@ -345,27 +379,31 @@ Vector4& Vector4::operator-(const float other)
  */
 Vector4& Vector4::operator-=(const float other)
 {
-    return *this - other;
+    *this = *this - other;
+    return *this;
 }
 
 /**
- * Multiplication operator overload. Multiply the value to all the components of the vector.
+ * Multiplication operator overload.<br>
+ * Multiply all components of the vector by the value.
  *
  * @param other The value to multiply
  *
  * @return itself
  */
-Vector4& Vector4::operator*(const float other)
+Vector4 Vector4::operator*(const float other) const
 {
-    _data[0] *= other;
-    _data[1] *= other;
-    _data[2] *= other;
-    _data[3] *= other;
-    return *this;
+    return Vector4(
+        _data[0] * other,
+        _data[1] * other,
+        _data[2] * other,
+        _data[3] * other
+    );
 }
 
 /**
- * Multiplication assignment operator overload. Multiply the value to all the components of the vector.
+ * Multiplication assignment operator overload.<br>
+ * Multiply all components of the vector by the value.
  *
  * @param other The value to multiply
  *
@@ -373,32 +411,36 @@ Vector4& Vector4::operator*(const float other)
  */
 Vector4& Vector4::operator*=(const float other)
 {
-    return *this * other;
-}
-
-/**
- * Division operator overload. Divide the value to all the components of the vector.
- *
- * @param other The value to divide
- *
- * @return itself
- */
-Vector4& Vector4::operator/(const float other)
-{
-    if (other == 0)
-    {
-        Logger::warning("Vector4::operator/(float): Division by zero. Operation aborted.");
-        return *this;
-    }
-    _data[0] /= other;
-    _data[1] /= other;
-    _data[2] /= other;
-    _data[3] /= other;
+    *this = *this * other;
     return *this;
 }
 
 /**
- * Division assignment operator overload. Divide the value to all the components of the vector.
+ * Division operator overload.<br>
+ * Divide the all components of the vector by the value. If the value is 0, return the non-modified vector.
+ *
+ * @param other The value to divide by
+ *
+ * @return itself
+ */
+Vector4 Vector4::operator/(const float other) const
+{
+    if (other == 0)
+    {
+        Logger::warning("Vector4::operator/(float): Division by zero. Operation aborted.");
+        return Vector4(*this);
+    }
+    return Vector4(
+        _data[0] / other,
+        _data[1] / other,
+        _data[2] / other,
+        _data[3] / other
+    );
+}
+
+/**
+ * Division assignment operator overload.<br>
+ * Divide the value to all the components of the vector.
  *
  * @param other The value to divide
  *
@@ -406,11 +448,13 @@ Vector4& Vector4::operator/(const float other)
  */
 Vector4& Vector4::operator/=(const float other)
 {
-    return *this / other;
+    *this = *this / other;
+    return *this;
 }
 
 /**
- * Equality operator overload. Check if the other vector is equal to this vector.
+ * Equality operator overload.<br>
+ * Check if the other vector is equal to this vector.
  *
  * @param other The vector to compare
  *
@@ -423,7 +467,8 @@ bool Vector4::operator==(const Vector4& other) const
 }
 
 /**
- * Inequality operator overload. Check if the other vector is not equal to this vector.
+ * Inequality operator overload.<br>
+ * Check if the other vector is not equal to this vector.
  *
  * @param other The vector to compare
  *
@@ -435,18 +480,36 @@ bool Vector4::operator!=(const Vector4& other) const
 }
 
 /**
- * Output stream operator overload. Print the vector to the output stream.
+ * Access operator[] overload.<br>
+ * Retrieve the component at the specified index.
+ *
+ * @param index The index of the component
+ *
+ * @return The created Vector4
+ */
+[[nodiscard]] const float& Vector4::operator[](const int index) const {
+    return _data[index];
+}
+
+/**
+ * Output stream operator overload.<br>
+ * Print the vector to the output stream.
  *
  * @param os The output stream
+ * @param vector The vector to print
  *
  * @return The output stream
  */
-std::ostream& Vector4::operator<<(std::ostream& os) const
+std::ostream& operator<<(std::ostream& os, const Vector4& vector)
 {
-    os << "Vector4(" << _data[0] << ", " << _data[1] << ", " << _data[2] << ", " << _data[3] << ")";
+    const auto vectorData = vector.getData();
+    os << "Vector4(" << vectorData[0] << ", " << vectorData[1] << ", " << vectorData[2] << ", " << vectorData[3] << ")";
     return os;
 }
 
+/**
+ * @return A string containing the data of the vector
+ */
 [[nodiscard]] std::string Vector4::toString() const
 {
     return "Vector4(" +
@@ -478,7 +541,8 @@ std::ostream& Vector4::operator<<(std::ostream& os) const
 Vector4& Vector4::normalize()
 {
     const float vectorMagnitude = magnitude();
-    return *this / vectorMagnitude;
+    *this = *this / vectorMagnitude;
+    return *this;
 }
 
 /**
