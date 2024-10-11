@@ -54,11 +54,9 @@ int main(const int argc, char** argv)
         glfwTerminate();
         return -1;
     }
-    Logger::info("main.cpp::main(): Window created successfully.");
 
     // Make the window's context current
     glfwMakeContextCurrent(window);
-    Logger::info("main.cpp::main(): Window context made current.");
 
     glewExperimental = true;
     if (glewInit() != GLEW_OK)
@@ -129,7 +127,6 @@ int main(const int argc, char** argv)
     BufferManager::addLinesVertices(lines);
     BufferManager::addLinesColors(linesColors);
     glfwSetKeyCallback(window, key_callback);
-    Logger::info("main.cpp::main(): Key callback set.");
 
     double lastRenderTime = glfwGetTime();
     double lastFpsCountTime = glfwGetTime();
@@ -152,9 +149,7 @@ int main(const int argc, char** argv)
             lastFpsCountTime = now;
         }
     }
-    Logger::info("main.cpp::main(): Window closed. Terminating GLFW.");
     glfwTerminate();
     glfwDestroyWindow(window);
-    Logger::info("main.cpp::main(): GLFW terminated.");
     return 0;
 }

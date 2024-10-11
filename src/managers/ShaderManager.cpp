@@ -11,22 +11,24 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Load and compile the shaders. (Vertex and Fragment)
+ * Load and compile the shaders (Vertex and Fragment).
  * Attach the shaders to a program.
  * Use the program.
  * Detach and delete the shaders.
+ *
+ * @return The ID of the shader program (0 if an error occurred)
  */
-void ShaderManager::init()
+GLuint ShaderManager::init()
 {
-    GLuint vertexShader = _compileShader(VERTEX_SHADER_SOURCE_PATH, GL_VERTEX_SHADER);
-    GLuint fragmentShader = _compileShader(FRAGMENT_SHADER_SOURCE_PATH, GL_FRAGMENT_SHADER);
+    const GLuint vertexShader = _compileShader(VERTEX_SHADER_SOURCE_PATH, GL_VERTEX_SHADER);
+    const GLuint fragmentShader = _compileShader(FRAGMENT_SHADER_SOURCE_PATH, GL_FRAGMENT_SHADER);
 
     // Create a shader program
-    GLuint programId = glCreateProgram();
+    const GLuint programId = glCreateProgram();
     if (programId == 0)
     {
         Logger::warning("ShaderManager::init(): Shader program creation failed.");
-        return;
+        return 0;
     }
 
     // Attach the shaders to the program
@@ -59,6 +61,7 @@ void ShaderManager::init()
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
     glUseProgram(programId);
+    return programId;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -68,10 +71,10 @@ void ShaderManager::init()
 /**
  * Compile the shader from the given file.
  *
- * @param fileName The name of the file to compile the shader from.
- * @param shaderId The ID of the shader to compile.
+ * @param fileName The name of the file to compile the shader from
+ * @param shaderId The ID of the shader to compile
  *
- * @return The compiled shader. (0 if an error occurred)
+ * @return The compiled shader (0 if an error occurred)
  */
 GLuint ShaderManager::_compileShader(const std::string& fileName, const GLenum shaderId)
 {
@@ -120,9 +123,9 @@ GLuint ShaderManager::_compileShader(const std::string& fileName, const GLenum s
 /**
  * Load the shader source from the given file.
  *
- * @param fileName The name of the file to load the shader source from.
+ * @param fileName The name of the file to load the shader source from
  *
- * @return The shader source as a string.
+ * @return The shader source as a string
  */
 const char* ShaderManager::_loadShader(const std::string& fileName)
 {

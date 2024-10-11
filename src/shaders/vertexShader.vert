@@ -7,5 +7,5 @@ out vec3 fragmentColor;// Output to fragment shader
 
 void main(void) {
     fragmentColor = vertexColor;
-    gl_Position = vec4(vertexPosition, 1);
+    gl_Position = vec4(vertexPosition.x, vertexPosition.y, vertexPosition.z, 1);
 }
