@@ -1,7 +1,10 @@
+#include <BufferManager.hpp>
 #include <ShaderManager.hpp>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "Logger.hpp"
+
+#define FPS_LIMIT 60
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -9,6 +12,19 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     }
+}
+
+void render(GLFWwindow* window, const double& now, double& lastRenderTime, unsigned int& frameCount)
+{
+    // Render here
+    glClear(GL_COLOR_BUFFER_BIT);
+    BufferManager::drawBuffers();
+    glfwSwapBuffers(window);
+    frameCount++;
+    lastRenderTime = now;
+
+    // Poll for and process events
+    glfwPollEvents();
 }
 
 int main(const int argc, char** argv)
@@ -50,62 +66,36 @@ int main(const int argc, char** argv)
         return -1;
     }
 
+    // Init VAO
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
 
     // @formatter:off
-    const GLfloat polygonVertices[] = {
+    float polygonVertices[] = {
         -0.5f, 0.0f, 0.0f,
         0.0f, 0.0f, 0.0f,
         -0.33f, 0.33f, 0.0f,
         -0.33f, 0.33f, 0.0f,
         0.0f, 0.0f, 0.0f,
-        0.0f, 0.5f, 0.0f,
-        0.0f, 0.5f, 0.0f,
-        0.0f, 0.0f, 0.0f,
-        0.33f, 0.33f, 0.0f,
-        0.33f, 0.33f, 0.0f,
-        0.0f, 0.0f, 0.0f,
         0.5f, 0.0f, 0.0f
     };
 
-    const GLfloat colors[] = {
+
+    float colors[] = {
         1.0f, 0.0f, 0.0f,
         1.0f, 0.0f, 0.0f,
         1.0f, 0.0f, 0.0f,
         0.0f, 1.0f, 0.0f,
         0.0f, 1.0f, 0.0f,
         0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 1.0f,
-        1.0f, 0.5f, 0.0f,
-        1.0f, 0.5f, 0.0f,
-        1.0f, 0.5f, 0.0f,
     };
     // @formatter:on
 
-    // This will identify our vertex buffer
-    GLuint vertexbuffer;
-    // Generate 1 buffer, put the resulting identifier in vertexbuffer
-    glGenBuffers(1, &vertexbuffer);
-    // The following commands will talk about our 'vertexbuffer' buffer
-    glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-    // Give our vertices to OpenGL.
-    glBufferData(GL_ARRAY_BUFFER, sizeof(polygonVertices), polygonVertices, GL_STATIC_DRAW);
-    // This will identify our vertex buffer
-
-    GLuint colorBuffer;
-    // Generate 1 buffer, put the resulting identifier in colorBuffer
-    glGenBuffers(1, &colorBuffer);
-    // The following commands will talk about our 'colorBuffer' buffer
-    glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
-    // Give our vertices to OpenGL.
-    glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
-    // This will identify our vertex buffer
-
     ShaderManager::init();
+    BufferManager::init();
+    BufferManager::setColorBuffer(colors, sizeof(colors) / sizeof(float));
+    BufferManager::setVertexBuffer(polygonVertices, sizeof(polygonVertices) / sizeof(float));
 
     glfwSetKeyCallback(window, key_callback);
     Logger::info("main.cpp::main(): Key callback set.");
@@ -113,28 +103,26 @@ int main(const int argc, char** argv)
     // Set the clear color to a grey blue color
     glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
 
+    double lastRenderTime = glfwGetTime();
+    double lastFpsCountTime = glfwGetTime();
+    unsigned int frameCount = 0;
+
     // Loop until the user closes the window
     while (!glfwWindowShouldClose(window))
     {
-        // Render here
-        glClear(GL_COLOR_BUFFER_BIT);
+        const double now = glfwGetTime();
 
-        glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-        glVertexAttribPointer(0, 3,GL_FLOAT,GL_FALSE, 0, (void*) 0);
-
-        glEnableVertexAttribArray(1);
-        glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
-        glVertexAttribPointer(1, 3,GL_FLOAT,GL_FALSE, 0, (void*) 0);
-
-        glDrawArrays(GL_TRIANGLES, 0, 4 * 3);
-        glDisableVertexAttribArray(0);
-
-        // Swap front and back buffers
-        glfwSwapBuffers(window);
-
-        // Poll for and process events
-        glfwPollEvents();
+        // Limit the frame rate ti FPS_LIMIT
+        if ((now - lastRenderTime) >= 1.0 / FPS_LIMIT)
+        {
+            render(window, now, lastRenderTime, frameCount);
+        }
+        if (now - lastFpsCountTime > 1.0)
+        {
+            Logger::info("main.cpp::main(): FPS: %f", frameCount / (now - lastFpsCountTime));
+            frameCount = 0;
+            lastFpsCountTime = now;
+        }
     }
     Logger::info("main.cpp::main(): Window closed. Terminating GLFW.");
     glfwTerminate();
