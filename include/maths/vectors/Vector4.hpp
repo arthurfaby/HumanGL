@@ -56,8 +56,6 @@ public:
     [[nodiscard]] float magnitude() const;
     Vector4& normalize();
     [[nodiscard]] std::string toString() const;
-    Vector4 getRow(unsigned int index) const;
-    Vector4 getColumn(unsigned int index) const;
 
 private:
     /**
