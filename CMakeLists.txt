@@ -35,6 +35,7 @@ set(BODY_PARTS_SOURCE_FILES
 # Contain all cpp files within src/managers
 set(MANAGERS_SOURCE_FILES
         src/managers/ShaderManager.cpp
+        src/managers/BufferManager.cpp
 )
 
 # Contain all source files
