@@ -1,5 +1,6 @@
 #ifndef MATRIX4_HPP
 #define MATRIX4_HPP
+
 #include <array>
 #include <Vector4.hpp>
 
@@ -7,8 +8,8 @@ class Matrix4
 {
 public:
     // Constructors
-    Matrix4() = default;
-    explicit Matrix4(const std::array<float, 16>&);
+    Matrix4() = delete;
+    explicit Matrix4(const std::array<float, 16>& list);
     Matrix4(const Matrix4& other) = default;
     
     // Destructor
@@ -16,14 +17,8 @@ public:
     
     // Getters
     [[nodiscard]] const float* getData() const;
-    [[nodiscard]] Vector4 getRowOne() const;
-    [[nodiscard]] Vector4 getRowTwo() const;
-    [[nodiscard]] Vector4 getRowThree() const;
-    [[nodiscard]] Vector4 getRowFour() const;
-    [[nodiscard]] Vector4 getColumnOne() const;
-    [[nodiscard]] Vector4 getColumnTwo() const;
-    [[nodiscard]] Vector4 getColumnThree() const;
-    [[nodiscard]] Vector4 getColumnFour() const;
+    [[nodiscard]] Vector4 getRow(int index) const;
+    [[nodiscard]] Vector4 getColumn(int index) const;
 
     // Operator overloads
     Matrix4& operator=(const Matrix4& other);
@@ -31,14 +26,14 @@ public:
 
     Vector4 operator*(const Vector4& other) const;
 
-    [[nodiscard]] std::string toString() const;
-
     // Methods
-    static Matrix4 createTranslationMatrix(float, float, float);
-    static Matrix4 createRotationXMatrix(double);
-    static Matrix4 createRotationYMatrix(double);
-    static Matrix4 createRotationZMatrix(double);
-    static Matrix4 createScalingMatrix(float, float, float);
+    static Matrix4 createRotationMatrix(double angleX, double angleY, double angleZ);
+    static Matrix4 createRotationXMatrix(double angle);
+    static Matrix4 createRotationYMatrix(double angle);
+    static Matrix4 createRotationZMatrix(double angle);
+    static Matrix4 createScalingMatrix(float sx, float sy, float sz);
+    static Matrix4 createTranslationMatrix(float tx, float ty, float tz);
+    [[nodiscard]] std::string toString() const;
 
 private:
     /**
@@ -51,6 +46,6 @@ private:
     float _data[16]{};
 };
 
-std::ostream& operator<<(std::ostream& os, const Matrix4&);
+std::ostream& operator<<(std::ostream& os, const Matrix4& matrix);
 
 #endif //MATRIX4_HPP

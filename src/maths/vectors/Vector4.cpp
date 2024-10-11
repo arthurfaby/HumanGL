@@ -507,21 +507,19 @@ std::ostream& operator<<(std::ostream& os, const Vector4& vector)
     return os;
 }
 
-/**
- * @return A string containing the data of the vector
- */
-[[nodiscard]] std::string Vector4::toString() const
-{
-    return "Vector4(" +
-           std::to_string(_data[0]) + ", " +
-           std::to_string(_data[1]) + ", " +
-           std::to_string(_data[2]) + ", " +
-           std::to_string(_data[3]) + ")";
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Methods
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Check if the vector is normalized (has a magnitude of 1) with a precision of 1.e-6.
+ *
+ * @return true if the vector is normalized, false otherwise
+ */
+[[nodiscard]] bool Vector4::isNormalized() const
+{
+    return fabsf(magnitude() - 1.0f) < 1.e-6f;
+}
 
 /**
  * Calculate the magnitude of the vector (the length of the vector).
@@ -546,11 +544,13 @@ Vector4& Vector4::normalize()
 }
 
 /**
- * Check if the vector is normalized (has a magnitude of 1) with a precision of 1.e-6.
- *
- * @return true if the vector is normalized, false otherwise
+ * @return A string containing the data of the vector
  */
-[[nodiscard]] bool Vector4::isNormalized() const
+[[nodiscard]] std::string Vector4::toString() const
 {
-    return fabsf(magnitude() - 1.0f) < 1.e-6f;
+    return "Vector4(" +
+           std::to_string(_data[0]) + ", " +
+           std::to_string(_data[1]) + ", " +
+           std::to_string(_data[2]) + ", " +
+           std::to_string(_data[3]) + ")";
 }

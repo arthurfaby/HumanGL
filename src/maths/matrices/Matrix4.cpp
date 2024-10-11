@@ -1,5 +1,6 @@
 #include <array>
 #include <cmath>
+#include <Logger.hpp>
 #include <Matrix4.hpp>
 #include <sstream>
 #include <vector>
@@ -34,67 +35,39 @@ Matrix4::Matrix4(const std::array<float, 16>& list)
 }
 
 /**
- * @return The first row of the matrix
+ * Get the row of the matrix at the index.
+ *
+ * @param index The index of the row to get
+ *
+ * @throw std::out_of_range If the index is not between 0 and 3
+ *
+ * @return The row of the matrix at the index
  */
-[[nodiscard]] Vector4 Matrix4::getRowOne() const
+Vector4 Vector4::getRow(const int index) const
 {
-    return Vector4(_data[0], _data[1], _data[2], _data[3]);
+    if (index < 0 || index > 3)
+    {
+        throw std::out_of_range("The index must be between 0 and 3");
+    }
+    return Vector4(_data[index * 4 + 0], _data[index * 4 + 1], _data[index * 4 + 2], _data[index * 4 + 3]);
 }
 
 /**
- * @return The second row of the matrix
+ * Get the column of the matrix at the index.
+ *
+ * @param index The index of the column to get
+ *
+ * @throw std::out_of_range If the index is not between 0 and 3
+ *
+ * @return The column of the matrix at the index
  */
-[[nodiscard]] Vector4 Matrix4::getRowTwo() const
+Vector4 Vector4::getColumn(const int index) const
 {
-    return Vector4(_data[4], _data[5], _data[6], _data[7]);
-}
-
-/**
- * @return The third row of the matrix
- */
-[[nodiscard]] Vector4 Matrix4::getRowThree() const
-{
-    return Vector4(_data[8], _data[9], _data[10], _data[11]);
-}
-
-/**
- * @return The fourth row of the matrix
- */
-[[nodiscard]] Vector4 Matrix4::getRowFour() const
-{
-    return Vector4(_data[12], _data[13], _data[14], _data[15]);
-}
-
-/**
- * @return The first column of the matrix
- */
-[[nodiscard]] Vector4 Matrix4::getColumnOne() const
-{
-    return Vector4(_data[0], _data[4], _data[8], _data[12]);
-}
-
-/**
- * @return The second column of the matrix
- */
-[[nodiscard]] Vector4 Matrix4::getColumnTwo() const
-{
-    return Vector4(_data[1], _data[5], _data[9], _data[13]);
-}
-
-/**
- * @return The third column of the matrix
- */
-[[nodiscard]] Vector4 Matrix4::getColumnThree() const
-{
-    return Vector4(_data[2], _data[6], _data[10], _data[14]);
-}
-
-/**
- * @return The fourth column of the matrix
- */
-[[nodiscard]] Vector4 Matrix4::getColumnFour() const
-{
-    return Vector4(_data[3], _data[7], _data[11], _data[15]);
+    if (index < 0 || index > 3)
+    {
+        throw std::out_of_range("The index must be between 0 and 3");
+    }
+    return Vector4(_data[index * 4], _data[index * 4], _data[index * 4], _data[index * 4]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -133,12 +106,12 @@ Matrix4& Matrix4::operator=(const Matrix4& other)
  */
 Matrix4 Matrix4::operator*(const Matrix4& other) const
 {
-    const std::array rows = {getRowOne(), getRowTwo(), getRowThree(), getRowFour()};
+    const std::array rows = {getRow(0), getRow(1), getRow(2), getRow(3)};
     const std::array columns = {
-        other.getColumnOne(),
-        other.getColumnTwo(),
-        other.getColumnThree(),
-        other.getColumnFour()
+        other.getColumn(0),
+        other.getColumn(1),
+        other.getColumn(2),
+        other.getColumn(3)
     };
     std::vector<float> resVector;
 
@@ -204,23 +177,126 @@ std::ostream& operator<<(std::ostream& os, const Matrix4& matrix)
     return os;
 }
 
-/**
- * @return A string containing the data of the matrix
- */
-[[nodiscard]] std::string Matrix4::toString() const
-{
-    std::ostringstream oss;
-    oss << "Matrix4("
-            << "Row1: [" << _data[0] << ", " << _data[1] << ", " << _data[2] << ", " << _data[3] << "], "
-            << "Row2: [" << _data[4] << ", " << _data[5] << ", " << _data[6] << ", " << _data[7] << "], "
-            << "Row3: [" << _data[8] << ", " << _data[9] << ", " << _data[10] << ", " << _data[11] << "], "
-            << "Row4: [" << _data[12] << ", " << _data[13] << ", " << _data[14] << ", " << _data[15] << "])";
-    return oss.str();
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Methods
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Create a rotation matrix for the X, Y and Z axis.
+ *
+ * @param angleX The angle in radians to apply on the x-axis
+ * @param angleY The angle in radians to apply on the y-axis
+ * @param angleZ The angle in radians to apply on the z-axis
+ *
+ * @return The created rotation matrix
+ */
+Matrix4 Matrix4::createRotationMatrix(const double angleX, const double angleY, const double angleZ)
+{
+    return createRotationXMatrix(angleX) * createRotationYMatrix(angleY) * createRotationZMatrix(angleZ);
+}
+
+/**
+ * Create a rotation matrix for the X axis such as :<br>
+ *  [1, 0, 0, 0]<br>
+ *  [0, cos(angle), -sin(angle), 0]<br>
+ *  [0, sin(angle), cos(angle), 0]<br>
+ *  [0, 0, 0, 1 ]<br>
+ *
+ * @param angle The angle in radians of type double
+ *
+ * @return The created rotation matrix
+ */
+Matrix4 Matrix4::createRotationXMatrix(const double angle)
+{
+    const auto cosAngleF = static_cast<float>(cos(angle));
+    const auto sinAngleF = static_cast<float>(sin(angle));
+
+    //@formatter:off
+    return Matrix4({
+        1,         0,          0, 0,
+        0, cosAngleF, -sinAngleF, 0,
+        0, sinAngleF,  cosAngleF, 0,
+        0,         0,          0, 1
+    });
+    //@formatter:on
+}
+
+/**
+ * Create a rotation matrix for the Y axis such as :<br>
+ *  [cos(angle), 0, sin(angle), 0]<br>
+ *  [0, 1, 0, 0]<br>
+ *  [-sin(angle), 0, cos(angle), 0]<br>
+ *  [0, 0, 0, 1 ]<br>
+ *
+ * @param angle The angle in radians of type double
+ *
+ * @return The created rotation matrix
+ */
+Matrix4 Matrix4::createRotationYMatrix(const double angle)
+{
+    const auto cosAngleF = static_cast<float>(cos(angle));
+    const auto sinAngleF = static_cast<float>(sin(angle));
+
+    //@formatter:off
+    return Matrix4({
+         cosAngleF, 0, sinAngleF, 0,
+                 0, 1,         0, 0,
+        -sinAngleF, 0, cosAngleF, 0,
+                 0, 0,         0, 1
+    });
+    //@formatter:on
+}
+
+/**
+ * Create a rotation matrix for the Z axis such as :<br>
+ *  [cos(angle), -sin(angle), 0, 0]<br>
+ *  [sin(angle), cos(angle), 0, 0]<br>
+ *  [0, 0, 1, 0]<br>
+ *  [0, 0, 0, 1]<br>
+ *
+ * @param angle The angle in radians of type double
+ *
+ * @return The created rotation matrix
+ */
+Matrix4 Matrix4::createRotationZMatrix(const double angle)
+{
+    const auto cosAngleF = static_cast<float>(cos(angle));
+    const auto sinAngleF = static_cast<float>(sin(angle));
+
+    //@formatter:off
+    return Matrix4({
+        cosAngleF, -sinAngleF, 0, 0,
+        sinAngleF,  cosAngleF, 0, 0,
+                0,          0, 1, 0,
+                0,          0, 0, 1
+    });
+    //@formatter:on
+}
+
+/**
+ * Create a scaling matrix such as :<br>
+ *  [sx, 0, 0, 0]<br>
+ *  [0, sy, 0, 0]<br>
+ *  [0, 0, sz, 0]<br>
+ *  [0, 0, 0, 1 ]<br>
+ *
+ * @param sx The x translation
+ * @param sy The y translation
+ * @param sz The z translation
+ *
+ * @return The created scaling matrix
+ */
+Matrix4 Matrix4::createScalingMatrix(const float sx, const float sy, const float sz)
+{
+    //@formatter:off
+    return Matrix4({
+        sx,  0,  0, 0,
+         0, sy,  0, 0,
+         0,  0, sz, 0,
+         0,  0,  0, 1
+    });
+    //@formatter:on
+}
 
 /**
  * Create a translation matrix such as :<br>
@@ -248,104 +324,15 @@ Matrix4 Matrix4::createTranslationMatrix(const float tx, const float ty, const f
 }
 
 /**
- * Create a rotation matrix for the X axis such as :<br>
- *  [1, 0, 0, 0]<br>
- *  [0, cos(angle), -sin(angle), 0]<br>
- *  [0, sin(angle), cos(angle), 0]<br>
- *  [0, 0, 0, 1 ]<br>
- *
- * @param angleD The angle in degrees of type double
- *
- * @return The created translation matrix
+ * @return A string containing the data of the matrix
  */
-Matrix4 Matrix4::createRotationXMatrix(const double angleD)
+[[nodiscard]] std::string Matrix4::toString() const
 {
-    const auto cosAngleF = static_cast<float>(cos(angleD));
-    const auto sinAngleF = static_cast<float>(sin(angleD));
-
-    //@formatter:off
-    return Matrix4({
-        1,         0,          0, 0,
-        0, cosAngleF, -sinAngleF, 0,
-        0, sinAngleF,  cosAngleF, 0,
-        0,         0,          0, 1
-    });
-    //@formatter:on
-}
-
-/**
- * Create a rotation matrix for the Y axis such as :<br>
- *  [cos(angle), 0, sin(angle), 0]<br>
- *  [0, 1, 0, 0]<br>
- *  [-sin(angle), 0, cos(angle), 0]<br>
- *  [0, 0, 0, 1 ]<br>
- *
- * @param angleD The angle in degrees of type double
- *
- * @return The created translation matrix
- */
-Matrix4 Matrix4::createRotationYMatrix(const double angleD)
-{
-    const auto cosAngleF = static_cast<float>(cos(angleD));
-    const auto sinAngleF = static_cast<float>(sin(angleD));
-
-    //@formatter:off
-    return Matrix4({
-         cosAngleF, 0, sinAngleF, 0,
-                 0, 1,         0, 0,
-        -sinAngleF, 0, cosAngleF, 0,
-                 0, 0,         0, 1
-    });
-    //@formatter:on
-}
-
-/**
- * Create a rotation matrix for the Z axis such as :<br>
- *  [cos(angle), -sin(angle), 0, 0]<br>
- *  [sin(angle), cos(angle), 0, 0]<br>
- *  [0, 0, 1, 0]<br>
- *  [0, 0, 0, 1]<br>
- *
- * @param angleD The angle in degrees of type double
- *
- * @return The created translation matrix
- */
-Matrix4 Matrix4::createRotationZMatrix(const double angleD)
-{
-    const auto cosAngleF = static_cast<float>(cos(angleD));
-    const auto sinAngleF = static_cast<float>(sin(angleD));
-
-    //@formatter:off
-    return Matrix4({
-        cosAngleF, -sinAngleF, 0, 0,
-        sinAngleF,  cosAngleF, 0, 0,
-                0,          0, 1, 0,
-                0,          0, 0, 1
-    });
-    //@formatter:on
-}
-
-/**
- * Create a scaling matrix such as :<br>
- *  [sx, 0, 0, 0]<br>
- *  [0, sy, 0, 0]<br>
- *  [0, 0, sz, 0]<br>
- *  [0, 0, 0, 1 ]<br>
- *
- * @param sx The x translation
- * @param sy The y translation
- * @param sz The z translation
- *
- * @return The created translation matrix
- */
-Matrix4 Matrix4::createScalingMatrix(const float sx, const float sy, const float sz)
-{
-    //@formatter:off
-    return Matrix4({
-        sx,  0,  0, 0,
-         0, sy,  0, 0,
-         0,  0, sz, 0,
-         0,  0,  0, 1
-    });
-    //@formatter:on
+    std::ostringstream oss;
+    oss << "Matrix4("
+            << "Row1: [" << _data[0] << ", " << _data[1] << ", " << _data[2] << ", " << _data[3] << "], "
+            << "Row2: [" << _data[4] << ", " << _data[5] << ", " << _data[6] << ", " << _data[7] << "], "
+            << "Row3: [" << _data[8] << ", " << _data[9] << ", " << _data[10] << ", " << _data[11] << "], "
+            << "Row4: [" << _data[12] << ", " << _data[13] << ", " << _data[14] << ", " << _data[15] << "])";
+    return oss.str();
 }

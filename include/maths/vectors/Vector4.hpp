@@ -51,12 +51,13 @@ public:
 
     [[nodiscard]] const float& operator[](int index) const;
 
-    [[nodiscard]] std::string toString() const;
-
     // Methods
+    [[nodiscard]] bool isNormalized() const;
     [[nodiscard]] float magnitude() const;
     Vector4& normalize();
-    [[nodiscard]] bool isNormalized() const;
+    [[nodiscard]] std::string toString() const;
+    Vector4 getRow(int index) const;
+    Vector4 getColumn(int index) const;
 
 private:
     /**
