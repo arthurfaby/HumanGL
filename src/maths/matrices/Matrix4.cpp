@@ -67,7 +67,7 @@ Vector4 Vector4::getColumn(const int index) const
     {
         throw std::out_of_range("The index must be between 0 and 3");
     }
-    return Vector4(_data[index * 4], _data[index * 4], _data[index * 4], _data[index * 4]);
+    return Vector4(_data[0 + index], _data[4 + index], _data[8 + index], _data[12 + index]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
