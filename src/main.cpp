@@ -36,11 +36,9 @@ int main(const int argc, char** argv)
         glfwTerminate();
         return -1;
     }
-    Logger::info("main.cpp::main(): Window created successfully.");
 
     // Make the window's context current
     glfwMakeContextCurrent(window);
-    Logger::info("main.cpp::main(): Window context made current.");
 
     glewExperimental = true;
     if (glewInit() != GLEW_OK)
@@ -108,7 +106,6 @@ int main(const int argc, char** argv)
     ShaderManager::init();
 
     glfwSetKeyCallback(window, key_callback);
-    Logger::info("main.cpp::main(): Key callback set.");
 
     // Set the clear color to a grey blue color
     glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
@@ -136,9 +133,7 @@ int main(const int argc, char** argv)
         // Poll for and process events
         glfwPollEvents();
     }
-    Logger::info("main.cpp::main(): Window closed. Terminating GLFW.");
     glfwTerminate();
     glfwDestroyWindow(window);
-    Logger::info("main.cpp::main(): GLFW terminated.");
     return 0;
 }

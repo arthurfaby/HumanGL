@@ -28,34 +28,36 @@ public:
 
     // Operator overloads
     Vector4& operator=(const Vector4& other);
-    Vector4& operator+(const Vector4& other);
+    Vector4 operator+(const Vector4& other) const;
     Vector4& operator+=(const Vector4& other);
-    Vector4& operator-(const Vector4& other);
+    Vector4 operator-(const Vector4& other) const;
     Vector4& operator-=(const Vector4& other);
-    Vector4& operator*(const Vector4& other);
+    Vector4 operator*(const Vector4& other) const;
     Vector4& operator*=(const Vector4& other);
-    Vector4& operator/(const Vector4& other);
+    Vector4 operator/(const Vector4& other) const;
     Vector4& operator/=(const Vector4& other);
 
-    Vector4& operator+(float other);
+    Vector4 operator+(float other) const;
     Vector4& operator+=(float other);
-    Vector4& operator-(float other);
+    Vector4 operator-(float other) const;
     Vector4& operator-=(float other);
-    Vector4& operator*(float other);
+    Vector4 operator*(float other) const;
     Vector4& operator*=(float other);
-    Vector4& operator/(float other);
+    Vector4 operator/(float other) const;
     Vector4& operator/=(float other);
 
     bool operator==(const Vector4& other) const;
     bool operator!=(const Vector4& other) const;
 
-    std::ostream& operator<<(std::ostream& os) const;
-    [[nodiscard]] std::string toString() const;
+    [[nodiscard]] const float& operator[](int index) const;
 
     // Methods
+    [[nodiscard]] bool isNormalized() const;
     [[nodiscard]] float magnitude() const;
     Vector4& normalize();
-    [[nodiscard]] bool isNormalized() const;
+    [[nodiscard]] std::string toString() const;
+    Vector4 getRow(unsigned int index) const;
+    Vector4 getColumn(unsigned int index) const;
 
 private:
     /**
@@ -67,5 +69,7 @@ private:
     */
     float _data[4]{};
 };
+
+std::ostream& operator<<(std::ostream& os, const Vector4&);
 
 #endif //VECTOR4_HPP
