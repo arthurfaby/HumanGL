@@ -61,9 +61,9 @@ Vector4 Vector4::getRow(const unsigned int index) const
  *
  * @return The column of the matrix at the index
  */
-Vector4 Vector4::getColumn(const int index) const
+Vector4 Vector4::getColumn(const unsigned int index) const
 {
-    if (index < 0 || index > 3)
+    if (index > 3)
     {
         throw std::out_of_range("The index must be between 0 and 3");
     }
