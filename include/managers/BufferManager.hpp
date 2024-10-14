@@ -1,7 +1,16 @@
 #ifndef BUFFER_MANAGER_HPP
 #define BUFFER_MANAGER_HPP
+
 #include <vector>
 #include <GL/glew.h>
+
+enum ManipulableBuffer
+{
+ TRIANGLES_VERTICES,
+ TRIANGLES_COLORS,
+ LINES_VERTICES,
+ LINES_COLORS
+};
 
 class BufferManager
 {
@@ -18,15 +27,10 @@ public:
  static void drawTriangles();
  static void drawLines();
 
- static unsigned int addTrianglesVertices(const std::vector<float>& trianglesVertices);
- static unsigned int addTrianglesColors(const std::vector<float>& trianglesColors);
- static unsigned int addLinesVertices(const std::vector<float>& linesVertices);
- static unsigned int addLinesColors(const std::vector<float>& linesColors);
-
- static unsigned int modifyTrianglesVertices(unsigned int startIndex, const std::vector<float>& trianglesVertices);
- static unsigned int modifyTrianglesColors(unsigned int startIndex, const std::vector<float>& trianglesColors);
- static unsigned int modifyLinesVertices(unsigned int startIndex, const std::vector<float>& linesVertices);
- static unsigned int modifyLinesColors(unsigned int startIndex, const std::vector<float>& linesColors);
+ static unsigned int add(ManipulableBuffer bufferToManipulate, const std::vector<float>& data);
+ static unsigned int modify(ManipulableBuffer bufferToManipulate,
+                            unsigned int startIndex,
+                            const std::vector<float>& data);
 
 private:
  /**
@@ -73,6 +77,9 @@ private:
   * The OpenGL lines buffer.
   */
  static GLuint _glLinesColorsBuffer;
+
+ // Methods
+ static std::vector<float>* _getBuffer(ManipulableBuffer bufferToGet);
 };
 
 #endif //BUFFER_MANAGER_HPP

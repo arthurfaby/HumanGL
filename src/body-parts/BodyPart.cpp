@@ -20,11 +20,11 @@ BodyPart::BodyPart(const Vector4& position, const Vector4& offset)
     _position = position;
     _offset = offset;
 
-    _startLinesVerticesBufferStartIndex = BufferManager::addLinesVertices(_linesVertices);
-    _startLinesColorBufferStartIndex = BufferManager::addLinesColors(_linesColors);
-    _startTrianglesVerticesBufferStartIndex = BufferManager::addTrianglesVertices(_trianglesVertices);
-    _startTrianglesColorBufferStartIndex = BufferManager::addTrianglesColors(_trianglesColors);
-    updateVertices();
+    _startLinesVerticesBufferStartIndex = BufferManager::add(LINES_VERTICES, _linesVertices);
+    _startLinesColorBufferStartIndex = BufferManager::add(LINES_COLORS, _linesColors);
+    _startTrianglesVerticesBufferStartIndex = BufferManager::add(TRIANGLES_VERTICES, _trianglesVertices);
+    _startTrianglesColorBufferStartIndex = BufferManager::add(TRIANGLES_COLORS, _trianglesColors);
+    _updateVertices();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -166,43 +166,32 @@ void BodyPart::removeChild(BodyPart* child)
  */
 void BodyPart::updateVertices()
 {
-    static bool a = false;
-    float cubeSize = 0.15f;
-    Matrix4 rotationMatrix = getRotationMatrix(); // Utiliser la matrice de rotation
+    constexpr float cubeSize = 0.15f;
+    const Matrix4 rotationMatrix = Matrix4::createRotationMatrix(_dir.getX(), _dir.getY(), _dir.getZ());
 
-    Vector4 frontTopLeft = Vector4(-cubeSize, cubeSize, cubeSize, 1.0f);
-    Vector4 frontTopRight = Vector4(cubeSize, cubeSize, cubeSize, 1.0f);
-    Vector4 frontBottomLeft = Vector4(-cubeSize, -cubeSize, cubeSize, 1.0f);
-    Vector4 frontBottomRight = Vector4(cubeSize, -cubeSize, cubeSize, 1.0f);
+    Vector4 frontTopLeft = Vector4(-cubeSize, cubeSize, cubeSize);
+    Vector4 frontTopRight = Vector4(cubeSize, cubeSize, cubeSize);
+    Vector4 frontBottomLeft = Vector4(-cubeSize, -cubeSize, cubeSize);
+    Vector4 frontBottomRight = Vector4(cubeSize, -cubeSize, cubeSize);
 
-    Vector4 backTopLeft = Vector4(-cubeSize, cubeSize, -cubeSize, 1.0f);
-    Vector4 backTopRight = Vector4(cubeSize, cubeSize, -cubeSize, 1.0f);
-    Vector4 backBottomLeft = Vector4(-cubeSize, -cubeSize, -cubeSize, 1.0f);
-    Vector4 backBottomRight = Vector4(cubeSize, -cubeSize, -cubeSize, 1.0f);
+    Vector4 backTopLeft = Vector4(-cubeSize, cubeSize, -cubeSize);
+    Vector4 backTopRight = Vector4(cubeSize, cubeSize, -cubeSize);
+    Vector4 backBottomLeft = Vector4(-cubeSize, -cubeSize, -cubeSize);
+    Vector4 backBottomRight = Vector4(cubeSize, -cubeSize, -cubeSize);
 
-    Matrix4 scaleMatrix = Matrix4::createScalingMatrix(0.5f, 0.5f, 0.5f);
-    if (!a)
-    {
-        Logger::error("toto");
-        Vector4 newOffset = _offset;
-        _offset.setX(_offset.getX() * 0.5f);
-        _offset.setY(_offset.getY() * 0.5f);
-        _offset.setZ(_offset.getZ() * 0.5f);
-        a = true;
-    }
+    frontTopLeft = rotationMatrix * frontTopLeft + _position;
+    frontTopRight = rotationMatrix * frontTopRight + _position;
+    frontBottomLeft = rotationMatrix * frontBottomLeft + _position;
+    frontBottomRight = rotationMatrix * frontBottomRight + _position;
 
-    frontTopLeft = rotationMatrix * scaleMatrix * frontTopLeft + _position;
-    frontTopRight = rotationMatrix * scaleMatrix * frontTopRight + _position;
-    frontBottomLeft = rotationMatrix * scaleMatrix * frontBottomLeft + _position;
-    frontBottomRight = rotationMatrix * scaleMatrix * frontBottomRight + _position;
-
-    backTopLeft = rotationMatrix * scaleMatrix * backTopLeft + _position;
-    backTopRight = rotationMatrix * scaleMatrix * backTopRight + _position;
-    backBottomLeft = rotationMatrix * scaleMatrix * backBottomLeft + _position;
-    backBottomRight = rotationMatrix * scaleMatrix * backBottomRight + _position;
+    backTopLeft = rotationMatrix * backTopLeft + _position;
+    backTopRight = rotationMatrix * backTopRight + _position;
+    backBottomLeft = rotationMatrix * backBottomLeft + _position;
+    backBottomRight = rotationMatrix * backBottomRight + _position;
 
     //@formatter:off
     _trianglesVertices = {
+        // Front face
         frontTopLeft.getX(), frontTopLeft.getY(), frontTopLeft.getZ(),
         frontBottomLeft.getX(), frontBottomLeft.getY(), frontBottomLeft.getZ(),
         frontBottomRight.getX(), frontBottomRight.getY(), frontBottomRight.getZ(),
@@ -210,6 +199,7 @@ void BodyPart::updateVertices()
         frontTopRight.getX(), frontTopRight.getY(), frontTopRight.getZ(),
         frontBottomRight.getX(), frontBottomRight.getY(), frontBottomRight.getZ(),
 
+        // Back face
         backTopLeft.getX(), backTopLeft.getY(), backTopLeft.getZ(),
         backBottomLeft.getX(), backBottomLeft.getY(), backBottomLeft.getZ(),
         backBottomRight.getX(), backBottomRight.getY(), backBottomRight.getZ(),
@@ -217,6 +207,7 @@ void BodyPart::updateVertices()
         backTopRight.getX(), backTopRight.getY(), backTopRight.getZ(),
         backBottomRight.getX(), backBottomRight.getY(), backBottomRight.getZ(),
 
+        // Left face
         backTopLeft.getX(), backTopLeft.getY(), backTopLeft.getZ(),
         backBottomLeft.getX(), backBottomLeft.getY(), backBottomLeft.getZ(),
         frontBottomLeft.getX(), frontBottomLeft.getY(), frontBottomLeft.getZ(),
@@ -224,6 +215,7 @@ void BodyPart::updateVertices()
         frontTopLeft.getX(), frontTopLeft.getY(), frontTopLeft.getZ(),
         frontBottomLeft.getX(), frontBottomLeft.getY(), frontBottomLeft.getZ(),
 
+        // Right face
         frontTopRight.getX(), frontTopRight.getY(), frontTopRight.getZ(),
         frontBottomRight.getX(), frontBottomRight.getY(), frontBottomRight.getZ(),
         backBottomRight.getX(), backBottomRight.getY(), backBottomRight.getZ(),
@@ -231,6 +223,7 @@ void BodyPart::updateVertices()
         backTopRight.getX(), backTopRight.getY(), backTopRight.getZ(),
         backBottomRight.getX(), backBottomRight.getY(), backBottomRight.getZ(),
 
+        // Top face
         frontTopLeft.getX(), frontTopLeft.getY(), frontTopLeft.getZ(),
         backTopLeft.getX(), backTopLeft.getY(), backTopLeft.getZ(),
         backTopRight.getX(), backTopRight.getY(), backTopRight.getZ(),
@@ -238,6 +231,7 @@ void BodyPart::updateVertices()
         frontTopRight.getX(), frontTopRight.getY(), frontTopRight.getZ(),
         backTopRight.getX(), backTopRight.getY(), backTopRight.getZ(),
 
+        // Bottom face
         frontBottomLeft.getX(), frontBottomLeft.getY(), frontBottomLeft.getZ(),
         backBottomLeft.getX(), backBottomLeft.getY(), backBottomLeft.getZ(),
         backBottomRight.getX(), backBottomRight.getY(), backBottomRight.getZ(),
@@ -247,57 +241,62 @@ void BodyPart::updateVertices()
     };
 
     _trianglesColors = {
-        1.0f, 0.0f, 0.0f,
-        1.0f, 0.0f, 0.0f,
-        1.0f, 0.0f, 0.0f,
-        1.0f, 0.0f, 0.0f,
-        1.0f, 0.0f, 0.0f,
-        1.0f, 0.0f, 0.0f,
+        // Front face
+        1.0f, 0.3f, 0.3f,
+        1.0f, 0.3f, 0.3f,
+        1.0f, 0.3f, 0.3f,
+        1.0f, 0.3f, 0.3f,
+        1.0f, 0.3f, 0.3f,
+        1.0f, 0.3f, 0.3f,
 
-        0.0f, 1.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
+        // Back face
+        0.3f, 1.0f, 0.3f,
+        0.3f, 1.0f, 0.3f,
+        0.3f, 1.0f, 0.3f,
+        0.3f, 1.0f, 0.3f,
+        0.3f, 1.0f, 0.3f,
+        0.3f, 1.0f, 0.3f,
 
-        0.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 1.0f,
+        // Left face
+        0.3f, 0.3f, 1.0f,
+        0.3f, 0.3f, 1.0f,
+        0.3f, 0.3f, 1.0f,
+        0.3f, 0.3f, 1.0f,
+        0.3f, 0.3f, 1.0f,
+        0.3f, 0.3f, 1.0f,
 
-        1.0f, 1.0f, 0.0f,
-        1.0f, 1.0f, 0.0f,
-        1.0f, 1.0f, 0.0f,
-        1.0f, 1.0f, 0.0f,
-        1.0f, 1.0f, 0.0f,
-        1.0f, 1.0f, 0.0f,
+        // Right face
+        1.0f, 1.0f, 0.3f,
+        1.0f, 1.0f, 0.3f,
+        1.0f, 1.0f, 0.3f,
+        1.0f, 1.0f, 0.3f,
+        1.0f, 1.0f, 0.3f,
+        1.0f, 1.0f, 0.3f,
 
-        1.0f, 0.0f, 1.0f,
-        1.0f, 0.0f, 1.0f,
-        1.0f, 0.0f, 1.0f,
-        1.0f, 0.0f, 1.0f,
-        1.0f, 0.0f, 1.0f,
-        1.0f, 0.0f, 1.0f,
+        // Top face
+        1.0f, 0.3f, 1.0f,
+        1.0f, 0.3f, 1.0f,
+        1.0f, 0.3f, 1.0f,
+        1.0f, 0.3f, 1.0f,
+        1.0f, 0.3f, 1.0f,
+        1.0f, 0.3f, 1.0f,
 
-        0.0f, 1.0f, 1.0f,
-        0.0f, 1.0f, 1.0f,
-        0.0f, 1.0f, 1.0f,
-        0.0f, 1.0f, 1.0f,
-        0.0f, 1.0f, 1.0f,
-        0.0f, 1.0f, 1.0f
+        // Bottom face
+        0.3f, 1.0f, 1.0f,
+        0.3f, 1.0f, 1.0f,
+        0.3f, 1.0f, 1.0f,
+        0.3f, 1.0f, 1.0f,
+        0.3f, 1.0f, 1.0f,
+        0.3f, 1.0f, 1.0f
     };
     //@formatter:on
 
-    _startTrianglesVerticesBufferStartIndex = BufferManager::modifyTrianglesVertices(
-        _startTrianglesVerticesBufferStartIndex,
-        _trianglesVertices);
-    _startTrianglesColorBufferStartIndex = BufferManager::modifyTrianglesColors(
-        _startTrianglesColorBufferStartIndex,
-        _trianglesColors);
-
+    _startTrianglesVerticesBufferStartIndex = BufferManager::modify(TRIANGLES_VERTICES,
+                                                                    _startTrianglesVerticesBufferStartIndex,
+                                                                    _trianglesVertices);
+    _startTrianglesColorBufferStartIndex = BufferManager::modify(TRIANGLES_COLORS,
+                                                                 _startTrianglesColorBufferStartIndex,
+                                                                 _trianglesColors);
     for (const auto& child: _children)
     {
         child->setDir(getDir()); // Applique la rotation au child

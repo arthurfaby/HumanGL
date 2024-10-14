@@ -20,7 +20,7 @@ GLuint BufferManager::_glLinesColorsBuffer = 0;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Initialize the buffer manager.\n
+ * Initialize the buffer manager.<br>
  * Create the 4 OpenGL buffers (triangles vertices, triangles colors, lines vertices, lines colors).
  */
 void BufferManager::init()
@@ -40,8 +40,8 @@ void BufferManager::init()
 }
 
 /**
- * Draw all the buffers.\n
- * Draw the lines and the triangles with their colors.\n
+ * Draw all the buffers.<br>
+ * Draw the lines and the triangles with their colors.<br>
  * Don't draw if the buffer manager is not initialized.
  */
 void BufferManager::drawAll()
@@ -57,164 +57,65 @@ void BufferManager::drawAll()
 }
 
 /**
- * Add vertices to the triangles vertices buffer.
+ * Add data to the buffer that is being manipulated.
  *
- * @param trianglesVertices Triangles vertices to add
+ * @param bufferToManipulate The buffer to manipulate
+ * @param data The data to add
  *
- * @return Start index of the added triangles vertices
+ * @return the start index of the data in the buffer (or -1 if the buffer is invalid)
  */
-unsigned int BufferManager::addTrianglesVertices(const std::vector<float>& trianglesVertices)
+unsigned int BufferManager::add(const ManipulableBuffer bufferToManipulate, const std::vector<float>& data)
 {
-    const unsigned int startIndex = _trianglesVerticesBuffer.size();
-    _trianglesVerticesBuffer.insert(_trianglesVerticesBuffer.end(), trianglesVertices.begin(), trianglesVertices.end());
-    return startIndex;
-}
-
-/**
- * Add colors to the triangles colors buffer.
- *
- * @param trianglesColors Colors to add
- *
- * @return Start index of the added colors
- */
-unsigned int BufferManager::addTrianglesColors(const std::vector<float>& trianglesColors)
-{
-    const unsigned int startIndex = _trianglesColorsBuffer.size();
-    _trianglesColorsBuffer.insert(_trianglesColorsBuffer.end(), trianglesColors.begin(), trianglesColors.end());
-    return startIndex;
-}
-
-/**
- * Add vertices to the lines vertices buffer.
- *
- * @param linesVertices Lines vertices to add
- *
- * @return Start index of the added lines vertices
- */
-unsigned int BufferManager::addLinesVertices(const std::vector<float>& linesVertices)
-{
-    const unsigned int startIndex = _linesVerticesBuffer.size();
-    _linesVerticesBuffer.insert(_linesVerticesBuffer.end(), linesVertices.begin(), linesVertices.end());
-    return startIndex;
-}
-
-/**
- * Add colors to the lines colors buffer.
- *
- * @param linesColors Colors to add
- *
- * @return Start index of the added colors
- */
-unsigned int BufferManager::addLinesColors(const std::vector<float>& linesColors)
-{
-    const unsigned int startIndex = _linesColorsBuffer.size();
-    _linesColorsBuffer.insert(_linesColorsBuffer.end(), linesColors.begin(), linesColors.end());
-    return startIndex;
-}
-
-/**
- * Modify vertices in the triangles vertices buffer.
- *
- * @param startIndex Start index of the triangles vertices to modify
- * @param trianglesVertices Triangles vertices that will overwrite the existing ones
- *
- * @return Start index of the modified triangles vertices
- */
-unsigned int BufferManager::modifyTrianglesVertices(const unsigned int startIndex,
-                                                    const std::vector<float>& trianglesVertices)
-{
-    if (startIndex + trianglesVertices.size() > _trianglesVerticesBuffer.size())
+    std::vector<float>* buffer = _getBuffer(bufferToManipulate);
+    if (buffer == nullptr)
     {
-        // Erase existing vertices and add new ones
-        _trianglesVerticesBuffer.erase(_trianglesVerticesBuffer.begin() + startIndex, _trianglesVerticesBuffer.end());
-        const unsigned int newStartIndex = _trianglesVerticesBuffer.size();
-        _trianglesVerticesBuffer.insert(_trianglesVerticesBuffer.end(),
-                                        trianglesVertices.begin(),
-                                        trianglesVertices.end());
+        return -1;
+    }
+    const unsigned int startIndex = buffer->size();
+    buffer->insert(buffer->end(), data.begin(), data.end());
+    return startIndex;
+}
+
+/**
+ * Modify the data in the buffer that is being manipulated.
+ *
+ * @param bufferToManipulate The buffer to manipulate
+ * @param startIndex The start index of the data to modify
+ * @param data The data to add
+ *
+ * @return the start index of the data in the buffer (or -1 if the buffer is invalid)
+ */
+unsigned int BufferManager::modify(const ManipulableBuffer bufferToManipulate,
+                                   const unsigned int startIndex,
+                                   const std::vector<float>& data)
+{
+    std::vector<float>* buffer = _getBuffer(bufferToManipulate);
+    if (buffer == nullptr)
+    {
+        return -1;
+    }
+    if (startIndex + data.size() > buffer->size())
+    {
+        // Erase existing data and add new one
+        buffer->erase(buffer->begin() + startIndex, buffer->end());
+        const unsigned int newStartIndex = buffer->size();
+        buffer->insert(buffer->end(), data.begin(), data.end());
         return newStartIndex;
     }
-    std::ranges::copy(trianglesVertices, _trianglesVerticesBuffer.begin() + startIndex);
+    std::ranges::copy(data, buffer->begin() + startIndex);
     return startIndex;
 }
 
 /**
- * Modify colors in the triangles colors buffer.
- *
- * @param startIndex Start index of the colors to modify
- * @param trianglesColors Colors that will overwrite the existing ones
- *
- * @return Start index of the modified triangles colors
- */
-unsigned int BufferManager::modifyTrianglesColors(const unsigned int startIndex,
-                                                  const std::vector<float>& trianglesColors)
-{
-    if (startIndex + trianglesColors.size() > _trianglesColorsBuffer.size())
-    {
-        // Erase existing colors and add new ones
-        _trianglesColorsBuffer.erase(_trianglesColorsBuffer.begin() + startIndex, _trianglesColorsBuffer.end());
-        const unsigned int newStartIndex = _trianglesColorsBuffer.size();
-        _trianglesColorsBuffer.insert(_trianglesColorsBuffer.end(), trianglesColors.begin(), trianglesColors.end());
-        return newStartIndex;
-    }
-
-    std::ranges::copy(trianglesColors, _trianglesColorsBuffer.begin() + startIndex);
-    return startIndex;
-}
-
-/**
- * Modify vertices in the lines buffer.
- *
- * @param startIndex Start index of the lines vertices to modify
- * @param linesVertices Lines vertices that will overwrite the existing ones
- *
- * @return Start index of the modified lines vertices
- */
-unsigned int BufferManager::modifyLinesVertices(const unsigned int startIndex, const std::vector<float>& linesVertices)
-{
-    if (startIndex + linesVertices.size() > _linesVerticesBuffer.size())
-    {
-        // Erase existing vertices and add new ones
-        _linesVerticesBuffer.erase(_linesVerticesBuffer.begin() + startIndex, _linesVerticesBuffer.end());
-        const unsigned int newStartIndex = _linesVerticesBuffer.size();
-        _linesVerticesBuffer.insert(_linesVerticesBuffer.end(), linesVertices.begin(), linesVertices.end());
-        return newStartIndex;
-    }
-    std::ranges::copy(linesVertices, _linesVerticesBuffer.begin() + startIndex);
-    return startIndex;
-}
-
-/**
- * Modify colors in the lines colors buffer.
- *
- * @param startIndex Start index of the colors to modify
- * @param linesColors Colors that will overwrite the existing ones
- *
- * @return Start index of the modified lines colors
- */
-unsigned int BufferManager::modifyLinesColors(const unsigned int startIndex, const std::vector<float>& linesColors)
-{
-    if (startIndex + linesColors.size() > _linesColorsBuffer.size())
-    {
-        // Erase existing colors and add new ones
-        _linesColorsBuffer.erase(_linesColorsBuffer.begin() + startIndex, _linesColorsBuffer.end());
-        const unsigned int newStartIndex = _linesColorsBuffer.size();
-        _linesColorsBuffer.insert(_linesColorsBuffer.end(), linesColors.begin(), linesColors.end());
-        return newStartIndex;
-    }
-    std::ranges::copy(linesColors, _linesColorsBuffer.begin() + startIndex);
-    return startIndex;
-}
-
-/**
- * Draw the triangles.\n
- * 1. Bind the triangles vertices buffer.\n
- * 2. Enable the vertex attribute array with index 0 for vertices.\n
- * 3. Configure the vertex attribute array with index 0 for vertices.\n
- * 4. Bind the triangles colors buffer.\n
- * 5. Enable the vertex attribute array with index 1 for colors.\n
- * 6. Configure the vertex attribute array with index 1 for colors.\n
- * 7. Calculate the total length of the vertices and colors buffers.\n
- * 8. Draw the triangles.\n
+ * Draw the triangles.<br>
+ * 1. Bind the triangles vertices buffer.<br>
+ * 2. Enable the vertex attribute array with index 0 for vertices.<br>
+ * 3. Configure the vertex attribute array with index 0 for vertices.<br>
+ * 4. Bind the triangles colors buffer.<br>
+ * 5. Enable the vertex attribute array with index 1 for colors.<br>
+ * 6. Configure the vertex attribute array with index 1 for colors.<br>
+ * 7. Calculate the total length of the vertices and colors buffers.<br>
+ * 8. Draw the triangles.<br>
  * 9. Disable the vertex attribute arrays with index 0 and 1.
  */
 void BufferManager::drawTriangles()
@@ -245,15 +146,15 @@ void BufferManager::drawTriangles()
 }
 
 /**
- * Draw the lines.\n
- * 1. Bind the lines vertices buffer.\n
- * 2. Enable the vertex attribute array with index 0 for vertices.\n
- * 3. Configure the vertex attribute array with index 0 for vertices.\n
- * 4. Bind the lines colors buffer.\n
- * 5. Enable the vertex attribute array with index 1 for colors.\n
- * 6. Configure the vertex attribute array with index 1 for colors.\n
- * 7. Calculate the total length of the vertices and colors buffers.\n
- * 8. Draw the lines.\n
+ * Draw the lines.<br>
+ * 1. Bind the lines vertices buffer.<br>
+ * 2. Enable the vertex attribute array with index 0 for vertices.<br>
+ * 3. Configure the vertex attribute array with index 0 for vertices.<br>
+ * 4. Bind the lines colors buffer.<br>
+ * 5. Enable the vertex attribute array with index 1 for colors.<br>
+ * 6. Configure the vertex attribute array with index 1 for colors.<br>
+ * 7. Calculate the total length of the vertices and colors buffers.<br>
+ * 8. Draw the lines.<br>
  * 9. Disable the vertex attribute arrays with index 0 and 1.
  */
 void BufferManager::drawLines()
@@ -284,3 +185,21 @@ void BufferManager::drawLines()
     glDisableVertexAttribArray(1);
 }
 
+std::vector<float>* BufferManager::_getBuffer(ManipulableBuffer bufferToGet)
+{
+    switch (bufferToGet)
+    {
+        case TRIANGLES_VERTICES:
+            return &_trianglesVerticesBuffer;
+        case TRIANGLES_COLORS:
+            return &_trianglesColorsBuffer;
+        case LINES_VERTICES:
+            return &_linesVerticesBuffer;
+        case LINES_COLORS:
+            return &_linesColorsBuffer;
+        default:
+            //TODO: Throw ?
+            Logger::error("BufferManager::add(): Invalid buffer type.");
+            return nullptr;
+    }
+}
