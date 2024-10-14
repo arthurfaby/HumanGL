@@ -120,14 +120,35 @@ int main(const int argc, char** argv)
     ShaderManager::init();
     BufferManager::init();
 
-    BodyPart torso = BodyPart(Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+    BodyPart head = BodyPart(Vector4(), Vector4(0.0f, 0.31f, 0.0f, 0.0f));
+    BodyPart torso = BodyPart(Vector4(), Vector4());
+    BodyPart upperLeftArm = BodyPart(Vector4(), Vector4(0.31f, 0.1f, 0.0f, 0.0f));
+    BodyPart lowerLeftArm = BodyPart(Vector4(), Vector4(0.31f, 0.0f, 0.0f, 0.0f));
+    BodyPart upperRightArm = BodyPart(Vector4(), Vector4(-0.31f, 0.1f, 0.0f, 0.0f));
+    BodyPart lowerRightArm = BodyPart(Vector4(), Vector4(-0.31f, 0.0f, 0.0f, 0.0f));
+    BodyPart upperLeftLeg = BodyPart(Vector4(), Vector4(0.16f, -0.31f, 0.0f, 0.0f));
+    BodyPart lowerLeftLeg = BodyPart(Vector4(), Vector4(0.0f, -0.31f, 0.0f, 0.0f));
+    BodyPart upperRightLeg = BodyPart(Vector4(), Vector4(-0.16f, -0.31f, 0.0f, 0.0f));
+    BodyPart lowerRightLeg = BodyPart(Vector4(), Vector4(0.0f, -0.31f, 0.0f, 0.0f));
+
+    torso.addChild(&head);
+    torso.addChild(&upperRightArm);
+    torso.addChild(&upperLeftArm);
+    torso.addChild(&upperRightLeg);
+    torso.addChild(&upperLeftLeg);
+    upperRightArm.addChild(&lowerRightArm);
+    upperLeftArm.addChild(&lowerLeftArm);
+    upperRightLeg.addChild(&lowerRightLeg);
+    upperLeftLeg.addChild(&lowerLeftLeg);
+    torso.updateVertices();
+
+    BodyPart* selectedBodyPart = &torso;
 
     glfwSetKeyCallback(window, key_callback);
 
     double lastRenderTime = glfwGetTime();
     double lastFpsCountTime = glfwGetTime();
     unsigned int frameCount = 0;
-    double angle1 = 0;
 
     // Loop until the user closes the window
     while (!glfwWindowShouldClose(window))
@@ -136,42 +157,42 @@ int main(const int argc, char** argv)
 
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         {
-            torso.setPosition(torso.getPosition() + Vector4(0.00001f, 0.0f, 0.0f, 0.0f));
+            selectedBodyPart->setPosition(selectedBodyPart->getPosition() + Vector4(0.0001f, 0.0f, 0.0f, 0.0f));
         }
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
         {
-            torso.setPosition(torso.getPosition() - Vector4(0.00001f, 0.0f, 0.0f, 0.0f));
+            selectedBodyPart->setPosition(selectedBodyPart->getPosition() - Vector4(0.0001f, 0.0f, 0.0f, 0.0f));
         }
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         {
-            torso.setPosition(torso.getPosition() + Vector4(0.0f, 0.00001f, 0.0f, 0.0f));
+            selectedBodyPart->setPosition(selectedBodyPart->getPosition() + Vector4(0.0f, 0.0001f, 0.0f, 0.0f));
         }
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         {
-            torso.setPosition(torso.getPosition() - Vector4(0.0f, 0.00001f, 0.0f, 0.0f));
+            selectedBodyPart->setPosition(selectedBodyPart->getPosition() - Vector4(0.0f, 0.0001f, 0.0f, 0.0f));
         }
         // Rotate when pressing X
         if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
         {
-            Vector4 torsoDir = torso.getDir();
-            torsoDir.setX(torsoDir.getX() + 0.0001f);
-            torso.setDir(torsoDir);
+            Vector4 selectedBodyPartDir = selectedBodyPart->getDir();
+            selectedBodyPartDir.setX(selectedBodyPartDir.getX() + 0.001f);
+            selectedBodyPart->setDir(selectedBodyPartDir);
         }
 
         // Rotate when pressing Y
         if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS)
         {
-            Vector4 torsoDir = torso.getDir();
-            torsoDir.setY(torsoDir.getY() + 0.0001f);
-            torso.setDir(torsoDir);
+            Vector4 selectedBodyPartDir = selectedBodyPart->getDir();
+            selectedBodyPartDir.setY(selectedBodyPartDir.getY() + 0.001f);
+            selectedBodyPart->setDir(selectedBodyPartDir);
         }
 
         // Rotate when pressing Z
         if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
         {
-            Vector4 torsoDir = torso.getDir();
-            torsoDir.setZ(torsoDir.getZ() + 0.0001f);
-            torso.setDir(torsoDir);
+            Vector4 selectedBodyPartDir = selectedBodyPart->getDir();
+            selectedBodyPartDir.setZ(selectedBodyPartDir.getZ() + 0.001f);
+            selectedBodyPart->setDir(selectedBodyPartDir);
         }
 
         // Limit the frame rate ti FPS_LIMIT
