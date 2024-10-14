@@ -99,7 +99,7 @@ void BodyPart::addChild(BodyPart* child)
  *
  * @param child The child to remove
  */
-void BodyPart::removeChild(BodyPart* child)
+void BodyPart::removeChild(const BodyPart* child)
 {
     std::erase(_children, child);
 }
@@ -111,18 +111,18 @@ void BodyPart::removeChild(BodyPart* child)
  */
 void BodyPart::_updateVertices(bool modifyBuffer /*= true*/)
 {
-    float cubeSize = 0.15f;
-    Matrix4 rotationMatrix = Matrix4::createRotationMatrix(_dir.getX(), _dir.getY(), _dir.getZ());
+    constexpr float cubeSize = 0.15f;
+    const Matrix4 rotationMatrix = Matrix4::createRotationMatrix(_dir.getX(), _dir.getY(), _dir.getZ());
 
-    Vector4 frontTopLeft = Vector4(-cubeSize, cubeSize, cubeSize, 1.0f);
-    Vector4 frontTopRight = Vector4(cubeSize, cubeSize, cubeSize, 1.0f);
-    Vector4 frontBottomLeft = Vector4(-cubeSize, -cubeSize, cubeSize, 1.0f);
-    Vector4 frontBottomRight = Vector4(cubeSize, -cubeSize, cubeSize, 1.0f);
+    Vector4 frontTopLeft = Vector4(-cubeSize, cubeSize, cubeSize);
+    Vector4 frontTopRight = Vector4(cubeSize, cubeSize, cubeSize);
+    Vector4 frontBottomLeft = Vector4(-cubeSize, -cubeSize, cubeSize);
+    Vector4 frontBottomRight = Vector4(cubeSize, -cubeSize, cubeSize);
 
-    Vector4 backTopLeft = Vector4(-cubeSize, cubeSize, -cubeSize, 1.0f);
-    Vector4 backTopRight = Vector4(cubeSize, cubeSize, -cubeSize, 1.0f);
-    Vector4 backBottomLeft = Vector4(-cubeSize, -cubeSize, -cubeSize, 1.0f);
-    Vector4 backBottomRight = Vector4(cubeSize, -cubeSize, -cubeSize, 1.0f);
+    Vector4 backTopLeft = Vector4(-cubeSize, cubeSize, -cubeSize);
+    Vector4 backTopRight = Vector4(cubeSize, cubeSize, -cubeSize);
+    Vector4 backBottomLeft = Vector4(-cubeSize, -cubeSize, -cubeSize);
+    Vector4 backBottomRight = Vector4(cubeSize, -cubeSize, -cubeSize);
 
     frontTopLeft = rotationMatrix * frontTopLeft + _position;
     frontTopRight = rotationMatrix * frontTopRight + _position;

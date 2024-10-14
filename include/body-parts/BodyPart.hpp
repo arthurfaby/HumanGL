@@ -29,7 +29,7 @@ public:
 
   // Methods
   void addChild(BodyPart* child);
-  void removeChild(BodyPart* child);
+  void removeChild(const BodyPart* child);
 
 protected:
   /**
@@ -55,22 +55,22 @@ protected:
   /**
     * The start index of the lines vertices buffer.
     */
-  unsigned int _startLinesVerticesBufferStartIndex{};
+  unsigned int _startLinesVerticesBufferStartIndex = 0;
 
   /**
     * The start index of the lines colors buffer.
     */
-  unsigned int _startLinesColorBufferStartIndex{};
+  unsigned int _startLinesColorBufferStartIndex = 0;
 
   /**
     * The start index of the triangles vertices buffer.
     */
-  unsigned int _startTrianglesVerticesBufferStartIndex{};
+  unsigned int _startTrianglesVerticesBufferStartIndex = 0;
 
   /**
     * The start index of the triangles colors buffer.
     */
-  unsigned int _startTrianglesColorBufferStartIndex{};
+  unsigned int _startTrianglesColorBufferStartIndex = 0;
 
   /**
     * The children of the body part.

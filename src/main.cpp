@@ -120,7 +120,7 @@ int main(const int argc, char** argv)
     ShaderManager::init();
     BufferManager::init();
 
-    BodyPart torso = BodyPart(Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+    BodyPart torso = BodyPart(Vector4(0.0f, 0.0f, 0.0f));
 
     glfwSetKeyCallback(window, key_callback);
 
