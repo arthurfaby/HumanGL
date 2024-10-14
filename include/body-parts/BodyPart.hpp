@@ -93,7 +93,7 @@ protected:
   Vector4 _dir;
 
   // Methods
-  void _updateVertices(bool modifyBuffer = true);
+  void _updateVertices();
 };
 
 #endif //BODY_PART_HPP

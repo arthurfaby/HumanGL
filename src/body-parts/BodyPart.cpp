@@ -20,7 +20,7 @@ BodyPart::BodyPart(const Vector4& position)
     _startLinesColorBufferStartIndex = BufferManager::add(LINES_COLORS, _linesColors);
     _startTrianglesVerticesBufferStartIndex = BufferManager::add(TRIANGLES_VERTICES, _trianglesVertices);
     _startTrianglesColorBufferStartIndex = BufferManager::add(TRIANGLES_COLORS, _trianglesColors);
-    _updateVertices(false);
+    _updateVertices();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -106,10 +106,8 @@ void BodyPart::removeChild(const BodyPart* child)
 
 /**
  * Update the vertices of the body part.
- *
- * @param modifyBuffer If true, the buffer will be modified
  */
-void BodyPart::_updateVertices(bool modifyBuffer /*= true*/)
+void BodyPart::_updateVertices()
 {
     constexpr float cubeSize = 0.15f;
     const Matrix4 rotationMatrix = Matrix4::createRotationMatrix(_dir.getX(), _dir.getY(), _dir.getZ());
@@ -136,6 +134,7 @@ void BodyPart::_updateVertices(bool modifyBuffer /*= true*/)
 
     //@formatter:off
     _trianglesVertices = {
+        // Front face
         frontTopLeft.getX(), frontTopLeft.getY(), frontTopLeft.getZ(),
         frontBottomLeft.getX(), frontBottomLeft.getY(), frontBottomLeft.getZ(),
         frontBottomRight.getX(), frontBottomRight.getY(), frontBottomRight.getZ(),
@@ -143,6 +142,7 @@ void BodyPart::_updateVertices(bool modifyBuffer /*= true*/)
         frontTopRight.getX(), frontTopRight.getY(), frontTopRight.getZ(),
         frontBottomRight.getX(), frontBottomRight.getY(), frontBottomRight.getZ(),
 
+        // Back face
         backTopLeft.getX(), backTopLeft.getY(), backTopLeft.getZ(),
         backBottomLeft.getX(), backBottomLeft.getY(), backBottomLeft.getZ(),
         backBottomRight.getX(), backBottomRight.getY(), backBottomRight.getZ(),
@@ -150,6 +150,7 @@ void BodyPart::_updateVertices(bool modifyBuffer /*= true*/)
         backTopRight.getX(), backTopRight.getY(), backTopRight.getZ(),
         backBottomRight.getX(), backBottomRight.getY(), backBottomRight.getZ(),
 
+        // Left face
         backTopLeft.getX(), backTopLeft.getY(), backTopLeft.getZ(),
         backBottomLeft.getX(), backBottomLeft.getY(), backBottomLeft.getZ(),
         frontBottomLeft.getX(), frontBottomLeft.getY(), frontBottomLeft.getZ(),
@@ -157,6 +158,7 @@ void BodyPart::_updateVertices(bool modifyBuffer /*= true*/)
         frontTopLeft.getX(), frontTopLeft.getY(), frontTopLeft.getZ(),
         frontBottomLeft.getX(), frontBottomLeft.getY(), frontBottomLeft.getZ(),
 
+        // Right face
         frontTopRight.getX(), frontTopRight.getY(), frontTopRight.getZ(),
         frontBottomRight.getX(), frontBottomRight.getY(), frontBottomRight.getZ(),
         backBottomRight.getX(), backBottomRight.getY(), backBottomRight.getZ(),
@@ -164,6 +166,7 @@ void BodyPart::_updateVertices(bool modifyBuffer /*= true*/)
         backTopRight.getX(), backTopRight.getY(), backTopRight.getZ(),
         backBottomRight.getX(), backBottomRight.getY(), backBottomRight.getZ(),
 
+        // Top face
         frontTopLeft.getX(), frontTopLeft.getY(), frontTopLeft.getZ(),
         backTopLeft.getX(), backTopLeft.getY(), backTopLeft.getZ(),
         backTopRight.getX(), backTopRight.getY(), backTopRight.getZ(),
@@ -171,6 +174,7 @@ void BodyPart::_updateVertices(bool modifyBuffer /*= true*/)
         frontTopRight.getX(), frontTopRight.getY(), frontTopRight.getZ(),
         backTopRight.getX(), backTopRight.getY(), backTopRight.getZ(),
 
+        // Bottom face
         frontBottomLeft.getX(), frontBottomLeft.getY(), frontBottomLeft.getZ(),
         backBottomLeft.getX(), backBottomLeft.getY(), backBottomLeft.getZ(),
         backBottomRight.getX(), backBottomRight.getY(), backBottomRight.getZ(),
@@ -180,47 +184,53 @@ void BodyPart::_updateVertices(bool modifyBuffer /*= true*/)
     };
 
     _trianglesColors = {
-        1.0f, 0.0f, 0.0f,
-        1.0f, 0.0f, 0.0f,
-        1.0f, 0.0f, 0.0f,
-        1.0f, 0.0f, 0.0f,
-        1.0f, 0.0f, 0.0f,
-        1.0f, 0.0f, 0.0f,
+        // Front face
+        1.0f, 0.3f, 0.3f,
+        1.0f, 0.3f, 0.3f,
+        1.0f, 0.3f, 0.3f,
+        1.0f, 0.3f, 0.3f,
+        1.0f, 0.3f, 0.3f,
+        1.0f, 0.3f, 0.3f,
 
-        0.0f, 1.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
+        // Back face
+        0.3f, 1.0f, 0.3f,
+        0.3f, 1.0f, 0.3f,
+        0.3f, 1.0f, 0.3f,
+        0.3f, 1.0f, 0.3f,
+        0.3f, 1.0f, 0.3f,
+        0.3f, 1.0f, 0.3f,
 
-        0.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 1.0f,
+        // Left face
+        0.3f, 0.3f, 1.0f,
+        0.3f, 0.3f, 1.0f,
+        0.3f, 0.3f, 1.0f,
+        0.3f, 0.3f, 1.0f,
+        0.3f, 0.3f, 1.0f,
+        0.3f, 0.3f, 1.0f,
 
-        1.0f, 1.0f, 0.0f,
-        1.0f, 1.0f, 0.0f,
-        1.0f, 1.0f, 0.0f,
-        1.0f, 1.0f, 0.0f,
-        1.0f, 1.0f, 0.0f,
-        1.0f, 1.0f, 0.0f,
+        // Right face
+        1.0f, 1.0f, 0.3f,
+        1.0f, 1.0f, 0.3f,
+        1.0f, 1.0f, 0.3f,
+        1.0f, 1.0f, 0.3f,
+        1.0f, 1.0f, 0.3f,
+        1.0f, 1.0f, 0.3f,
 
-        1.0f, 0.0f, 1.0f,
-        1.0f, 0.0f, 1.0f,
-        1.0f, 0.0f, 1.0f,
-        1.0f, 0.0f, 1.0f,
-        1.0f, 0.0f, 1.0f,
-        1.0f, 0.0f, 1.0f,
+        // Top face
+        1.0f, 0.3f, 1.0f,
+        1.0f, 0.3f, 1.0f,
+        1.0f, 0.3f, 1.0f,
+        1.0f, 0.3f, 1.0f,
+        1.0f, 0.3f, 1.0f,
+        1.0f, 0.3f, 1.0f,
 
-        0.0f, 1.0f, 1.0f,
-        0.0f, 1.0f, 1.0f,
-        0.0f, 1.0f, 1.0f,
-        0.0f, 1.0f, 1.0f,
-        0.0f, 1.0f, 1.0f,
-        0.0f, 1.0f, 1.0f
+        // Bottom face
+        0.3f, 1.0f, 1.0f,
+        0.3f, 1.0f, 1.0f,
+        0.3f, 1.0f, 1.0f,
+        0.3f, 1.0f, 1.0f,
+        0.3f, 1.0f, 1.0f,
+        0.3f, 1.0f, 1.0f
     };
     //@formatter:on
 
