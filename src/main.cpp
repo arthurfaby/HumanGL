@@ -1,5 +1,6 @@
 #include <BodyPart.hpp>
 #include <BufferManager.hpp>
+#include <Matrix4.hpp>
 #include <ShaderManager.hpp>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -118,22 +119,60 @@ int main(const int argc, char** argv)
 
     ShaderManager::init();
     BufferManager::init();
-    BufferManager::addTrianglesVertices(vertices);
-    BufferManager::addTrianglesColors(verticesColors);
-    BufferManager::addTrianglesVertices(vertices2);
-    BufferManager::addTrianglesColors(vertices2Colors);
-    BufferManager::addLinesVertices(lines);
-    BufferManager::addLinesColors(linesColors);
+
+    BodyPart torso = BodyPart(Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+
     glfwSetKeyCallback(window, key_callback);
 
     double lastRenderTime = glfwGetTime();
     double lastFpsCountTime = glfwGetTime();
     unsigned int frameCount = 0;
+    double angle1 = 0;
 
     // Loop until the user closes the window
     while (!glfwWindowShouldClose(window))
     {
         const double now = glfwGetTime();
+
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        {
+            torso.setPosition(torso.getPosition() + Vector4(0.00001f, 0.0f, 0.0f, 0.0f));
+        }
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        {
+            torso.setPosition(torso.getPosition() - Vector4(0.00001f, 0.0f, 0.0f, 0.0f));
+        }
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        {
+            torso.setPosition(torso.getPosition() + Vector4(0.0f, 0.00001f, 0.0f, 0.0f));
+        }
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        {
+            torso.setPosition(torso.getPosition() - Vector4(0.0f, 0.00001f, 0.0f, 0.0f));
+        }
+        // Rotate when pressing X
+        if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+        {
+            Vector4 torsoDir = torso.getDir();
+            torsoDir.setX(torsoDir.getX() + 0.0001f);
+            torso.setDir(torsoDir);
+        }
+
+        // Rotate when pressing Y
+        if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS)
+        {
+            Vector4 torsoDir = torso.getDir();
+            torsoDir.setY(torsoDir.getY() + 0.0001f);
+            torso.setDir(torsoDir);
+        }
+
+        // Rotate when pressing Z
+        if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+        {
+            Vector4 torsoDir = torso.getDir();
+            torsoDir.setZ(torsoDir.getZ() + 0.0001f);
+            torso.setDir(torsoDir);
+        }
 
         // Limit the frame rate ti FPS_LIMIT
         if ((now - lastRenderTime) >= 1.0 / FPS_LIMIT)

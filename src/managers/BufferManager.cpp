@@ -26,6 +26,12 @@ GLuint BufferManager::_glLinesColorsBuffer = 0;
 void BufferManager::init()
 {
     Logger::debug("BufferManager::init(): Initializing buffer manager.");
+
+    // Init VAO
+    GLuint VertexArrayID;
+    glGenVertexArrays(1, &VertexArrayID);
+    glBindVertexArray(VertexArrayID);
+
     _initialized = true;
     glGenBuffers(1, &_glTrianglesVerticesBuffer);
     glGenBuffers(1, &_glTrianglesColorsBuffer);
