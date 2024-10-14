@@ -20,6 +20,11 @@
  */
 GLuint ShaderManager::init()
 {
+    // Init VAO
+    GLuint VertexArrayID;
+    glGenVertexArrays(1, &VertexArrayID);
+    glBindVertexArray(VertexArrayID);
+
     const GLuint vertexShader = _compileShader(VERTEX_SHADER_SOURCE_PATH, GL_VERTEX_SHADER);
     const GLuint fragmentShader = _compileShader(FRAGMENT_SHADER_SOURCE_PATH, GL_FRAGMENT_SHADER);
 
