@@ -24,7 +24,7 @@ BodyPart::BodyPart(const Vector4& position, const Vector4& offset)
     _startLinesColorBufferStartIndex = BufferManager::add(LINES_COLORS, _linesColors);
     _startTrianglesVerticesBufferStartIndex = BufferManager::add(TRIANGLES_VERTICES, _trianglesVertices);
     _startTrianglesColorBufferStartIndex = BufferManager::add(TRIANGLES_COLORS, _trianglesColors);
-    _updateVertices();
+    updateVertices();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
