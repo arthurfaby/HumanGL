@@ -1,7 +1,14 @@
+#include <BodyPart.hpp>
+#include <BufferManager.hpp>
+#include <Matrix4.hpp>
 #include <ShaderManager.hpp>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "Logger.hpp"
+
+#define FPS_LIMIT 60
+#define WINDOW_WIDTH 1000
+#define WINDOW_HEIGHT 700
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -9,6 +16,21 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     }
+}
+
+void render(GLFWwindow* window, const double& now, double& lastRenderTime, unsigned int& frameCount)
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // Render here
+    BufferManager::drawAll();
+
+    glfwSwapBuffers(window);
+    frameCount++;
+    lastRenderTime = now;
+
+    // Poll for and process events
+    glfwPollEvents();
 }
 
 int main(const int argc, char** argv)
@@ -29,7 +51,7 @@ int main(const int argc, char** argv)
     }
 
     // Create a windowed mode window and its OpenGL context
-    GLFWwindow* window = glfwCreateWindow(640, 480, "Hello World", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Hello World", nullptr, nullptr);
     if (window == nullptr)
     {
         Logger::error("main::glfwCreateWindow(): Window creation failed %s. Terminating GLFW.", window);
@@ -48,90 +70,121 @@ int main(const int argc, char** argv)
         return -1;
     }
 
-    GLuint VertexArrayID;
-    glGenVertexArrays(1, &VertexArrayID);
-    glBindVertexArray(VertexArrayID);
+    // Set the clear color to a grey blue color
+    glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
+
+    // Enable depth test
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
 
     // @formatter:off
-    const GLfloat polygonVertices[] = {
-        -0.5f, 0.0f, 0.0f,
-        0.0f, 0.0f, 0.0f,
-        -0.33f, 0.33f, 0.0f,
-        -0.33f, 0.33f, 0.0f,
-        0.0f, 0.0f, 0.0f,
-        0.0f, 0.5f, 0.0f,
-        0.0f, 0.5f, 0.0f,
-        0.0f, 0.0f, 0.0f,
-        0.33f, 0.33f, 0.0f,
-        0.33f, 0.33f, 0.0f,
-        0.0f, 0.0f, 0.0f,
-        0.5f, 0.0f, 0.0f
+    std::vector<float> vertices = {
+        0.3f, 0.3f, 0.0f,
+        0.3f, -0.3f, 0.0f,
+        -0.3f, -0.3f, 0.0f,
     };
 
-    const GLfloat colors[] = {
+    std::vector<float> verticesColors = {
         1.0f, 0.0f, 0.0f,
         1.0f, 0.0f, 0.0f,
         1.0f, 0.0f, 0.0f,
+    };
+
+    std::vector<float> vertices2 = {
+        0.5f, 0.5f, 0,
+        0.5f, -0.5f, 0,
+        -0.5f, -0.5f, 0,
+    };
+
+    std::vector<float> vertices2Colors = {
         0.0f, 1.0f, 0.0f,
         0.0f, 1.0f, 0.0f,
         0.0f, 1.0f, 0.0f,
+    };
+
+    std::vector<float> lines = {
+        -1.0f, 0.0f, -1.0f,
+        1.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f
+    };
+
+    std::vector<float> linesColors = {
         0.0f, 0.0f, 1.0f,
         0.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 1.0f,
-        1.0f, 0.5f, 0.0f,
-        1.0f, 0.5f, 0.0f,
-        1.0f, 0.5f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 1.0f, 0.0f
     };
     // @formatter:on
 
-    // This will identify our vertex buffer
-    GLuint vertexbuffer;
-    // Generate 1 buffer, put the resulting identifier in vertexbuffer
-    glGenBuffers(1, &vertexbuffer);
-    // The following commands will talk about our 'vertexbuffer' buffer
-    glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-    // Give our vertices to OpenGL.
-    glBufferData(GL_ARRAY_BUFFER, sizeof(polygonVertices), polygonVertices, GL_STATIC_DRAW);
-    // This will identify our vertex buffer
-
-    GLuint colorBuffer;
-    // Generate 1 buffer, put the resulting identifier in colorBuffer
-    glGenBuffers(1, &colorBuffer);
-    // The following commands will talk about our 'colorBuffer' buffer
-    glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
-    // Give our vertices to OpenGL.
-    glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
-    // This will identify our vertex buffer
-
     ShaderManager::init();
+    BufferManager::init();
+
+    BodyPart torso = BodyPart(Vector4(0.0f, 0.0f, 0.0f));
 
     glfwSetKeyCallback(window, key_callback);
 
-    // Set the clear color to a grey blue color
-    glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
+    double lastRenderTime = glfwGetTime();
+    double lastFpsCountTime = glfwGetTime();
+    unsigned int frameCount = 0;
+    double angle1 = 0;
 
     // Loop until the user closes the window
     while (!glfwWindowShouldClose(window))
     {
-        // Render here
-        glClear(GL_COLOR_BUFFER_BIT);
+        const double now = glfwGetTime();
 
-        glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-        glVertexAttribPointer(0, 3,GL_FLOAT,GL_FALSE, 0, (void*) 0);
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        {
+            torso.setPosition(torso.getPosition() + Vector4(0.00001f, 0.0f, 0.0f, 0.0f));
+        }
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        {
+            torso.setPosition(torso.getPosition() - Vector4(0.00001f, 0.0f, 0.0f, 0.0f));
+        }
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        {
+            torso.setPosition(torso.getPosition() + Vector4(0.0f, 0.00001f, 0.0f, 0.0f));
+        }
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        {
+            torso.setPosition(torso.getPosition() - Vector4(0.0f, 0.00001f, 0.0f, 0.0f));
+        }
+        // Rotate when pressing X
+        if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+        {
+            Vector4 torsoDir = torso.getDir();
+            torsoDir.setX(torsoDir.getX() + 0.0001f);
+            torso.setDir(torsoDir);
+        }
 
-        glEnableVertexAttribArray(1);
-        glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
-        glVertexAttribPointer(1, 3,GL_FLOAT,GL_FALSE, 0, (void*) 0);
+        // Rotate when pressing Y
+        if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS)
+        {
+            Vector4 torsoDir = torso.getDir();
+            torsoDir.setY(torsoDir.getY() + 0.0001f);
+            torso.setDir(torsoDir);
+        }
 
-        glDrawArrays(GL_TRIANGLES, 0, 4 * 3);
-        glDisableVertexAttribArray(0);
+        // Rotate when pressing Z
+        if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+        {
+            Vector4 torsoDir = torso.getDir();
+            torsoDir.setZ(torsoDir.getZ() + 0.0001f);
+            torso.setDir(torsoDir);
+        }
 
-        // Swap front and back buffers
-        glfwSwapBuffers(window);
-
-        // Poll for and process events
-        glfwPollEvents();
+        // Limit the frame rate ti FPS_LIMIT
+        if ((now - lastRenderTime) >= 1.0 / FPS_LIMIT)
+        {
+            render(window, now, lastRenderTime, frameCount);
+        }
+        if (now - lastFpsCountTime > 1.0)
+        {
+            Logger::info("main.cpp::main(): FPS: %f", frameCount / (now - lastFpsCountTime));
+            frameCount = 0;
+            lastFpsCountTime = now;
+        }
     }
     glfwTerminate();
     glfwDestroyWindow(window);

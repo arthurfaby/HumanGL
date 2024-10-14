@@ -43,7 +43,7 @@ Matrix4::Matrix4(const std::array<float, 16>& list)
  *
  * @return The row of the matrix at the index
  */
-Vector4 Vector4::getRow(const unsigned int index) const
+Vector4 Matrix4::getRow(const unsigned int index) const
 {
     if (index > 3)
     {
@@ -61,7 +61,7 @@ Vector4 Vector4::getRow(const unsigned int index) const
  *
  * @return The column of the matrix at the index
  */
-Vector4 Vector4::getColumn(const unsigned int index) const
+Vector4 Matrix4::getColumn(const unsigned int index) const
 {
     if (index > 3)
     {

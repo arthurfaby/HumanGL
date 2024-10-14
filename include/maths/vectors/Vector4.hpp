@@ -7,7 +7,7 @@ class Vector4
 public:
     // Constructors
     Vector4();
-    Vector4(float x, float y, float z, float w);
+    Vector4(float x, float y, float z, float w = 1.0f);
     Vector4(const Vector4& other);
 
     // Destructor
@@ -54,10 +54,8 @@ public:
     // Methods
     [[nodiscard]] bool isNormalized() const;
     [[nodiscard]] float magnitude() const;
-    Vector4& normalize();
+    [[nodiscard]] Vector4 normalize() const;
     [[nodiscard]] std::string toString() const;
-    Vector4 getRow(unsigned int index) const;
-    Vector4 getColumn(unsigned int index) const;
 
 private:
     /**

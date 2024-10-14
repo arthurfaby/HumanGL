@@ -11,14 +11,14 @@ public:
     Matrix4() = delete;
     explicit Matrix4(const std::array<float, 16>& list);
     Matrix4(const Matrix4& other) = default;
-    
+
     // Destructor
     ~Matrix4() = default;
-    
+
     // Getters
     [[nodiscard]] const float* getData() const;
-    [[nodiscard]] Vector4 getRow(int index) const;
-    [[nodiscard]] Vector4 getColumn(int index) const;
+    [[nodiscard]] Vector4 getRow(unsigned int index) const;
+    [[nodiscard]] Vector4 getColumn(unsigned int index) const;
 
     // Operator overloads
     Matrix4& operator=(const Matrix4& other);

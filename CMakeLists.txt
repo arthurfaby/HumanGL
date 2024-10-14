@@ -28,15 +28,23 @@ set(MATHS_SOURCE_FILES
         src/maths/matrices/Matrix4.cpp
 )
 
+# Contain all cpp files within src/utils
+set(BODY_PARTS_SOURCE_FILES
+        src/body-parts/BodyPart.cpp
+)
+
 # Contain all cpp files within src/managers
 set(MANAGERS_SOURCE_FILES
         src/managers/ShaderManager.cpp
+        src/managers/BufferManager.cpp
 )
 
 # Contain all source files
 set(ALL_SOURCE_FILES
         ${SOURCE_FILES}
+        ${UTILS_SOURCE_FILES}
         ${MATHS_SOURCE_FILES}
+        ${BODY_PARTS_SOURCE_FILES}
         ${MANAGERS_SOURCE_FILES}
         ${UTILS_SOURCE_FILES}
 )
@@ -53,6 +61,8 @@ target_include_directories(${PROJECT_NAME}
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/exceptions
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/managers
+        PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/body-parts
+        PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/utils
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/maths/vectors
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/maths/matrices
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/utils

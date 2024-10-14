@@ -10,7 +10,7 @@
 /**
  * Default constructor.
  */
-Vector4::Vector4(): Vector4(0.0f, 0.0f, 0.0f, 1.0f)
+Vector4::Vector4(): Vector4(0.0f, 0.0f, 0.0f)
 {
 }
 
@@ -20,9 +20,9 @@ Vector4::Vector4(): Vector4(0.0f, 0.0f, 0.0f, 1.0f)
  * @param x The x component of the vector
  * @param y The y component of the vector
  * @param z The z component of the vector
- * @param w The w component of the vector
+ * @param w The w component of the vector (default to 1.0f)
  */
-Vector4::Vector4(const float x, const float y, const float z, const float w)
+Vector4::Vector4(const float x, const float y, const float z, const float w /*= 1.0f*/)
 {
     _data[0] = x;
     _data[1] = y;
@@ -487,7 +487,8 @@ bool Vector4::operator!=(const Vector4& other) const
  *
  * @return The created Vector4
  */
-[[nodiscard]] const float& Vector4::operator[](const int index) const {
+[[nodiscard]] const float& Vector4::operator[](const int index) const
+{
     return _data[index];
 }
 
@@ -536,11 +537,10 @@ std::ostream& operator<<(std::ostream& os, const Vector4& vector)
  *
  * @return itself
  */
-Vector4& Vector4::normalize()
+[[nodiscard]] Vector4 Vector4::normalize() const
 {
     const float vectorMagnitude = magnitude();
-    *this = *this / vectorMagnitude;
-    return *this;
+    return Vector4(*this / vectorMagnitude);
 }
 
 /**
