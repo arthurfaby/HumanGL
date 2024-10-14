@@ -487,7 +487,8 @@ bool Vector4::operator!=(const Vector4& other) const
  *
  * @return The created Vector4
  */
-[[nodiscard]] const float& Vector4::operator[](const int index) const {
+[[nodiscard]] const float& Vector4::operator[](const int index) const
+{
     return _data[index];
 }
 
@@ -536,11 +537,10 @@ std::ostream& operator<<(std::ostream& os, const Vector4& vector)
  *
  * @return itself
  */
-Vector4& Vector4::normalize()
+Vector4 Vector4::normalize()
 {
     const float vectorMagnitude = magnitude();
-    *this = *this / vectorMagnitude;
-    return *this;
+    return Vector4(*this / vectorMagnitude);
 }
 
 /**
