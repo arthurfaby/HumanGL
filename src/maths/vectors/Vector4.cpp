@@ -537,7 +537,7 @@ std::ostream& operator<<(std::ostream& os, const Vector4& vector)
  *
  * @return itself
  */
-Vector4 Vector4::normalize()
+[[nodiscard]] Vector4 Vector4::normalize() const
 {
     const float vectorMagnitude = magnitude();
     return Vector4(*this / vectorMagnitude);

@@ -54,7 +54,7 @@ public:
     // Methods
     [[nodiscard]] bool isNormalized() const;
     [[nodiscard]] float magnitude() const;
-    Vector4 normalize();
+    [[nodiscard]] Vector4 normalize() const;
     [[nodiscard]] std::string toString() const;
 
 private:
