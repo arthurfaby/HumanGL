@@ -16,10 +16,10 @@ BodyPart::BodyPart(const Vector4& position)
 {
     _position = position;
 
-    _startLinesVerticesBufferStartIndex = BufferManager::addLinesVertices(_linesVertices);
-    _startLinesColorBufferStartIndex = BufferManager::addLinesColors(_linesColors);
-    _startTrianglesVerticesBufferStartIndex = BufferManager::addTrianglesVertices(_trianglesVertices);
-    _startTrianglesColorBufferStartIndex = BufferManager::addTrianglesColors(_trianglesColors);
+    _startLinesVerticesBufferStartIndex = BufferManager::add(LINES_VERTICES, _linesVertices);
+    _startLinesColorBufferStartIndex = BufferManager::add(LINES_COLORS, _linesColors);
+    _startTrianglesVerticesBufferStartIndex = BufferManager::add(TRIANGLES_VERTICES, _trianglesVertices);
+    _startTrianglesColorBufferStartIndex = BufferManager::add(TRIANGLES_COLORS, _trianglesColors);
     _updateVertices(false);
 }
 
@@ -224,10 +224,10 @@ void BodyPart::_updateVertices(bool modifyBuffer /*= true*/)
     };
     //@formatter:on
 
-    _startTrianglesVerticesBufferStartIndex = BufferManager::modifyTrianglesVertices(
-        _startTrianglesVerticesBufferStartIndex,
-        _trianglesVertices);
-    _startTrianglesColorBufferStartIndex = BufferManager::modifyTrianglesColors(
-        _startTrianglesColorBufferStartIndex,
-        _trianglesColors);
+    _startTrianglesVerticesBufferStartIndex = BufferManager::modify(TRIANGLES_VERTICES,
+                                                                    _startTrianglesVerticesBufferStartIndex,
+                                                                    _trianglesVertices);
+    _startTrianglesColorBufferStartIndex = BufferManager::modify(TRIANGLES_COLORS,
+                                                                 _startTrianglesColorBufferStartIndex,
+                                                                 _trianglesColors);
 }
