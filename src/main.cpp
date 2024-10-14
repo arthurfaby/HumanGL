@@ -6,6 +6,8 @@
 #include "Logger.hpp"
 
 #define FPS_LIMIT 60
+#define WINDOW_WIDTH 1000
+#define WINDOW_HEIGHT 700
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -21,6 +23,7 @@ void render(GLFWwindow* window, const double& now, double& lastRenderTime, unsig
 
     // Render here
     BufferManager::drawAll();
+
     glfwSwapBuffers(window);
     frameCount++;
     lastRenderTime = now;
@@ -47,7 +50,7 @@ int main(const int argc, char** argv)
     }
 
     // Create a windowed mode window and its OpenGL context
-    GLFWwindow* window = glfwCreateWindow(640, 480, "Hello World", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Hello World", nullptr, nullptr);
     if (window == nullptr)
     {
         Logger::error("main::glfwCreateWindow(): Window creation failed %s. Terminating GLFW.", window);
@@ -72,11 +75,6 @@ int main(const int argc, char** argv)
     // Enable depth test
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
-
-    // Init VAO
-    GLuint VertexArrayID;
-    glGenVertexArrays(1, &VertexArrayID);
-    glBindVertexArray(VertexArrayID);
 
     // @formatter:off
     std::vector<float> vertices = {
