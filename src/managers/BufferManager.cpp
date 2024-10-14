@@ -117,15 +117,24 @@ unsigned int BufferManager::addLinesColors(const std::vector<float>& linesColors
  *
  * @param startIndex Start index of the triangles vertices to modify
  * @param trianglesVertices Triangles vertices that will overwrite the existing ones
+ *
+ * @return Start index of the modified triangles vertices
  */
-void BufferManager::modifyTrianglesVertices(const unsigned int startIndex, const std::vector<float>& trianglesVertices)
+unsigned int BufferManager::modifyTrianglesVertices(const unsigned int startIndex,
+                                                    const std::vector<float>& trianglesVertices)
 {
     if (startIndex + trianglesVertices.size() > _trianglesVerticesBuffer.size())
     {
-        Logger::error("BufferManager::modifyVertices(): Index out of bounds.");
-        return;
+        // Erase existing vertices and add new ones
+        _trianglesVerticesBuffer.erase(_trianglesVerticesBuffer.begin() + startIndex, _trianglesVerticesBuffer.end());
+        const unsigned int newStartIndex = _trianglesVerticesBuffer.size();
+        _trianglesVerticesBuffer.insert(_trianglesVerticesBuffer.end(),
+                                        trianglesVertices.begin(),
+                                        trianglesVertices.end());
+        return newStartIndex;
     }
     std::ranges::copy(trianglesVertices, _trianglesVerticesBuffer.begin() + startIndex);
+    return startIndex;
 }
 
 /**
@@ -133,15 +142,23 @@ void BufferManager::modifyTrianglesVertices(const unsigned int startIndex, const
  *
  * @param startIndex Start index of the colors to modify
  * @param trianglesColors Colors that will overwrite the existing ones
+ *
+ * @return Start index of the modified triangles colors
  */
-void BufferManager::modifyTrianglesColors(const unsigned int startIndex, const std::vector<float>& trianglesColors)
+unsigned int BufferManager::modifyTrianglesColors(const unsigned int startIndex,
+                                                  const std::vector<float>& trianglesColors)
 {
     if (startIndex + trianglesColors.size() > _trianglesColorsBuffer.size())
     {
-        Logger::error("BufferManager::modifyColors(): Index out of bounds.");
-        return;
+        // Erase existing colors and add new ones
+        _trianglesColorsBuffer.erase(_trianglesColorsBuffer.begin() + startIndex, _trianglesColorsBuffer.end());
+        const unsigned int newStartIndex = _trianglesColorsBuffer.size();
+        _trianglesColorsBuffer.insert(_trianglesColorsBuffer.end(), trianglesColors.begin(), trianglesColors.end());
+        return newStartIndex;
     }
+
     std::ranges::copy(trianglesColors, _trianglesColorsBuffer.begin() + startIndex);
+    return startIndex;
 }
 
 /**
@@ -149,15 +166,21 @@ void BufferManager::modifyTrianglesColors(const unsigned int startIndex, const s
  *
  * @param startIndex Start index of the lines vertices to modify
  * @param linesVertices Lines vertices that will overwrite the existing ones
+ *
+ * @return Start index of the modified lines vertices
  */
-void BufferManager::modifyLinesVertices(const unsigned int startIndex, const std::vector<float>& linesVertices)
+unsigned int BufferManager::modifyLinesVertices(const unsigned int startIndex, const std::vector<float>& linesVertices)
 {
     if (startIndex + linesVertices.size() > _linesVerticesBuffer.size())
     {
-        Logger::error("BufferManager::modifyLines(): Index out of bounds.");
-        return;
+        // Erase existing vertices and add new ones
+        _linesVerticesBuffer.erase(_linesVerticesBuffer.begin() + startIndex, _linesVerticesBuffer.end());
+        const unsigned int newStartIndex = _linesVerticesBuffer.size();
+        _linesVerticesBuffer.insert(_linesVerticesBuffer.end(), linesVertices.begin(), linesVertices.end());
+        return newStartIndex;
     }
     std::ranges::copy(linesVertices, _linesVerticesBuffer.begin() + startIndex);
+    return startIndex;
 }
 
 /**
@@ -165,15 +188,21 @@ void BufferManager::modifyLinesVertices(const unsigned int startIndex, const std
  *
  * @param startIndex Start index of the colors to modify
  * @param linesColors Colors that will overwrite the existing ones
+ *
+ * @return Start index of the modified lines colors
  */
-void BufferManager::modifyLinesColors(const unsigned int startIndex, const std::vector<float>& linesColors)
+unsigned int BufferManager::modifyLinesColors(const unsigned int startIndex, const std::vector<float>& linesColors)
 {
     if (startIndex + linesColors.size() > _linesColorsBuffer.size())
     {
-        Logger::error("BufferManager::modifyColors(): Index out of bounds.");
-        return;
+        // Erase existing colors and add new ones
+        _linesColorsBuffer.erase(_linesColorsBuffer.begin() + startIndex, _linesColorsBuffer.end());
+        const unsigned int newStartIndex = _linesColorsBuffer.size();
+        _linesColorsBuffer.insert(_linesColorsBuffer.end(), linesColors.begin(), linesColors.end());
+        return newStartIndex;
     }
     std::ranges::copy(linesColors, _linesColorsBuffer.begin() + startIndex);
+    return startIndex;
 }
 
 /**

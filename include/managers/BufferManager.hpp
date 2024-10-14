@@ -23,10 +23,10 @@ public:
  static unsigned int addLinesVertices(const std::vector<float>& linesVertices);
  static unsigned int addLinesColors(const std::vector<float>& linesColors);
 
- static void modifyTrianglesVertices(unsigned int startIndex, const std::vector<float>& trianglesVertices);
- static void modifyTrianglesColors(unsigned int startIndex, const std::vector<float>& trianglesColors);
- static void modifyLinesVertices(unsigned int startIndex, const std::vector<float>& linesVertices);
- static void modifyLinesColors(unsigned int startIndex, const std::vector<float>& linesColors);
+ static unsigned int modifyTrianglesVertices(unsigned int startIndex, const std::vector<float>& trianglesVertices);
+ static unsigned int modifyTrianglesColors(unsigned int startIndex, const std::vector<float>& trianglesColors);
+ static unsigned int modifyLinesVertices(unsigned int startIndex, const std::vector<float>& linesVertices);
+ static unsigned int modifyLinesColors(unsigned int startIndex, const std::vector<float>& linesColors);
 
 private:
  /**
