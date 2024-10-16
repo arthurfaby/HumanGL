@@ -1,5 +1,6 @@
 #include <BodyPart.hpp>
 #include <BufferManager.hpp>
+#include <cmath>
 #include <Matrix4.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -117,7 +118,7 @@ void BodyPart::setPosition(const Vector4& position)
  */
 void BodyPart::setAngleX(const double angleX)
 {
-    _angleX = angleX;
+    _angleX = fmod(angleX + std::numbers::pi, 2 * std::numbers::pi) - std::numbers::pi;
     updateVertices();
 }
 
@@ -128,7 +129,7 @@ void BodyPart::setAngleX(const double angleX)
  */
 void BodyPart::setAngleY(const double angleY)
 {
-    _angleY = angleY;
+    _angleY = fmod(angleY + std::numbers::pi, 2 * std::numbers::pi) - std::numbers::pi;;
     updateVertices();
 }
 
@@ -139,7 +140,7 @@ void BodyPart::setAngleY(const double angleY)
  */
 void BodyPart::setAngleZ(const double angleZ)
 {
-    _angleZ = angleZ;
+    _angleZ = fmod(angleZ + std::numbers::pi, 2 * std::numbers::pi) - std::numbers::pi;;
     updateVertices();
 }
 
