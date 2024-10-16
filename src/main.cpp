@@ -1,7 +1,6 @@
 #include <BodyPart.hpp>
 #include <BufferManager.hpp>
 #include <cmath>
-#include <Matrix4.hpp>
 #include <ShaderManager.hpp>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
