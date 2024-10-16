@@ -1,16 +1,56 @@
 #include <BodyPart.hpp>
 #include <BufferManager.hpp>
-#include <Matrix4.hpp>
+#include <cmath>
 #include <ShaderManager.hpp>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "Logger.hpp"
 
-#define FPS_LIMIT 60
+#define FPS_LIMIT 144
 #define WINDOW_WIDTH 1000
 #define WINDOW_HEIGHT 700
+#define TRANSLATION_SPEED 0.01f
+#define ROTATION_SPEED 0.01f
 
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void handleBodyPartKeys(GLFWwindow* window, BodyPart& selectedBodyPart)
+{
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    {
+        selectedBodyPart.setPosition(selectedBodyPart.getPosition() + Vector4(TRANSLATION_SPEED, 0.0f, 0.0f, 0.0f));
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    {
+        selectedBodyPart.setPosition(selectedBodyPart.getPosition() - Vector4(TRANSLATION_SPEED, 0.0f, 0.0f, 0.0f));
+    }
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    {
+        selectedBodyPart.setPosition(selectedBodyPart.getPosition() + Vector4(0.0f, TRANSLATION_SPEED, 0.0f, 0.0f));
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    {
+        selectedBodyPart.setPosition(selectedBodyPart.getPosition() - Vector4(0.0f, TRANSLATION_SPEED, 0.0f, 0.0f));
+    }
+    if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+    {
+        double newAngleX = selectedBodyPart.getAngleX();
+        newAngleX += glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? -ROTATION_SPEED : ROTATION_SPEED;
+        selectedBodyPart.setAngleX(newAngleX);
+    }
+    if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS)
+    {
+        double newAngleY = selectedBodyPart.getAngleY();
+        newAngleY += glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? -ROTATION_SPEED : ROTATION_SPEED;
+        selectedBodyPart.setAngleY(newAngleY);
+    }
+    if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+    {
+        double newAngleZ = selectedBodyPart.getAngleZ();
+        newAngleZ += glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? -ROTATION_SPEED : ROTATION_SPEED;
+        selectedBodyPart.setAngleZ(newAngleZ);
+    }
+}
+
+static void key_callback(GLFWwindow* window, const int key, const int scancode, const int action, const int mods)
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     {
@@ -18,8 +58,13 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     }
 }
 
-void render(GLFWwindow* window, const double& now, double& lastRenderTime, unsigned int& frameCount)
+void render(GLFWwindow* window,
+            BodyPart& selectedBodyPart,
+            const double& now,
+            double& lastRenderTime,
+            unsigned int& frameCount)
 {
+    handleBodyPartKeys(window, selectedBodyPart);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Render here
@@ -91,9 +136,9 @@ int main(const int argc, char** argv)
     };
 
     std::vector<float> vertices2 = {
-        0.5f, 0.5f, 0,
-        0.5f, -0.5f, 0,
-        -0.5f, -0.5f, 0,
+        0.5f, 0.5f, 0.0f,
+        0.5f, -0.5f, 0.0f,
+        -0.5f, -0.5f, 0.0f,
     };
 
     std::vector<float> vertices2Colors = {
@@ -120,68 +165,50 @@ int main(const int argc, char** argv)
     ShaderManager::init();
     BufferManager::init();
 
-    BodyPart torso = BodyPart(Vector4(0.0f, 0.0f, 0.0f));
+    Vector4 defaultPosition = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+    BodyPart head = BodyPart(defaultPosition, Vector4(0.0f, 0.31f, 0.0f, 0.0f));
+    BodyPart torso = BodyPart(defaultPosition, Vector4());
+    BodyPart upperLeftArm = BodyPart(defaultPosition, Vector4(0.31f, 0.1f, 0.0f, 0.0f));
+    BodyPart lowerLeftArm = BodyPart(defaultPosition, Vector4(0.31f, 0.0f, 0.0f, 0.0f));
+    BodyPart upperRightArm = BodyPart(defaultPosition, Vector4(-0.31f, 0.1f, 0.0f, 0.0f));
+    BodyPart lowerRightArm = BodyPart(defaultPosition, Vector4(-0.31f, 0.0f, 0.0f, 0.0f));
+    BodyPart upperLeftLeg = BodyPart(defaultPosition, Vector4(0.16f, -0.31f, 0.0f, 0.0f));
+    BodyPart lowerLeftLeg = BodyPart(defaultPosition, Vector4(0.0f, -0.31f, 0.0f, 0.0f));
+    BodyPart upperRightLeg = BodyPart(defaultPosition, Vector4(-0.16f, -0.31f, 0.0f, 0.0f));
+    BodyPart lowerRightLeg = BodyPart(defaultPosition, Vector4(0.0f, -0.31f, 0.0f, 0.0f));
+
+    torso.addChild(&head);
+    torso.addChild(&upperRightArm);
+    torso.addChild(&upperLeftArm);
+    torso.addChild(&upperRightLeg);
+    torso.addChild(&upperLeftLeg);
+    upperRightArm.addChild(&lowerRightArm);
+    upperLeftArm.addChild(&lowerLeftArm);
+    upperRightLeg.addChild(&lowerRightLeg);
+    upperLeftLeg.addChild(&lowerLeftLeg);
+
+    BodyPart& selectedBodyPart = torso;
 
     glfwSetKeyCallback(window, key_callback);
 
     double lastRenderTime = glfwGetTime();
     double lastFpsCountTime = glfwGetTime();
     unsigned int frameCount = 0;
-    double angle1 = 0;
 
     // Loop until the user closes the window
     while (!glfwWindowShouldClose(window))
     {
         const double now = glfwGetTime();
 
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        {
-            torso.setPosition(torso.getPosition() + Vector4(0.00001f, 0.0f, 0.0f, 0.0f));
-        }
-        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        {
-            torso.setPosition(torso.getPosition() - Vector4(0.00001f, 0.0f, 0.0f, 0.0f));
-        }
-        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        {
-            torso.setPosition(torso.getPosition() + Vector4(0.0f, 0.00001f, 0.0f, 0.0f));
-        }
-        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        {
-            torso.setPosition(torso.getPosition() - Vector4(0.0f, 0.00001f, 0.0f, 0.0f));
-        }
-        // Rotate when pressing X
-        if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
-        {
-            Vector4 torsoDir = torso.getDir();
-            torsoDir.setX(torsoDir.getX() + 0.0001f);
-            torso.setDir(torsoDir);
-        }
-
-        // Rotate when pressing Y
-        if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS)
-        {
-            Vector4 torsoDir = torso.getDir();
-            torsoDir.setY(torsoDir.getY() + 0.0001f);
-            torso.setDir(torsoDir);
-        }
-
-        // Rotate when pressing Z
-        if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
-        {
-            Vector4 torsoDir = torso.getDir();
-            torsoDir.setZ(torsoDir.getZ() + 0.0001f);
-            torso.setDir(torsoDir);
-        }
-
         // Limit the frame rate ti FPS_LIMIT
         if ((now - lastRenderTime) >= 1.0 / FPS_LIMIT)
         {
-            render(window, now, lastRenderTime, frameCount);
+            render(window, selectedBodyPart, now, lastRenderTime, frameCount);
         }
         if (now - lastFpsCountTime > 1.0)
         {
-            Logger::info("main.cpp::main(): FPS: %f", frameCount / (now - lastFpsCountTime));
+            Logger::info("main.cpp::main(): FPS: %d",
+                         static_cast<int>(std::round(frameCount / (now - lastFpsCountTime))));
             frameCount = 0;
             lastFpsCountTime = now;
         }

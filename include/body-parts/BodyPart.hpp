@@ -1,6 +1,7 @@
 #ifndef BODY_PART_HPP
 #define BODY_PART_HPP
 
+#include <Matrix4.hpp>
 #include <Vector4.hpp>
 #include <vector>
 
@@ -9,27 +10,36 @@ class BodyPart
 public:
   // Constructor
   BodyPart() = delete;
-  explicit BodyPart(const Vector4& position);
+  explicit BodyPart(const Vector4& position, const Vector4& offset);
   BodyPart(const BodyPart& other) = delete;
 
   // Destructor
   virtual ~BodyPart() = default;
 
   // Getters
+  [[nodiscard]] Vector4 getOffset() const;
   [[nodiscard]] Vector4 getPosition() const;
-  [[nodiscard]] Vector4 getDir() const;
+  [[nodiscard]] double getAngleX() const;
+  [[nodiscard]] double getAngleY() const;
+  [[nodiscard]] double getAngleZ() const;
+  [[nodiscard]] BodyPart* getParent() const;
   [[nodiscard]] std::vector<BodyPart*> getChildren() const;
 
   // Setters
+  void setOffset(const Vector4& offset);
   void setPosition(const Vector4& position);
-  void setDir(const Vector4& dir);
+  void setAngleX(double angleX);
+  void setAngleY(double angleY);
+  void setAngleZ(double angleZ);
+  void setParent(BodyPart* parent);
 
   // Operator overloads
   BodyPart& operator=(const BodyPart& other) = delete;
 
   // Methods
   void addChild(BodyPart* child);
-  void removeChild(const BodyPart* child);
+  void removeChild(BodyPart* child);
+  void updateVertices();
 
 protected:
   /**
@@ -83,17 +93,29 @@ protected:
   BodyPart* _parent = nullptr;
 
   /**
+    * The offset of the body part compare to its parent.
+    */
+  Vector4 _offset;
+
+  /**
     * The position of the body part.
     */
   Vector4 _position;
 
   /**
-    * The direction of the body part.
+    * The x angle of the body part.
     */
-  Vector4 _dir;
+  double _angleX = 0;
 
-  // Methods
-  void _updateVertices();
+  /**
+    * The y angle of the body part.
+    */
+  double _angleY = 0;
+
+  /**
+    * The z angle of the body part.
+    */
+  double _angleZ = 0;
 };
 
 #endif //BODY_PART_HPP
