@@ -159,20 +159,6 @@ void BodyPart::setParent(BodyPart* parent)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Get the rotation matrix of the body part.
- *
- * @return The rotation matrix of the body part
- */
-[[nodiscard]] Matrix4 BodyPart::getRotationMatrix() const
-{
-    const Matrix4 rotationX = Matrix4::createRotationXMatrix(_angleX);
-    const Matrix4 rotationY = Matrix4::createRotationYMatrix(_angleY);
-    const Matrix4 rotationZ = Matrix4::createRotationZMatrix(_angleZ);
-
-    return rotationX * rotationY * rotationZ;
-}
-
-/**
  * Add a child to the body part.
  *
  * @param child The child to add
@@ -181,6 +167,7 @@ void BodyPart::addChild(BodyPart* child)
 {
     _children.push_back(child);
     child->setParent(this);
+    updateVertices();
 }
 
 /**
@@ -192,6 +179,7 @@ void BodyPart::removeChild(BodyPart* child)
 {
     std::erase(_children, child);
     child->setParent(nullptr);
+    updateVertices();
 }
 
 /**
@@ -200,7 +188,7 @@ void BodyPart::removeChild(BodyPart* child)
 void BodyPart::updateVertices()
 {
     constexpr float cubeSize = 0.15f;
-    Matrix4 rotationMatrix = getRotationMatrix();
+    const Matrix4 rotationMatrix = Matrix4::createRotationMatrix(_angleX, _angleY, _angleZ);
 
     Vector4 frontTopLeft = Vector4(-cubeSize, cubeSize, cubeSize);
     Vector4 frontTopRight = Vector4(cubeSize, cubeSize, cubeSize);

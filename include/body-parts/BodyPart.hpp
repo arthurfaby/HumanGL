@@ -40,7 +40,6 @@ public:
   void addChild(BodyPart* child);
   void removeChild(BodyPart* child);
   void updateVertices();
-  [[nodiscard]] Matrix4 getRotationMatrix() const;
 
 protected:
   /**

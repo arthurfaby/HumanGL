@@ -9,42 +9,44 @@
 #define FPS_LIMIT 144
 #define WINDOW_WIDTH 1000
 #define WINDOW_HEIGHT 700
+#define TRANSLATION_SPEED 0.01f
+#define ROTATION_SPEED 0.01f
 
-void handleBodyPartKeys(GLFWwindow* window, BodyPart* selectedBodyPart)
+void handleBodyPartKeys(GLFWwindow* window, BodyPart& selectedBodyPart)
 {
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     {
-        selectedBodyPart->setPosition(selectedBodyPart->getPosition() + Vector4(0.01f, 0.0f, 0.0f, 0.0f));
+        selectedBodyPart.setPosition(selectedBodyPart.getPosition() + Vector4(TRANSLATION_SPEED, 0.0f, 0.0f, 0.0f));
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
     {
-        selectedBodyPart->setPosition(selectedBodyPart->getPosition() - Vector4(0.01f, 0.0f, 0.0f, 0.0f));
+        selectedBodyPart.setPosition(selectedBodyPart.getPosition() - Vector4(TRANSLATION_SPEED, 0.0f, 0.0f, 0.0f));
     }
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
-        selectedBodyPart->setPosition(selectedBodyPart->getPosition() + Vector4(0.0f, 0.01f, 0.0f, 0.0f));
+        selectedBodyPart.setPosition(selectedBodyPart.getPosition() + Vector4(0.0f, TRANSLATION_SPEED, 0.0f, 0.0f));
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
     {
-        selectedBodyPart->setPosition(selectedBodyPart->getPosition() - Vector4(0.0f, 0.01f, 0.0f, 0.0f));
+        selectedBodyPart.setPosition(selectedBodyPart.getPosition() - Vector4(0.0f, TRANSLATION_SPEED, 0.0f, 0.0f));
     }
     if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
     {
-        double newAngleX = selectedBodyPart->getAngleX();
-        newAngleX += glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? -0.01f : 0.01f;
-        selectedBodyPart->setAngleX(newAngleX);
+        double newAngleX = selectedBodyPart.getAngleX();
+        newAngleX += glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? -ROTATION_SPEED : ROTATION_SPEED;
+        selectedBodyPart.setAngleX(newAngleX);
     }
     if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS)
     {
-        double newAngleY = selectedBodyPart->getAngleY();
-        newAngleY += glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? -0.01f : 0.01f;
-        selectedBodyPart->setAngleY(newAngleY);
+        double newAngleY = selectedBodyPart.getAngleY();
+        newAngleY += glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? -ROTATION_SPEED : ROTATION_SPEED;
+        selectedBodyPart.setAngleY(newAngleY);
     }
     if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
     {
-        double newAngleZ = selectedBodyPart->getAngleZ();
-        newAngleZ += glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? -0.01f : 0.01f;
-        selectedBodyPart->setAngleZ(newAngleZ);
+        double newAngleZ = selectedBodyPart.getAngleZ();
+        newAngleZ += glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? -ROTATION_SPEED : ROTATION_SPEED;
+        selectedBodyPart.setAngleZ(newAngleZ);
     }
 }
 
@@ -57,7 +59,7 @@ static void key_callback(GLFWwindow* window, const int key, const int scancode, 
 }
 
 void render(GLFWwindow* window,
-            BodyPart* selectedBodyPart,
+            BodyPart& selectedBodyPart,
             const double& now,
             double& lastRenderTime,
             unsigned int& frameCount)
@@ -163,16 +165,17 @@ int main(const int argc, char** argv)
     ShaderManager::init();
     BufferManager::init();
 
-    BodyPart head = BodyPart(Vector4(), Vector4(0.0f, 0.31f, 0.0f, 0.0f));
-    BodyPart torso = BodyPart(Vector4(), Vector4());
-    BodyPart upperLeftArm = BodyPart(Vector4(), Vector4(0.31f, 0.1f, 0.0f, 0.0f));
-    BodyPart lowerLeftArm = BodyPart(Vector4(), Vector4(0.31f, 0.0f, 0.0f, 0.0f));
-    BodyPart upperRightArm = BodyPart(Vector4(), Vector4(-0.31f, 0.1f, 0.0f, 0.0f));
-    BodyPart lowerRightArm = BodyPart(Vector4(), Vector4(-0.31f, 0.0f, 0.0f, 0.0f));
-    BodyPart upperLeftLeg = BodyPart(Vector4(), Vector4(0.16f, -0.31f, 0.0f, 0.0f));
-    BodyPart lowerLeftLeg = BodyPart(Vector4(), Vector4(0.0f, -0.31f, 0.0f, 0.0f));
-    BodyPart upperRightLeg = BodyPart(Vector4(), Vector4(-0.16f, -0.31f, 0.0f, 0.0f));
-    BodyPart lowerRightLeg = BodyPart(Vector4(), Vector4(0.0f, -0.31f, 0.0f, 0.0f));
+    Vector4 defaultPosition = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+    BodyPart head = BodyPart(defaultPosition, Vector4(0.0f, 0.31f, 0.0f, 0.0f));
+    BodyPart torso = BodyPart(defaultPosition, Vector4());
+    BodyPart upperLeftArm = BodyPart(defaultPosition, Vector4(0.31f, 0.1f, 0.0f, 0.0f));
+    BodyPart lowerLeftArm = BodyPart(defaultPosition, Vector4(0.31f, 0.0f, 0.0f, 0.0f));
+    BodyPart upperRightArm = BodyPart(defaultPosition, Vector4(-0.31f, 0.1f, 0.0f, 0.0f));
+    BodyPart lowerRightArm = BodyPart(defaultPosition, Vector4(-0.31f, 0.0f, 0.0f, 0.0f));
+    BodyPart upperLeftLeg = BodyPart(defaultPosition, Vector4(0.16f, -0.31f, 0.0f, 0.0f));
+    BodyPart lowerLeftLeg = BodyPart(defaultPosition, Vector4(0.0f, -0.31f, 0.0f, 0.0f));
+    BodyPart upperRightLeg = BodyPart(defaultPosition, Vector4(-0.16f, -0.31f, 0.0f, 0.0f));
+    BodyPart lowerRightLeg = BodyPart(defaultPosition, Vector4(0.0f, -0.31f, 0.0f, 0.0f));
 
     torso.addChild(&head);
     torso.addChild(&upperRightArm);
@@ -183,9 +186,8 @@ int main(const int argc, char** argv)
     upperLeftArm.addChild(&lowerLeftArm);
     upperRightLeg.addChild(&lowerRightLeg);
     upperLeftLeg.addChild(&lowerLeftLeg);
-    torso.updateVertices();
 
-    BodyPart* selectedBodyPart = &torso;
+    BodyPart& selectedBodyPart = torso;
 
     glfwSetKeyCallback(window, key_callback);
 
