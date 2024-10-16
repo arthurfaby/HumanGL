@@ -19,14 +19,18 @@ public:
   // Getters
   [[nodiscard]] Vector4 getOffset() const;
   [[nodiscard]] Vector4 getPosition() const;
-  [[nodiscard]] Vector4 getDir() const;
+  [[nodiscard]] double getAngleX() const;
+  [[nodiscard]] double getAngleY() const;
+  [[nodiscard]] double getAngleZ() const;
   [[nodiscard]] BodyPart* getParent() const;
   [[nodiscard]] std::vector<BodyPart*> getChildren() const;
 
   // Setters
   void setOffset(const Vector4& offset);
   void setPosition(const Vector4& position);
-  void setDir(const Vector4& dir);
+  void setAngleX(double angleX);
+  void setAngleY(double angleY);
+  void setAngleZ(double angleZ);
   void setParent(BodyPart* parent);
 
   // Operator overloads
@@ -100,9 +104,19 @@ protected:
   Vector4 _position;
 
   /**
-    * The direction of the body part.
+    * The x angle of the body part.
     */
-  Vector4 _dir;
+  double _angleX = 0;
+
+  /**
+    * The y angle of the body part.
+    */
+  double _angleY = 0;
+
+  /**
+    * The z angle of the body part.
+    */
+  double _angleZ = 0;
 };
 
 #endif //BODY_PART_HPP

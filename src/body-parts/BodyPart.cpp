@@ -1,8 +1,5 @@
 #include <BodyPart.hpp>
 #include <BufferManager.hpp>
-#include <cmath>
-#include <iostream>
-#include <Logger.hpp>
 #include <Matrix4.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -13,7 +10,7 @@
  * Constructor.
  *
  * @param position The position of the body part
- * @param offset
+ * @param offset The offset of the body part
  */
 BodyPart::BodyPart(const Vector4& position, const Vector4& offset)
 {
@@ -48,11 +45,27 @@ BodyPart::BodyPart(const Vector4& position, const Vector4& offset)
 }
 
 /**
- * @return The direction of the body part
+ * @return The angle on the X axis of the body part
  */
-[[nodiscard]] Vector4 BodyPart::getDir() const
+[[nodiscard]] double BodyPart::getAngleX() const
 {
-    return _dir;
+    return _angleX;
+}
+
+/**
+ * @return The angle on the Y axis of the body part
+ */
+[[nodiscard]] double BodyPart::getAngleY() const
+{
+    return _angleY;
+}
+
+/**
+ * @return The angle on the Z axis of the body part
+ */
+[[nodiscard]] double BodyPart::getAngleZ() const
+{
+    return _angleZ;
 }
 
 /**
@@ -98,16 +111,35 @@ void BodyPart::setPosition(const Vector4& position)
 }
 
 /**
- * Set the direction of the body part.
+ * Set the angle on the X axis of the body part.
  *
- * @param dir The new position of the body part.
+ * @param angleX The new angle on the X axis of the body part
  */
-void BodyPart::setDir(const Vector4& dir)
+void BodyPart::setAngleX(const double angleX)
 {
-    constexpr float pi = std::numbers::pi;
-    _dir.setX(fmodf(dir.getX() + pi, 2 * pi) - pi);
-    _dir.setY(fmodf(dir.getY() + pi, 2 * pi) - pi);
-    _dir.setZ(fmodf(dir.getZ() + pi, 2 * pi) - pi);
+    _angleX = angleX;
+    updateVertices();
+}
+
+/**
+ * Set the angle on the Y axis of the body part.
+ *
+ * @param angleY The new angle on the Y axis of the body part
+ */
+void BodyPart::setAngleY(const double angleY)
+{
+    _angleY = angleY;
+    updateVertices();
+}
+
+/**
+ * Set the angle on the Z axis of the body part.
+ *
+ * @param angleZ The new angle on the Z axis of the body part
+ */
+void BodyPart::setAngleZ(const double angleZ)
+{
+    _angleZ = angleZ;
     updateVertices();
 }
 
@@ -132,11 +164,11 @@ void BodyPart::setParent(BodyPart* parent)
  */
 [[nodiscard]] Matrix4 BodyPart::getRotationMatrix() const
 {
-    const Matrix4 rotationX = Matrix4::createRotationXMatrix(_dir.getX());
-    const Matrix4 rotationY = Matrix4::createRotationYMatrix(_dir.getY());
-    const Matrix4 rotationZ = Matrix4::createRotationZMatrix(_dir.getZ());
+    const Matrix4 rotationX = Matrix4::createRotationXMatrix(_angleX);
+    const Matrix4 rotationY = Matrix4::createRotationYMatrix(_angleY);
+    const Matrix4 rotationZ = Matrix4::createRotationZMatrix(_angleZ);
 
-    return rotationZ * rotationY * rotationX;
+    return rotationX * rotationY * rotationZ;
 }
 
 /**
@@ -167,7 +199,7 @@ void BodyPart::removeChild(BodyPart* child)
 void BodyPart::updateVertices()
 {
     constexpr float cubeSize = 0.15f;
-    const Matrix4 rotationMatrix = Matrix4::createRotationMatrix(_dir.getX(), _dir.getY(), _dir.getZ());
+    Matrix4 rotationMatrix = getRotationMatrix();
 
     Vector4 frontTopLeft = Vector4(-cubeSize, cubeSize, cubeSize);
     Vector4 frontTopRight = Vector4(cubeSize, cubeSize, cubeSize);
@@ -242,53 +274,54 @@ void BodyPart::updateVertices()
 
     _trianglesColors = {
         // Front face
-        1.0f, 0.3f, 0.3f,
-        1.0f, 0.3f, 0.3f,
-        1.0f, 0.3f, 0.3f,
-        1.0f, 0.3f, 0.3f,
-        1.0f, 0.3f, 0.3f,
-        1.0f, 0.3f, 0.3f,
+        1.0f, 0.2f, 0.2f,
+        1.0f, 0.2f, 0.2f,
+        0.9f, 0.2f, 0.2f,
+        1.0f, 0.2f, 0.2f,
+        0.9f, 0.2f, 0.2f,
+        0.9f, 0.2f, 0.2f,
 
         // Back face
-        0.3f, 1.0f, 0.3f,
-        0.3f, 1.0f, 0.3f,
-        0.3f, 1.0f, 0.3f,
-        0.3f, 1.0f, 0.3f,
-        0.3f, 1.0f, 0.3f,
-        0.3f, 1.0f, 0.3f,
+        0.2f, 1.0f, 0.2f,
+        0.2f, 1.0f, 0.2f,
+        0.2f, 0.9f, 0.2f,
+        0.2f, 1.0f, 0.2f,
+        0.2f, 0.9f, 0.2f,
+        0.2f, 0.9f, 0.2f,
 
         // Left face
-        0.3f, 0.3f, 1.0f,
-        0.3f, 0.3f, 1.0f,
-        0.3f, 0.3f, 1.0f,
-        0.3f, 0.3f, 1.0f,
-        0.3f, 0.3f, 1.0f,
-        0.3f, 0.3f, 1.0f,
+        0.2f, 0.2f, 1.0f,
+        0.2f, 0.2f, 1.0f,
+        0.2f, 0.2f, 0.9f,
+        0.2f, 0.2f, 1.0f,
+        0.2f, 0.2f, 0.9f,
+        0.2f, 0.2f, 0.9f,
 
         // Right face
-        1.0f, 1.0f, 0.3f,
-        1.0f, 1.0f, 0.3f,
-        1.0f, 1.0f, 0.3f,
-        1.0f, 1.0f, 0.3f,
-        1.0f, 1.0f, 0.3f,
-        1.0f, 1.0f, 0.3f,
+        1.0f, 1.0f, 0.2f,
+        1.0f, 1.0f, 0.2f,
+        0.9f, 0.9f, 0.2f,
+        1.0f, 1.0f, 0.2f,
+        0.9f, 0.9f, 0.2f,
+        0.9f, 0.9f, 0.2f,
 
         // Top face
-        1.0f, 0.3f, 1.0f,
-        1.0f, 0.3f, 1.0f,
-        1.0f, 0.3f, 1.0f,
-        1.0f, 0.3f, 1.0f,
-        1.0f, 0.3f, 1.0f,
-        1.0f, 0.3f, 1.0f,
+        1.0f, 0.2f, 1.0f,
+        1.0f, 0.2f, 1.0f,
+        0.9f, 0.2f, 0.9f,
+        1.0f, 0.2f, 1.0f,
+        0.9f, 0.2f, 0.9f,
+        0.9f, 0.2f, 0.9f,
 
         // Bottom face
-        0.3f, 1.0f, 1.0f,
-        0.3f, 1.0f, 1.0f,
-        0.3f, 1.0f, 1.0f,
-        0.3f, 1.0f, 1.0f,
-        0.3f, 1.0f, 1.0f,
-        0.3f, 1.0f, 1.0f
+        0.2f, 1.0f, 1.0f,
+        0.2f, 1.0f, 1.0f,
+        0.2f, 0.9f, 0.9f,
+        0.2f, 1.0f, 1.0f,
+        0.2f, 0.9f, 0.9f,
+        0.2f, 0.9f, 0.9f
     };
+
     //@formatter:on
 
     _startTrianglesVerticesBufferStartIndex = BufferManager::modify(TRIANGLES_VERTICES,
@@ -299,11 +332,11 @@ void BodyPart::updateVertices()
                                                                  _trianglesColors);
     for (const auto& child: _children)
     {
-        child->setDir(getDir()); // Applique la rotation au child
-
-        // Utilisez la matrice de rotation du parent pour le calcul de la position
-        Vector4 childLocalPosition = child->getOffset(); // Utilise l'offset pour la position locale
-        Vector4 newChildPosition = rotationMatrix * childLocalPosition + _position; // Calcul de la nouvelle position
-        child->setPosition(newChildPosition); // Met à jour la position de l'enfant
+        child->setAngleX(getAngleX());
+        child->setAngleY(getAngleY());
+        child->setAngleZ(getAngleZ());
+        Vector4 childLocalPosition = child->getOffset();
+        Vector4 newChildPosition = rotationMatrix * childLocalPosition + _position;
+        child->setPosition(newChildPosition);
     }
 }
