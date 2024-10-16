@@ -185,7 +185,7 @@ int main(const int argc, char** argv)
     upperLeftLeg.addChild(&lowerLeftLeg);
     torso.updateVertices();
 
-    BodyPart* selectedBodyPart = &upperLeftArm;
+    BodyPart* selectedBodyPart = &torso;
 
     glfwSetKeyCallback(window, key_callback);
 
