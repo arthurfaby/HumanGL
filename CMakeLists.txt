@@ -26,11 +26,13 @@ set(UTILS_SOURCE_FILES
 set(MATHS_SOURCE_FILES
         src/maths/vectors/Vector4.cpp
         src/maths/matrices/Matrix4.cpp
+        src/maths/matrices/MatrixStack.cpp
 )
 
 # Contain all cpp files within src/utils
 set(BODY_PARTS_SOURCE_FILES
         src/body-parts/BodyPart.cpp
+        src/body-parts/Axis.cpp
 )
 
 # Contain all cpp files within src/managers

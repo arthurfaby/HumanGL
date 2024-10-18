@@ -1,3 +1,4 @@
+#include <Axis.hpp>
 #include <BodyPart.hpp>
 #include <BufferManager.hpp>
 #include <cmath>
@@ -5,48 +6,58 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "Logger.hpp"
+#include "MatrixStack.hpp"
 
 #define FPS_LIMIT 144
 #define WINDOW_WIDTH 1000
 #define WINDOW_HEIGHT 700
 #define TRANSLATION_SPEED 0.01f
-#define ROTATION_SPEED 0.01f
+#define ROTATION_SPEED 0.05f
 
-void handleBodyPartKeys(GLFWwindow* window, BodyPart& selectedBodyPart)
+std::vector<Axis*> axises = {};
+
+void handleBodyPartKeys(GLFWwindow* window)
 {
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    Axis* lastAxis = axises.back();
+    float speed = 0;
+    if (lastAxis == nullptr)
     {
-        selectedBodyPart.setPosition(selectedBodyPart.getPosition() + Vector4(TRANSLATION_SPEED, 0.0f, 0.0f, 0.0f));
-    }
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-    {
-        selectedBodyPart.setPosition(selectedBodyPart.getPosition() - Vector4(TRANSLATION_SPEED, 0.0f, 0.0f, 0.0f));
-    }
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-    {
-        selectedBodyPart.setPosition(selectedBodyPart.getPosition() + Vector4(0.0f, TRANSLATION_SPEED, 0.0f, 0.0f));
-    }
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-    {
-        selectedBodyPart.setPosition(selectedBodyPart.getPosition() - Vector4(0.0f, TRANSLATION_SPEED, 0.0f, 0.0f));
+        return;
     }
     if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
     {
-        double newAngleX = selectedBodyPart.getAngleX();
-        newAngleX += glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? -ROTATION_SPEED : ROTATION_SPEED;
-        selectedBodyPart.setAngleX(newAngleX);
+        speed = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? -ROTATION_SPEED : ROTATION_SPEED;
+        lastAxis->rotateX(speed);
     }
     if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS)
     {
-        double newAngleY = selectedBodyPart.getAngleY();
-        newAngleY += glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? -ROTATION_SPEED : ROTATION_SPEED;
-        selectedBodyPart.setAngleY(newAngleY);
+        speed = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? -ROTATION_SPEED : ROTATION_SPEED;
+        lastAxis->rotateY(speed);
     }
     if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
     {
-        double newAngleZ = selectedBodyPart.getAngleZ();
-        newAngleZ += glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? -ROTATION_SPEED : ROTATION_SPEED;
-        selectedBodyPart.setAngleZ(newAngleZ);
+        speed = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? -ROTATION_SPEED : ROTATION_SPEED;
+        lastAxis->rotateZ(speed);
+    }
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    {
+        lastAxis->translate(0.0f, TRANSLATION_SPEED, 0.0f);
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    {
+        lastAxis->translate(0.0f, -TRANSLATION_SPEED, 0.0f);
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    {
+        lastAxis->translate(-TRANSLATION_SPEED, 0.0f, 0.0f);
+    }
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    {
+        lastAxis->translate(TRANSLATION_SPEED, 0.0f, 0.0f);
+    }
+    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
+    {
+        lastAxis->setPivotPoint(Vector4(0.0f, 0.5f, 0.0f, 1.0f));
     }
 }
 
@@ -56,18 +67,39 @@ static void key_callback(GLFWwindow* window, const int key, const int scancode, 
     {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     }
+    if (key == GLFW_KEY_KP_ADD && action == GLFW_PRESS)
+    {
+        Logger::debug("main.cpp::key_callback(): Adding a new axis.");
+        Axis* lastAxis = axises.back();
+        Axis* newAxis = new Axis();
+        if (lastAxis)
+        {
+            newAxis->addChild(lastAxis);
+        }
+        axises.push_back(newAxis);
+    }
 }
 
 void render(GLFWwindow* window,
-            BodyPart& selectedBodyPart,
             const double& now,
             double& lastRenderTime,
             unsigned int& frameCount)
 {
-    handleBodyPartKeys(window, selectedBodyPart);
+    handleBodyPartKeys(window);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Render here
+    Axis* parent = axises.back();
+    // for (Axis* axis: axises)
+    // {
+    // Logger::debug("draw axis : %p", axis);
+    // axis->draw();
+    // }
+    if (parent)
+    {
+        Logger::debug("main.cpp::render(): Drawing parent.");
+        parent->draw();
+    }
     BufferManager::drawAll();
 
     glfwSwapBuffers(window);
@@ -122,78 +154,33 @@ int main(const int argc, char** argv)
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
-    // @formatter:off
-    std::vector<float> vertices = {
-        0.3f, 0.3f, 0.0f,
-        0.3f, -0.3f, 0.0f,
-        -0.3f, -0.3f, 0.0f,
-    };
-
-    std::vector<float> verticesColors = {
-        1.0f, 0.0f, 0.0f,
-        1.0f, 0.0f, 0.0f,
-        1.0f, 0.0f, 0.0f,
-    };
-
-    std::vector<float> vertices2 = {
-        0.5f, 0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-        -0.5f, -0.5f, 0.0f,
-    };
-
-    std::vector<float> vertices2Colors = {
-        0.0f, 1.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-    };
-
-    std::vector<float> lines = {
-        -1.0f, 0.0f, -1.0f,
-        1.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f
-    };
-
-    std::vector<float> linesColors = {
-        0.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 1.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 1.0f, 0.0f
-    };
-    // @formatter:on
-
     ShaderManager::init();
     BufferManager::init();
-
-    Vector4 defaultPosition = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
-    BodyPart head = BodyPart(defaultPosition, Vector4(0.0f, 0.31f, 0.0f, 0.0f));
-    BodyPart torso = BodyPart(defaultPosition, Vector4());
-    BodyPart upperLeftArm = BodyPart(defaultPosition, Vector4(0.31f, 0.1f, 0.0f, 0.0f));
-    BodyPart lowerLeftArm = BodyPart(defaultPosition, Vector4(0.31f, 0.0f, 0.0f, 0.0f));
-    BodyPart upperRightArm = BodyPart(defaultPosition, Vector4(-0.31f, 0.1f, 0.0f, 0.0f));
-    BodyPart lowerRightArm = BodyPart(defaultPosition, Vector4(-0.31f, 0.0f, 0.0f, 0.0f));
-    BodyPart upperLeftLeg = BodyPart(defaultPosition, Vector4(0.16f, -0.31f, 0.0f, 0.0f));
-    BodyPart lowerLeftLeg = BodyPart(defaultPosition, Vector4(0.0f, -0.31f, 0.0f, 0.0f));
-    BodyPart upperRightLeg = BodyPart(defaultPosition, Vector4(-0.16f, -0.31f, 0.0f, 0.0f));
-    BodyPart lowerRightLeg = BodyPart(defaultPosition, Vector4(0.0f, -0.31f, 0.0f, 0.0f));
-
-    torso.addChild(&head);
-    torso.addChild(&upperRightArm);
-    torso.addChild(&upperLeftArm);
-    torso.addChild(&upperRightLeg);
-    torso.addChild(&upperLeftLeg);
-    upperRightArm.addChild(&lowerRightArm);
-    upperLeftArm.addChild(&lowerLeftArm);
-    upperRightLeg.addChild(&lowerRightLeg);
-    upperLeftLeg.addChild(&lowerLeftLeg);
-
-    BodyPart& selectedBodyPart = torso;
 
     glfwSetKeyCallback(window, key_callback);
 
     double lastRenderTime = glfwGetTime();
     double lastFpsCountTime = glfwGetTime();
     unsigned int frameCount = 0;
+
+    // Création des parties du corps
+    Axis* head = new Axis();
+    head->translate(0.0f, 0.21f, 0.0f);
+    head->setPivotPoint(Vector4(0.0f, -0.1f, 0.0f, 1.0f));
+
+    Axis* leftArm = new Axis();
+    leftArm->translate(-0.21f, -0.21f, 0.0f);
+
+    Axis* rightArm = new Axis();
+    rightArm->translate(0.21f, 0, 0.0f);
+
+    Axis* torso = new Axis();
+
+    torso->addChild(leftArm);
+    torso->addChild(rightArm);
+    torso->addChild(head);
+
+    axises.push_back(torso);
 
     // Loop until the user closes the window
     while (!glfwWindowShouldClose(window))
@@ -203,12 +190,12 @@ int main(const int argc, char** argv)
         // Limit the frame rate ti FPS_LIMIT
         if ((now - lastRenderTime) >= 1.0 / FPS_LIMIT)
         {
-            render(window, selectedBodyPart, now, lastRenderTime, frameCount);
+            render(window, now, lastRenderTime, frameCount);
         }
         if (now - lastFpsCountTime > 1.0)
         {
-            Logger::info("main.cpp::main(): FPS: %d",
-                         static_cast<int>(std::round(frameCount / (now - lastFpsCountTime))));
+            // Logger::info("main.cpp::main(): FPS: %d",
+            // static_cast<int>(std::round(frameCount / (now - lastFpsCountTime))));
             frameCount = 0;
             lastFpsCountTime = now;
         }

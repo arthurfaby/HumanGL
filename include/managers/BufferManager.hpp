@@ -80,6 +80,7 @@ private:
 
  // Methods
  static std::vector<float>* _getBuffer(ManipulableBuffer bufferToGet);
+ static void _applyMatricesTransformations(std::vector<float>* buffer);
 };
 
 #endif //BUFFER_MANAGER_HPP

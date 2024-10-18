@@ -324,6 +324,27 @@ Matrix4 Matrix4::createTranslationMatrix(const float tx, const float ty, const f
 }
 
 /**
+ * Create an identity matrix such as :<br>
+ *  [1, 0, 0, 0]<br>
+ *  [0, 1, 0, 0]<br>
+ *  [0, 0, 1, 0]<br>
+ *  [0, 0, 0, 1]<br>
+ *
+ * @return The created identity matrix
+ */
+Matrix4 Matrix4::identity()
+{
+    //@formatter:off
+    return Matrix4({
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1,
+    });
+    //@formatter:on
+}
+
+/**
  * @return A string containing the data of the matrix
  */
 [[nodiscard]] std::string Matrix4::toString() const
