@@ -97,7 +97,6 @@ void render(GLFWwindow* window,
     // }
     if (parent)
     {
-        Logger::debug("main.cpp::render(): Drawing parent.");
         parent->draw();
     }
     BufferManager::drawAll();
