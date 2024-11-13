@@ -14,6 +14,7 @@ std::vector<Matrix4> MatrixStack::_data;
 void MatrixStack::push(const Matrix4& matrix)
 {
     _data.push_back(matrix);
+    Logger::warning("MatrixStack::push(): Matrix pushed. (size: " + std::to_string(_data.size()) + ")");
 }
 
 /**
