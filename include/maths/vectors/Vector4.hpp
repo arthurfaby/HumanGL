@@ -52,6 +52,7 @@ public:
     [[nodiscard]] const float& operator[](int index) const;
 
     // Methods
+    [[nodiscard]] Vector4 cross(const Vector4& other) const;
     [[nodiscard]] bool isNormalized() const;
     [[nodiscard]] float magnitude() const;
     [[nodiscard]] Vector4 normalize() const;
