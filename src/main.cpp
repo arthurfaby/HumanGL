@@ -3,6 +3,7 @@
 #include <Camera.hpp>
 #include <cmath>
 #include <Matrix4.hpp>
+#include <cmath>
 #include <ShaderManager.hpp>
 #include <Vector4.hpp>
 #include <GL/glew.h>
@@ -18,8 +19,13 @@ static void key_callback(GLFWwindow* window, const int key, int scancode, const 
     }
 }
 
-void render(GLFWwindow* window, const double& now, double& lastRenderTime, unsigned int& frameCount)
+void render(GLFWwindow* window,
+            BodyPart& selectedBodyPart,
+            const double& now,
+            double& lastRenderTime,
+            unsigned int& frameCount)
 {
+    handleBodyPartKeys(window, selectedBodyPart);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     const Matrix4 translationMatrix = Matrix4::createTranslationMatrix(
@@ -109,6 +115,29 @@ int main(const int argc, char** argv)
 
     BodyPart torso = BodyPart(Vector4(0.0f, 0.0f, 0.0f));
     BodyPart torso2 = BodyPart(Vector4(0.5f, 0.5f, 0.5f));
+    Vector4 defaultPosition = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+    BodyPart head = BodyPart(defaultPosition, Vector4(0.0f, 0.31f, 0.0f, 0.0f));
+    BodyPart torso = BodyPart(defaultPosition, Vector4());
+    BodyPart upperLeftArm = BodyPart(defaultPosition, Vector4(0.31f, 0.1f, 0.0f, 0.0f));
+    BodyPart lowerLeftArm = BodyPart(defaultPosition, Vector4(0.31f, 0.0f, 0.0f, 0.0f));
+    BodyPart upperRightArm = BodyPart(defaultPosition, Vector4(-0.31f, 0.1f, 0.0f, 0.0f));
+    BodyPart lowerRightArm = BodyPart(defaultPosition, Vector4(-0.31f, 0.0f, 0.0f, 0.0f));
+    BodyPart upperLeftLeg = BodyPart(defaultPosition, Vector4(0.16f, -0.31f, 0.0f, 0.0f));
+    BodyPart lowerLeftLeg = BodyPart(defaultPosition, Vector4(0.0f, -0.31f, 0.0f, 0.0f));
+    BodyPart upperRightLeg = BodyPart(defaultPosition, Vector4(-0.16f, -0.31f, 0.0f, 0.0f));
+    BodyPart lowerRightLeg = BodyPart(defaultPosition, Vector4(0.0f, -0.31f, 0.0f, 0.0f));
+
+    torso.addChild(&head);
+    torso.addChild(&upperRightArm);
+    torso.addChild(&upperLeftArm);
+    torso.addChild(&upperRightLeg);
+    torso.addChild(&upperLeftLeg);
+    upperRightArm.addChild(&lowerRightArm);
+    upperLeftArm.addChild(&lowerLeftArm);
+    upperRightLeg.addChild(&lowerRightLeg);
+    upperLeftLeg.addChild(&lowerLeftLeg);
+
+    BodyPart& selectedBodyPart = torso;
 
     glfwSetKeyCallback(window, key_callback);
 
@@ -205,11 +234,16 @@ int main(const int argc, char** argv)
             }
 
             render(window, now, lastRenderTime, frameCount);
+        // Limit the frame rate ti FPS_LIMIT
+        if ((now - lastRenderTime) >= 1.0 / FPS_LIMIT)
+        {
+            render(window, selectedBodyPart, now, lastRenderTime, frameCount);
         }
 
         if (now - lastFpsCountTime > 1.0)
         {
-            Logger::info("main.cpp::main(): FPS: %f", frameCount / (now - lastFpsCountTime));
+            Logger::info("main.cpp::main(): FPS: %d",
+                         static_cast<int>(std::round(frameCount / (now - lastFpsCountTime))));
             frameCount = 0;
             lastFpsCountTime = now;
         }

@@ -11,21 +11,31 @@
  * Constructor.
  *
  * @param position The position of the body part
+ * @param offset The offset of the body part
  */
-BodyPart::BodyPart(const Vector4& position)
+BodyPart::BodyPart(const Vector4& position, const Vector4& offset)
 {
     _position = position;
+    _offset = offset;
 
     _startLinesVerticesBufferStartIndex = BufferManager::add(LINES_VERTICES, _linesVertices);
     _startLinesColorBufferStartIndex = BufferManager::add(LINES_COLORS, _linesColors);
     _startTrianglesVerticesBufferStartIndex = BufferManager::add(TRIANGLES_VERTICES, _trianglesVertices);
     _startTrianglesColorBufferStartIndex = BufferManager::add(TRIANGLES_COLORS, _trianglesColors);
-    _updateVertices();
+    updateVertices();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Getters
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @return The offset of the body part
+ */
+[[nodiscard]] Vector4 BodyPart::getOffset() const
+{
+    return _offset;
+}
 
 /**
  * @return The position of the body part
@@ -36,11 +46,35 @@ BodyPart::BodyPart(const Vector4& position)
 }
 
 /**
- * @return The direction of the body part
+ * @return The angle on the X axis of the body part
  */
-[[nodiscard]] Vector4 BodyPart::getDir() const
+[[nodiscard]] double BodyPart::getAngleX() const
 {
-    return _dir;
+    return _angleX;
+}
+
+/**
+ * @return The angle on the Y axis of the body part
+ */
+[[nodiscard]] double BodyPart::getAngleY() const
+{
+    return _angleY;
+}
+
+/**
+ * @return The angle on the Z axis of the body part
+ */
+[[nodiscard]] double BodyPart::getAngleZ() const
+{
+    return _angleZ;
+}
+
+/**
+ * @return The parent of the body part
+ */
+[[nodiscard]] BodyPart* BodyPart::getParent() const
+{
+    return _parent;
 }
 
 /**
@@ -56,6 +90,17 @@ BodyPart::BodyPart(const Vector4& position)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * Set the offset of the body part.
+ *
+ * @param offset The new offset of the body part
+ */
+void BodyPart::setOffset(const Vector4& offset)
+{
+    _offset = offset;
+    updateVertices();
+}
+
+/**
  * Set the position of the body part.
  *
  * @param position The new position of the body part.
@@ -63,21 +108,50 @@ BodyPart::BodyPart(const Vector4& position)
 void BodyPart::setPosition(const Vector4& position)
 {
     _position = position;
-    _updateVertices();
+    updateVertices();
 }
 
 /**
- * Set the direction of the body part.
+ * Set the angle on the X axis of the body part.
  *
- * @param dir The new position of the body part.
+ * @param angleX The new angle on the X axis of the body part
  */
-void BodyPart::setDir(const Vector4& dir)
+void BodyPart::setAngleX(const double angleX)
 {
-    constexpr float pi = std::numbers::pi;
-    _dir.setX(fmodf(dir.getX() + pi, 2 * pi) - pi);
-    _dir.setY(fmodf(dir.getY() + pi, 2 * pi) - pi);
-    _dir.setZ(fmodf(dir.getZ() + pi, 2 * pi) - pi);
-    _updateVertices();
+    _angleX = fmod(angleX + std::numbers::pi, 2 * std::numbers::pi) - std::numbers::pi;
+    updateVertices();
+}
+
+/**
+ * Set the angle on the Y axis of the body part.
+ *
+ * @param angleY The new angle on the Y axis of the body part
+ */
+void BodyPart::setAngleY(const double angleY)
+{
+    _angleY = fmod(angleY + std::numbers::pi, 2 * std::numbers::pi) - std::numbers::pi;;
+    updateVertices();
+}
+
+/**
+ * Set the angle on the Z axis of the body part.
+ *
+ * @param angleZ The new angle on the Z axis of the body part
+ */
+void BodyPart::setAngleZ(const double angleZ)
+{
+    _angleZ = fmod(angleZ + std::numbers::pi, 2 * std::numbers::pi) - std::numbers::pi;;
+    updateVertices();
+}
+
+/**
+ * Set the parent of the body part.
+ *
+ * @param parent The new parent of the body part
+ */
+void BodyPart::setParent(BodyPart* parent)
+{
+    _parent = parent;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -92,6 +166,8 @@ void BodyPart::setDir(const Vector4& dir)
 void BodyPart::addChild(BodyPart* child)
 {
     _children.push_back(child);
+    child->setParent(this);
+    updateVertices();
 }
 
 /**
@@ -99,15 +175,17 @@ void BodyPart::addChild(BodyPart* child)
  *
  * @param child The child to remove
  */
-void BodyPart::removeChild(const BodyPart* child)
+void BodyPart::removeChild(BodyPart* child)
 {
     std::erase(_children, child);
+    child->setParent(nullptr);
+    updateVertices();
 }
 
 /**
  * Update the vertices of the body part.
  */
-void BodyPart::_updateVertices()
+void BodyPart::updateVertices()
 {
     constexpr float cubeHalfEdge = 0.25f;
     const Matrix4 rotationMatrix = Matrix4::createRotationMatrix(_dir.getX(), _dir.getY(), _dir.getZ());
@@ -240,4 +318,13 @@ void BodyPart::_updateVertices()
     _startTrianglesColorBufferStartIndex = BufferManager::modify(TRIANGLES_COLORS,
                                                                  _startTrianglesColorBufferStartIndex,
                                                                  _trianglesColors);
+    for (const auto& child: _children)
+    {
+        child->setAngleX(getAngleX());
+        child->setAngleY(getAngleY());
+        child->setAngleZ(getAngleZ());
+        Vector4 childLocalPosition = child->getOffset();
+        Vector4 newChildPosition = rotationMatrix * childLocalPosition + _position;
+        child->setPosition(newChildPosition);
+    }
 }
