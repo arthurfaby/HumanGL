@@ -12,22 +12,22 @@ Camera* Camera::_instance = nullptr;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Camera::Camera(const Vector4& position): _cameraPosition(position),
-                                         _cameraXRotation(0.0f),
-                                         _cameraYRotation(0.0f),
                                          _cameraFront(Vector4(0.0f, 0.0f, -1.0f)),
                                          _cameraUp(Vector4(0.0f, 1.0f, 0.0f)),
                                          _worldUp(Vector4(0.0f, 1.0f, 0.0f)),
+                                         // @formatter:off
                                          _projectionMatrix(Matrix4({
                                              PROJECTION_FORMULA / ASPECT_RATIO, 0, 0, 0,
                                              0, PROJECTION_FORMULA, 0, 0,
                                              0, 0, (-FAR_PLANE_Z - NEAR_PLANE_Z)/Z_RANGE, (2 * FAR_PLANE_Z * NEAR_PLANE_Z)/Z_RANGE,
                                              0, 0, 1, 0,
                                          })),
-                                         _yaw(-90.0f),
+                                         // @formatter:on
+                                         _cameraXRotation(0.0f),
+                                         _cameraYRotation(0.0f),
                                          _pitch(0.0f),
-                                        // @formatter:off
-                                        _speed(0.015f)
-// @formatter:on
+                                         _speed(0.015f),
+                                         _yaw(-90.0f)
 {
     _updateCameraVectors();
 }
@@ -36,12 +36,15 @@ Camera::Camera(const Vector4& position): _cameraPosition(position),
 // Getters
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @return The unique instance of camera
+ */
 Camera& Camera::getInstance()
 {
-     if (_instance == nullptr)
-     {
-         _instance = new Camera(Vector4(0.0, 0.0, 1.0));
-     }
+    if (_instance == nullptr)
+    {
+        _instance = new Camera(Vector4(0.0, 0.0, 1.0));
+    }
     return *_instance;
 }
 

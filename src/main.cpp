@@ -22,24 +22,20 @@ void render(GLFWwindow* window, const double& now, double& lastRenderTime, unsig
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    const Matrix4 allTranslationMatrices = Matrix4::createTranslationMatrix(
+    const Matrix4 translationMatrix = Matrix4::createTranslationMatrix(
                                                Camera::getInstance().getPosition().getX(),
                                                Camera::getInstance().getPosition().getY(),
                                                Camera::getInstance().getPosition().getZ());
 
-    const Matrix4 allRotationMatrices = Matrix4::createRotationYMatrix(-Camera::getInstance().getYRotation()) *
+    const Matrix4 rotationMatrix = Matrix4::createRotationYMatrix(-Camera::getInstance().getYRotation()) *
                                         Matrix4::createRotationXMatrix(-Camera::getInstance().getXRotation());
 
-    const Matrix4 finalMatrix = Camera::getInstance().getProjectionMatrix() * allTranslationMatrices * allRotationMatrices;
+    const Matrix4 finalMatrix = Camera::getInstance().getProjectionMatrix() * translationMatrix * rotationMatrix;
 
     const GLint projection = glGetUniformLocation(ShaderManager::getProgramId(), "projection");
     if (projection == -1)
     {
         Logger::error("Uniform 'projection' not found in the shader program.");
-    }
-    else
-    {
-        Logger::debug("Uniform 'projection' initialized");
     }
     glUniformMatrix4fv(projection, 1, GL_TRUE, finalMatrix.getData());
 

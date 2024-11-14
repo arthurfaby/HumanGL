@@ -42,20 +42,67 @@ public:
 private:
     explicit Camera(const Vector4& position);
 
+    /**
+    * The unique instance of Camera.
+    */
     static Camera* _instance;
 
+    /**
+    * The camera's position Vector with its x, y and z coordinates.
+    */
     Vector4 _cameraPosition;
+
+    /**
+    * The vector pointing towards the front of the camera.
+    */
     Vector4 _cameraFront;
+
+    /**
+    * The vector pointing towards the up direction of the camera.
+    */
     Vector4 _cameraUp;
+
+    /**
+    * The vector pointing towards the right of the camera.
+    */
     Vector4 _cameraRight;
+
+    /**
+    * The vector pointing towards the up direction of the world.
+    */
     Vector4 _worldUp;
 
+    /**
+    * The projection matrix that converts the 3D coordinates into a 2D representation that will be displayed on the
+    * screen.
+    */
     Matrix4 _projectionMatrix;
 
+    /**
+    * The value representing the x-axis rotation of the camera. Its opposite value will be applied to the whole world
+    * to simulate the camera rotation.
+    */
     float _cameraXRotation;
+
+    /**
+    * The value representing the x-axis rotation of the camera. Its opposite value will be applied to the whole world
+    * to simulate the camera rotation.
+    */
     float _cameraYRotation;
+
+    /**
+    * The x-axis rotation.
+    */
     float _pitch;
+
+    /**
+    * The speed at which the different rotations will be done.
+    */
     float _speed;
+
+    /**
+    * The y-axis rotation.
+    */
     float _yaw;
 
     // Methods
