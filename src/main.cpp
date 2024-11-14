@@ -3,7 +3,6 @@
 #include <Camera.hpp>
 #include <cmath>
 #include <Matrix4.hpp>
-#include <cmath>
 #include <ShaderManager.hpp>
 #include <Vector4.hpp>
 #include <GL/glew.h>
@@ -20,21 +19,19 @@ static void key_callback(GLFWwindow* window, const int key, int scancode, const 
 }
 
 void render(GLFWwindow* window,
-            BodyPart& selectedBodyPart,
             const double& now,
             double& lastRenderTime,
             unsigned int& frameCount)
 {
-    handleBodyPartKeys(window, selectedBodyPart);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     const Matrix4 translationMatrix = Matrix4::createTranslationMatrix(
-                                               Camera::getInstance().getPosition().getX(),
-                                               Camera::getInstance().getPosition().getY(),
-                                               Camera::getInstance().getPosition().getZ());
+        Camera::getInstance().getPosition().getX(),
+        Camera::getInstance().getPosition().getY(),
+        Camera::getInstance().getPosition().getZ());
 
     const Matrix4 rotationMatrix = Matrix4::createRotationYMatrix(-Camera::getInstance().getYRotation()) *
-                                        Matrix4::createRotationXMatrix(-Camera::getInstance().getXRotation());
+                                   Matrix4::createRotationXMatrix(-Camera::getInstance().getXRotation());
 
     const Matrix4 finalMatrix = Camera::getInstance().getProjectionMatrix() * translationMatrix * rotationMatrix;
 
@@ -56,7 +53,7 @@ void render(GLFWwindow* window,
     glfwPollEvents();
 }
 
-static void handleDebugMode(const int argc, char **argv)
+static void handleDebugMode(const int argc, char** argv)
 {
     for (int i = 0; i < argc; ++i)
     {
@@ -113,8 +110,6 @@ int main(const int argc, char** argv)
     ShaderManager::init();
     BufferManager::init();
 
-    BodyPart torso = BodyPart(Vector4(0.0f, 0.0f, 0.0f));
-    BodyPart torso2 = BodyPart(Vector4(0.5f, 0.5f, 0.5f));
     Vector4 defaultPosition = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
     BodyPart head = BodyPart(defaultPosition, Vector4(0.0f, 0.31f, 0.0f, 0.0f));
     BodyPart torso = BodyPart(defaultPosition, Vector4());
@@ -153,30 +148,6 @@ int main(const int argc, char** argv)
         // Limit the frame rate ti FPS_LIMIT
         if ((now - lastRenderTime) >= 1.0 / FPS_LIMIT)
         {
-            // Rotate when pressing X
-            if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
-            {
-                Vector4 torsoDir = torso.getDir();
-                torsoDir.setX(torsoDir.getX() + 0.01f);
-                torso.setDir(torsoDir);
-            }
-
-            // Rotate when pressing Y
-            if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS)
-            {
-                Vector4 torsoDir = torso.getDir();
-                torsoDir.setY(torsoDir.getY() + 0.01f);
-                torso.setDir(torsoDir);
-            }
-
-            // Rotate when pressing Z
-            if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
-            {
-                Vector4 torsoDir = torso.getDir();
-                torsoDir.setZ(torsoDir.getZ() + 0.01f);
-                torso.setDir(torsoDir);
-            }
-
             // Move the camera forward
             if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
             {
@@ -234,18 +205,14 @@ int main(const int argc, char** argv)
             }
 
             render(window, now, lastRenderTime, frameCount);
-        // Limit the frame rate ti FPS_LIMIT
-        if ((now - lastRenderTime) >= 1.0 / FPS_LIMIT)
-        {
-            render(window, selectedBodyPart, now, lastRenderTime, frameCount);
-        }
 
-        if (now - lastFpsCountTime > 1.0)
-        {
-            Logger::info("main.cpp::main(): FPS: %d",
-                         static_cast<int>(std::round(frameCount / (now - lastFpsCountTime))));
-            frameCount = 0;
-            lastFpsCountTime = now;
+            if (now - lastFpsCountTime > 1.0)
+            {
+                Logger::info("main.cpp::main(): FPS: %d",
+                             static_cast<int>(std::round(frameCount / (now - lastFpsCountTime))));
+                frameCount = 0;
+                lastFpsCountTime = now;
+            }
         }
     }
     glfwTerminate();

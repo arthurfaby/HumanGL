@@ -188,7 +188,7 @@ void BodyPart::removeChild(BodyPart* child)
 void BodyPart::updateVertices()
 {
     constexpr float cubeHalfEdge = 0.25f;
-    const Matrix4 rotationMatrix = Matrix4::createRotationMatrix(_dir.getX(), _dir.getY(), _dir.getZ());
+    const Matrix4 rotationMatrix = Matrix4::createRotationMatrix(_angleX, _angleY, _angleZ);
 
     Vector4 frontTopLeft = Vector4(-cubeHalfEdge, cubeHalfEdge, cubeHalfEdge);
     Vector4 frontTopRight = Vector4(cubeHalfEdge, cubeHalfEdge, cubeHalfEdge);
