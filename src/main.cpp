@@ -1,56 +1,16 @@
 #include <BodyPart.hpp>
 #include <BufferManager.hpp>
+#include <Camera.hpp>
 #include <cmath>
+#include <Matrix4.hpp>
 #include <ShaderManager.hpp>
+#include <Vector4.hpp>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "Logger.hpp"
+#include "WindowDefines.hpp"
 
-#define FPS_LIMIT 144
-#define WINDOW_WIDTH 1000
-#define WINDOW_HEIGHT 700
-#define TRANSLATION_SPEED 0.01f
-#define ROTATION_SPEED 0.01f
-
-void handleBodyPartKeys(GLFWwindow* window, BodyPart& selectedBodyPart)
-{
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-    {
-        selectedBodyPart.setPosition(selectedBodyPart.getPosition() + Vector4(TRANSLATION_SPEED, 0.0f, 0.0f, 0.0f));
-    }
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-    {
-        selectedBodyPart.setPosition(selectedBodyPart.getPosition() - Vector4(TRANSLATION_SPEED, 0.0f, 0.0f, 0.0f));
-    }
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-    {
-        selectedBodyPart.setPosition(selectedBodyPart.getPosition() + Vector4(0.0f, TRANSLATION_SPEED, 0.0f, 0.0f));
-    }
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-    {
-        selectedBodyPart.setPosition(selectedBodyPart.getPosition() - Vector4(0.0f, TRANSLATION_SPEED, 0.0f, 0.0f));
-    }
-    if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
-    {
-        double newAngleX = selectedBodyPart.getAngleX();
-        newAngleX += glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? -ROTATION_SPEED : ROTATION_SPEED;
-        selectedBodyPart.setAngleX(newAngleX);
-    }
-    if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS)
-    {
-        double newAngleY = selectedBodyPart.getAngleY();
-        newAngleY += glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? -ROTATION_SPEED : ROTATION_SPEED;
-        selectedBodyPart.setAngleY(newAngleY);
-    }
-    if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
-    {
-        double newAngleZ = selectedBodyPart.getAngleZ();
-        newAngleZ += glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? -ROTATION_SPEED : ROTATION_SPEED;
-        selectedBodyPart.setAngleZ(newAngleZ);
-    }
-}
-
-static void key_callback(GLFWwindow* window, const int key, const int scancode, const int action, const int mods)
+static void key_callback(GLFWwindow* window, const int key, int scancode, const int action, int mods)
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     {
@@ -59,13 +19,28 @@ static void key_callback(GLFWwindow* window, const int key, const int scancode, 
 }
 
 void render(GLFWwindow* window,
-            BodyPart& selectedBodyPart,
             const double& now,
             double& lastRenderTime,
             unsigned int& frameCount)
 {
-    handleBodyPartKeys(window, selectedBodyPart);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    const Matrix4 translationMatrix = Matrix4::createTranslationMatrix(
+        Camera::getInstance().getPosition().getX(),
+        Camera::getInstance().getPosition().getY(),
+        Camera::getInstance().getPosition().getZ());
+
+    const Matrix4 rotationMatrix = Matrix4::createRotationYMatrix(-Camera::getInstance().getYRotation()) *
+                                   Matrix4::createRotationXMatrix(-Camera::getInstance().getXRotation());
+
+    const Matrix4 finalMatrix = Camera::getInstance().getProjectionMatrix() * translationMatrix * rotationMatrix;
+
+    const GLint projection = glGetUniformLocation(ShaderManager::getProgramId(), "projection");
+    if (projection == -1)
+    {
+        Logger::error("Uniform 'projection' not found in the shader program.");
+    }
+    glUniformMatrix4fv(projection, 1, GL_TRUE, finalMatrix.getData());
 
     // Render here
     BufferManager::drawAll();
@@ -78,7 +53,7 @@ void render(GLFWwindow* window,
     glfwPollEvents();
 }
 
-int main(const int argc, char** argv)
+static void handleDebugMode(const int argc, char** argv)
 {
     for (int i = 0; i < argc; ++i)
     {
@@ -87,6 +62,11 @@ int main(const int argc, char** argv)
             Logger::setDebug(true);
         }
     }
+}
+
+int main(const int argc, char** argv)
+{
+    handleDebugMode(argc, argv);
 
     // Initialize the library
     if (!glfwInit())
@@ -94,6 +74,9 @@ int main(const int argc, char** argv)
         Logger::error("main,cpp::main(): GLFW initialization failed. Terminating program.");
         return -1;
     }
+
+    // Disable window resizing
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
     // Create a windowed mode window and its OpenGL context
     GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Hello World", nullptr, nullptr);
@@ -106,6 +89,8 @@ int main(const int argc, char** argv)
 
     // Make the window's context current
     glfwMakeContextCurrent(window);
+    // Hide the cursor within the window
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
     glewExperimental = true;
     if (glewInit() != GLEW_OK)
@@ -121,46 +106,6 @@ int main(const int argc, char** argv)
     // Enable depth test
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
-
-    // @formatter:off
-    std::vector<float> vertices = {
-        0.3f, 0.3f, 0.0f,
-        0.3f, -0.3f, 0.0f,
-        -0.3f, -0.3f, 0.0f,
-    };
-
-    std::vector<float> verticesColors = {
-        1.0f, 0.0f, 0.0f,
-        1.0f, 0.0f, 0.0f,
-        1.0f, 0.0f, 0.0f,
-    };
-
-    std::vector<float> vertices2 = {
-        0.5f, 0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-        -0.5f, -0.5f, 0.0f,
-    };
-
-    std::vector<float> vertices2Colors = {
-        0.0f, 1.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-    };
-
-    std::vector<float> lines = {
-        -1.0f, 0.0f, -1.0f,
-        1.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f
-    };
-
-    std::vector<float> linesColors = {
-        0.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 1.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 1.0f, 0.0f
-    };
-    // @formatter:on
 
     ShaderManager::init();
     BufferManager::init();
@@ -203,14 +148,71 @@ int main(const int argc, char** argv)
         // Limit the frame rate ti FPS_LIMIT
         if ((now - lastRenderTime) >= 1.0 / FPS_LIMIT)
         {
-            render(window, selectedBodyPart, now, lastRenderTime, frameCount);
-        }
-        if (now - lastFpsCountTime > 1.0)
-        {
-            Logger::info("main.cpp::main(): FPS: %d",
-                         static_cast<int>(std::round(frameCount / (now - lastFpsCountTime))));
-            frameCount = 0;
-            lastFpsCountTime = now;
+            // Move the camera forward
+            if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+            {
+                Camera::getInstance().updateCameraPos(FORWARD);
+            }
+
+            // Move the camera backward
+            if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+            {
+                Camera::getInstance().updateCameraPos(BACKWARD);
+            }
+
+            // Move the camera to the right
+            if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+            {
+                Camera::getInstance().updateCameraPos(RIGHT);
+            }
+
+            // Move the camera to the left
+            if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+            {
+                Camera::getInstance().updateCameraPos(LEFT);
+            }
+
+            // Move the camera upward
+            if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+            {
+                Camera::getInstance().updateCameraPos(UP);
+            }
+
+            // Move the camera downward
+            if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+            {
+                Camera::getInstance().updateCameraPos(DOWN);
+            }
+
+            if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+            {
+                Camera::getInstance().setXRotation(UP);
+            }
+
+            if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+            {
+                Camera::getInstance().setXRotation(DOWN);
+            }
+
+            if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+            {
+                Camera::getInstance().setYRotation(RIGHT);
+            }
+
+            if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+            {
+                Camera::getInstance().setYRotation(LEFT);
+            }
+
+            render(window, now, lastRenderTime, frameCount);
+
+            if (now - lastFpsCountTime > 1.0)
+            {
+                Logger::info("main.cpp::main(): FPS: %d",
+                             static_cast<int>(std::round(frameCount / (now - lastFpsCountTime))));
+                frameCount = 0;
+                lastFpsCountTime = now;
+            }
         }
     }
     glfwTerminate();

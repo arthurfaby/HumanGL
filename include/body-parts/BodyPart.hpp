@@ -1,7 +1,6 @@
 #ifndef BODY_PART_HPP
 #define BODY_PART_HPP
 
-#include <Matrix4.hpp>
 #include <Vector4.hpp>
 #include <vector>
 

@@ -187,18 +187,18 @@ void BodyPart::removeChild(BodyPart* child)
  */
 void BodyPart::updateVertices()
 {
-    constexpr float cubeSize = 0.15f;
+    constexpr float cubeHalfEdge = 0.25f;
     const Matrix4 rotationMatrix = Matrix4::createRotationMatrix(_angleX, _angleY, _angleZ);
 
-    Vector4 frontTopLeft = Vector4(-cubeSize, cubeSize, cubeSize);
-    Vector4 frontTopRight = Vector4(cubeSize, cubeSize, cubeSize);
-    Vector4 frontBottomLeft = Vector4(-cubeSize, -cubeSize, cubeSize);
-    Vector4 frontBottomRight = Vector4(cubeSize, -cubeSize, cubeSize);
+    Vector4 frontTopLeft = Vector4(-cubeHalfEdge, cubeHalfEdge, cubeHalfEdge);
+    Vector4 frontTopRight = Vector4(cubeHalfEdge, cubeHalfEdge, cubeHalfEdge);
+    Vector4 frontBottomLeft = Vector4(-cubeHalfEdge, -cubeHalfEdge, cubeHalfEdge);
+    Vector4 frontBottomRight = Vector4(cubeHalfEdge, -cubeHalfEdge, cubeHalfEdge);
 
-    Vector4 backTopLeft = Vector4(-cubeSize, cubeSize, -cubeSize);
-    Vector4 backTopRight = Vector4(cubeSize, cubeSize, -cubeSize);
-    Vector4 backBottomLeft = Vector4(-cubeSize, -cubeSize, -cubeSize);
-    Vector4 backBottomRight = Vector4(cubeSize, -cubeSize, -cubeSize);
+    Vector4 backTopLeft = Vector4(-cubeHalfEdge, cubeHalfEdge, -cubeHalfEdge);
+    Vector4 backTopRight = Vector4(cubeHalfEdge, cubeHalfEdge, -cubeHalfEdge);
+    Vector4 backBottomLeft = Vector4(-cubeHalfEdge, -cubeHalfEdge, -cubeHalfEdge);
+    Vector4 backBottomRight = Vector4(cubeHalfEdge, -cubeHalfEdge, -cubeHalfEdge);
 
     frontTopLeft = rotationMatrix * frontTopLeft + _position;
     frontTopRight = rotationMatrix * frontTopRight + _position;
@@ -263,54 +263,53 @@ void BodyPart::updateVertices()
 
     _trianglesColors = {
         // Front face
-        1.0f, 0.2f, 0.2f,
-        1.0f, 0.2f, 0.2f,
-        0.9f, 0.2f, 0.2f,
-        1.0f, 0.2f, 0.2f,
-        0.9f, 0.2f, 0.2f,
-        0.9f, 0.2f, 0.2f,
+        1.0f, 0.3f, 0.3f,
+        1.0f, 0.3f, 0.3f,
+        0.8f, 0.3f, 0.3f,
+        1.0f, 0.3f, 0.3f,
+        0.8f, 0.3f, 0.3f,
+        0.8f, 0.3f, 0.3f,
 
         // Back face
-        0.2f, 1.0f, 0.2f,
-        0.2f, 1.0f, 0.2f,
-        0.2f, 0.9f, 0.2f,
-        0.2f, 1.0f, 0.2f,
-        0.2f, 0.9f, 0.2f,
-        0.2f, 0.9f, 0.2f,
+        0.3f, 1.0f, 0.3f,
+        0.3f, 1.0f, 0.3f,
+        0.3f, 0.8f, 0.3f,
+        0.3f, 1.0f, 0.3f,
+        0.3f, 0.8f, 0.3f,
+        0.3f, 0.8f, 0.3f,
 
         // Left face
-        0.2f, 0.2f, 1.0f,
-        0.2f, 0.2f, 1.0f,
-        0.2f, 0.2f, 0.9f,
-        0.2f, 0.2f, 1.0f,
-        0.2f, 0.2f, 0.9f,
-        0.2f, 0.2f, 0.9f,
+        0.3f, 0.3f, 1.0f,
+        0.3f, 0.3f, 1.0f,
+        0.3f, 0.3f, 0.8f,
+        0.3f, 0.3f, 1.0f,
+        0.3f, 0.3f, 0.8f,
+        0.3f, 0.3f, 0.8f,
 
         // Right face
-        1.0f, 1.0f, 0.2f,
-        1.0f, 1.0f, 0.2f,
-        0.9f, 0.9f, 0.2f,
-        1.0f, 1.0f, 0.2f,
-        0.9f, 0.9f, 0.2f,
-        0.9f, 0.9f, 0.2f,
+        1.0f, 1.0f, 0.3f,
+        1.0f, 1.0f, 0.3f,
+        0.8f, 0.8f, 0.3f,
+        1.0f, 1.0f, 0.3f,
+        0.8f, 0.8f, 0.3f,
+        0.8f, 0.8f, 0.3f,
 
         // Top face
-        1.0f, 0.2f, 1.0f,
-        1.0f, 0.2f, 1.0f,
-        0.9f, 0.2f, 0.9f,
-        1.0f, 0.2f, 1.0f,
-        0.9f, 0.2f, 0.9f,
-        0.9f, 0.2f, 0.9f,
+        1.0f, 0.3f, 1.0f,
+        1.0f, 0.3f, 1.0f,
+        0.8f, 0.3f, 0.8f,
+        1.0f, 0.3f, 1.0f,
+        0.8f, 0.3f, 0.8f,
+        0.8f, 0.3f, 0.8f,
 
         // Bottom face
-        0.2f, 1.0f, 1.0f,
-        0.2f, 1.0f, 1.0f,
-        0.2f, 0.9f, 0.9f,
-        0.2f, 1.0f, 1.0f,
-        0.2f, 0.9f, 0.9f,
-        0.2f, 0.9f, 0.9f
+        0.3f, 1.0f, 1.0f,
+        0.3f, 1.0f, 1.0f,
+        0.3f, 0.8f, 0.8f,
+        0.3f, 1.0f, 1.0f,
+        0.3f, 0.8f, 0.8f,
+        0.3f, 0.8f, 0.8f
     };
-
     //@formatter:on
 
     _startTrianglesVerticesBufferStartIndex = BufferManager::modify(TRIANGLES_VERTICES,
