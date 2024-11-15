@@ -14,50 +14,50 @@
 #define TRANSLATION_SPEED 0.01f
 #define ROTATION_SPEED 0.05f
 
-std::vector<Axis*> axises = {};
+Axis* torso;
+Axis* rightArm;
+Axis* leftArm;
+
+Axis* targetAxis;
+Axis* root;
 
 void handleBodyPartKeys(GLFWwindow* window)
 {
-    Axis* lastAxis = axises.back();
     float speed = 0;
-    if (lastAxis == nullptr)
+    if (targetAxis == nullptr)
     {
         return;
     }
     if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
     {
         speed = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? -ROTATION_SPEED : ROTATION_SPEED;
-        lastAxis->rotateX(speed);
+        targetAxis->rotateX(speed);
     }
     if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS)
     {
         speed = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? -ROTATION_SPEED : ROTATION_SPEED;
-        lastAxis->rotateY(speed);
+        targetAxis->rotateY(speed);
     }
     if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
     {
         speed = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? -ROTATION_SPEED : ROTATION_SPEED;
-        lastAxis->rotateZ(speed);
+        targetAxis->rotateZ(speed);
     }
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
-        lastAxis->translate(0.0f, TRANSLATION_SPEED, 0.0f);
+        targetAxis->translate(0.0f, TRANSLATION_SPEED, 0.0f);
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
     {
-        lastAxis->translate(0.0f, -TRANSLATION_SPEED, 0.0f);
+        targetAxis->translate(0.0f, -TRANSLATION_SPEED, 0.0f);
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
     {
-        lastAxis->translate(-TRANSLATION_SPEED, 0.0f, 0.0f);
+        targetAxis->translate(-TRANSLATION_SPEED, 0.0f, 0.0f);
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     {
-        lastAxis->translate(TRANSLATION_SPEED, 0.0f, 0.0f);
-    }
-    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
-    {
-        lastAxis->setPivotPoint(Vector4(0.0f, 0.5f, 0.0f, 1.0f));
+        targetAxis->translate(TRANSLATION_SPEED, 0.0f, 0.0f);
     }
 }
 
@@ -66,17 +66,6 @@ static void key_callback(GLFWwindow* window, const int key, const int scancode, 
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
-    }
-    if (key == GLFW_KEY_KP_ADD && action == GLFW_PRESS)
-    {
-        Logger::debug("main.cpp::key_callback(): Adding a new axis.");
-        Axis* lastAxis = axises.back();
-        Axis* newAxis = new Axis();
-        if (lastAxis)
-        {
-            newAxis->addChild(lastAxis);
-        }
-        axises.push_back(newAxis);
     }
 }
 
@@ -87,18 +76,10 @@ void render(GLFWwindow* window,
 {
     handleBodyPartKeys(window);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    root->rotateY(0.01f);
 
-    // Render here
-    Axis* parent = axises.back();
-    // for (Axis* axis: axises)
-    // {
-    // Logger::debug("draw axis : %p", axis);
-    // axis->draw();
-    // }
-    if (parent)
-    {
-        parent->draw();
-    }
+    root->draw();
+
     BufferManager::drawAll();
 
     glfwSwapBuffers(window);
@@ -163,23 +144,30 @@ int main(const int argc, char** argv)
     unsigned int frameCount = 0;
 
     // Création des parties du corps
-    Axis* head = new Axis();
-    head->translate(0.0f, 0.21f, 0.0f);
-    head->setPivotPoint(Vector4(0.0f, -0.1f, 0.0f, 1.0f));
+    torso = new Axis();
+    torso->setHeight(0.4f);
+    torso->setWidth(0.2f);
+    torso->setDepth(0.1f);
 
-    Axis* leftArm = new Axis();
-    leftArm->translate(-0.21f, -0.21f, 0.0f);
+    rightArm = new Axis();
+    rightArm->setHeight(0.05f);
+    rightArm->setDepth(0.05f);
+    rightArm->translate(-0.2f, 0.15f, 0.0f);
+    rightArm->setPivotPoint(Vector4(0.10f, 0, 0, 1));
 
-    Axis* rightArm = new Axis();
-    rightArm->translate(0.21f, 0, 0.0f);
+    leftArm = new Axis();
+    leftArm->setHeight(0.05f);
+    leftArm->setDepth(0.05f);
+    leftArm->setPivotPoint(Vector4(-0.10f, 0, 0, 1));
+    leftArm->translate(0.2f, 0.15f, 0.0f);
 
-    Axis* torso = new Axis();
+    rightArm->translate(-0.2f, -0.15f, 0.0f);
 
-    torso->addChild(leftArm);
     torso->addChild(rightArm);
-    torso->addChild(head);
+    torso->addChild(leftArm);
 
-    axises.push_back(torso);
+    root = torso;
+    targetAxis = rightArm;
 
     // Loop until the user closes the window
     while (!glfwWindowShouldClose(window))
