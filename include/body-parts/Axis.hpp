@@ -8,18 +8,30 @@ class Axis
 public:
     Axis();
     void translate(float x, float y, float z);
+
     void rotateX(float angle);
     void rotateY(float angle);
     void rotateZ(float angle);
+
+    void setWidth(float width);
+    void setHeight(float height);
+    void setDepth(float depth);
+    void setParent(Axis* parent);
+    void setPivotPoint(const Vector4& pivotPoint);
+
     void addChild(Axis* child);
     [[nodiscard]] Matrix4 getTransformationMatrix() const;
     void draw();
-    void setPivotPoint(const Vector4& pivotPoint);
 
 private:
+    float _width = 0.2f;
+    float _height = 0.2f;
+    float _depth = 0.2f;
+
     Matrix4 _translationMatrix;
     Matrix4 _rotationMatrix;
     std::vector<Axis*> _children;
+    Axis* _parent = nullptr;
 
     Vector4 _pivotPoint;
 
