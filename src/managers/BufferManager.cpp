@@ -228,7 +228,7 @@ void BufferManager::_applyMatricesTransformations(std::vector<float>* buffer)
         const float y = (*buffer)[i + 1];
         const float z = (*buffer)[i + 2];
         Vector4 vertex = Vector4(x, y, z, 1.0f);
-        std::vector<Matrix4> matrices = MatrixStack::data();
+        const std::vector<Matrix4> matrices = MatrixStack::data();
         for (const Matrix4& matrix: matrices)
         {
             vertex = matrix * vertex;
