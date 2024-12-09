@@ -25,15 +25,7 @@ void render(GLFWwindow* window,
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    const Matrix4 translationMatrix = Matrix4::createTranslationMatrix(
-        Camera::getInstance().getPosition().getX(),
-        Camera::getInstance().getPosition().getY(),
-        Camera::getInstance().getPosition().getZ());
-
-    const Matrix4 rotationMatrix = Matrix4::createRotationYMatrix(-Camera::getInstance().getYRotation()) *
-                                   Matrix4::createRotationXMatrix(-Camera::getInstance().getXRotation());
-
-    const Matrix4 finalMatrix = Camera::getInstance().getProjectionMatrix() * translationMatrix * rotationMatrix;
+    const Matrix4 finalMatrix = Camera::getFinalMatrix();
 
     const GLint projection = glGetUniformLocation(ShaderManager::getProgramId(), "projection");
     if (projection == -1)

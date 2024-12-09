@@ -38,6 +38,7 @@ public:
 
     // Methods
     void updateCameraPos(CameraDirection dir);
+    [[nodiscard]] static Matrix4 getFinalMatrix();
 
 private:
     explicit Camera(const Vector4& position);
@@ -85,7 +86,7 @@ private:
     float _cameraXRotation;
 
     /**
-    * The value representing the x-axis rotation of the camera. Its opposite value will be applied to the whole world
+    * The value representing the y-axis rotation of the camera. Its opposite value will be applied to the whole world
     * to simulate the camera rotation.
     */
     float _cameraYRotation;

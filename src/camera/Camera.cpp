@@ -160,6 +160,20 @@ void Camera::updateCameraPos(const CameraDirection dir)
     }
 }
 
+Matrix4 Camera::getFinalMatrix()
+{
+    const Matrix4 translationMatrix = Matrix4::createTranslationMatrix(
+        getInstance().getPosition().getX(),
+        getInstance().getPosition().getY(),
+        getInstance().getPosition().getZ()
+    );
+
+    const Matrix4 rotationMatrix = Matrix4::createRotationYMatrix(-getInstance().getYRotation()) *
+                                   Matrix4::createRotationXMatrix(-getInstance().getXRotation());
+
+    return getInstance().getProjectionMatrix() * translationMatrix * rotationMatrix;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Private Methods
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
