@@ -3,9 +3,9 @@
 layout (location = 0) in vec3 vertexPosition;
 layout (location = 1) in vec3 vertexColor;
 
-out vec3 fragmentColor;// Output to fragment shader
+layout (location = 0) out vec3 fragmentColor; // Output to geometry shader
 
 void main(void) {
     fragmentColor = vertexColor;
-    gl_Position = vec4(vertexPosition.x, vertexPosition.y, vertexPosition.z, 1);
+    gl_Position = vec4(vertexPosition, 1.0);
 }
