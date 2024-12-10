@@ -1,10 +1,7 @@
 #include "BufferManager.hpp"
 #include <algorithm>
 #include <Logger.hpp>
-#include <Vector4.hpp>
 #include <GL/glew.h>
-
-#include "MatrixStack.hpp"
 
 bool BufferManager::_initialized = false;
 
@@ -77,10 +74,6 @@ unsigned int BufferManager::add(const ManipulableBuffer bufferToManipulate, cons
     const unsigned int startIndex = buffer->size();
     buffer->insert(buffer->end(), data.begin(), data.end());
 
-    if (bufferToManipulate == TRIANGLES_VERTICES || bufferToManipulate == LINES_VERTICES)
-    {
-        _applyMatricesTransformations(buffer);
-    }
     return startIndex;
 }
 
@@ -108,17 +101,11 @@ unsigned int BufferManager::modify(const ManipulableBuffer bufferToManipulate,
         buffer->erase(buffer->begin() + startIndex, buffer->end());
         const unsigned int newStartIndex = buffer->size();
         buffer->insert(buffer->end(), data.begin(), data.end());
-        if (bufferToManipulate == TRIANGLES_VERTICES || bufferToManipulate == LINES_VERTICES)
-        {
-            _applyMatricesTransformations(buffer);
-        }
+
         return newStartIndex;
     }
     std::ranges::copy(data, buffer->begin() + startIndex);
-    if (bufferToManipulate == TRIANGLES_VERTICES || bufferToManipulate == LINES_VERTICES)
-    {
-        _applyMatricesTransformations(buffer);
-    }
+
     return startIndex;
 }
 
@@ -201,7 +188,7 @@ void BufferManager::drawLines()
     glDisableVertexAttribArray(1);
 }
 
-std::vector<float>* BufferManager::_getBuffer(ManipulableBuffer bufferToGet)
+std::vector<float>* BufferManager::_getBuffer(const ManipulableBuffer bufferToGet)
 {
     switch (bufferToGet)
     {
@@ -217,24 +204,5 @@ std::vector<float>* BufferManager::_getBuffer(ManipulableBuffer bufferToGet)
             //TODO: Throw ?
             Logger::error("BufferManager::add(): Invalid buffer type.");
             return nullptr;
-    }
-}
-
-void BufferManager::_applyMatricesTransformations(std::vector<float>* buffer)
-{
-    for (int i = 0; i < buffer->size(); i += 3)
-    {
-        const float x = (*buffer)[i + 0];
-        const float y = (*buffer)[i + 1];
-        const float z = (*buffer)[i + 2];
-        Vector4 vertex = Vector4(x, y, z, 1.0f);
-        const std::vector<Matrix4> matrices = MatrixStack::data();
-        for (const Matrix4& matrix: matrices)
-        {
-            vertex = matrix * vertex;
-        }
-        (*buffer)[i + 0] = vertex.getX();
-        (*buffer)[i + 1] = vertex.getY();
-        (*buffer)[i + 2] = vertex.getZ();
     }
 }
