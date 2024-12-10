@@ -1,6 +1,6 @@
 #ifndef BODYPART_DEFINES_HPP
 #define BODYPART_DEFINES_HPP
 
-#define BASE_UNIT 0.2f
+#define BASE_UNIT 1.0f
 
 #endif // BODYPART_DEFINES_HPP

@@ -31,7 +31,6 @@ set(MATHS_SOURCE_FILES
 # Contain all cpp files within src/utils
 set(BODY_PARTS_SOURCE_FILES
         src/body-parts/BodyPart.cpp
-        src/body-parts/Axis.cpp
 )
 
 # Contain all cpp files within src/managers
@@ -63,6 +62,7 @@ target_include_directories(${PROJECT_NAME}
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/exceptions
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/managers
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/body-parts
+        PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/defines
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/utils
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/maths/vectors
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/maths/matrices
