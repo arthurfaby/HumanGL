@@ -22,6 +22,7 @@ GLuint ShaderManager::init()
 {
     const GLuint vertexShader = _compileShader(VERTEX_SHADER_SOURCE_PATH, GL_VERTEX_SHADER);
     const GLuint fragmentShader = _compileShader(FRAGMENT_SHADER_SOURCE_PATH, GL_FRAGMENT_SHADER);
+    const GLuint geometryShader = _compileShader(GEOMETRY_SHADER_SOURCE_PATH, GL_GEOMETRY_SHADER);
 
     // Create a shader program
     const GLuint programId = glCreateProgram();
@@ -39,6 +40,10 @@ GLuint ShaderManager::init()
     if (fragmentShader != 0)
     {
         glAttachShader(programId, fragmentShader);
+    }
+    if (geometryShader != 0)
+    {
+        glAttachShader(programId, geometryShader);
     }
     glLinkProgram(programId);
 
@@ -58,9 +63,12 @@ GLuint ShaderManager::init()
     }
     glDetachShader(programId, vertexShader);
     glDetachShader(programId, fragmentShader);
+    glDetachShader(programId, geometryShader);
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+    glDeleteShader(geometryShader);
     glUseProgram(programId);
+    glUniform2f(glGetUniformLocation(programId, "screenSize"), (float)1000, (float)700);
     return programId;
 }
 

@@ -6,6 +6,7 @@
 
 #define VERTEX_SHADER_SOURCE_PATH "../src/shaders/vertexShader.vert"
 #define FRAGMENT_SHADER_SOURCE_PATH "../src/shaders/fragShader.frag"
+#define GEOMETRY_SHADER_SOURCE_PATH "../src/shaders/geometryShader.geom"
 
 class ShaderManager
 {
