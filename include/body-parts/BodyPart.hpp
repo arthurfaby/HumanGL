@@ -1,120 +1,163 @@
 #ifndef BODY_PART_HPP
 #define BODY_PART_HPP
 
-#include <Vector4.hpp>
+#include <stack>
 #include <vector>
+#include "BodyPartDefines.hpp"
+#include "Matrix4.hpp"
 
 class BodyPart
 {
 public:
-  // Constructor
-  BodyPart() = delete;
-  explicit BodyPart(const Vector4& position, const Vector4& offset);
-  BodyPart(const BodyPart& other) = delete;
+    // Constructors
+    BodyPart();
 
-  // Destructor
-  virtual ~BodyPart() = default;
+    // Getters
+    [[nodiscard]] float getDepth() const;
+    [[nodiscard]] float getHeight() const;
+    [[nodiscard]] float getWidth() const;
+    [[nodiscard]] Matrix4 getMatrixStack() const;
+    [[nodiscard]] Matrix4 getTransformationMatrix() const;
 
-  // Getters
-  [[nodiscard]] Vector4 getOffset() const;
-  [[nodiscard]] Vector4 getPosition() const;
-  [[nodiscard]] double getAngleX() const;
-  [[nodiscard]] double getAngleY() const;
-  [[nodiscard]] double getAngleZ() const;
-  [[nodiscard]] BodyPart* getParent() const;
-  [[nodiscard]] std::vector<BodyPart*> getChildren() const;
+    // Setters
+    BodyPart& setColor(short int red, short int green, short int blue);
+    BodyPart& setHeight(float height);
+    BodyPart& setDepth(float depth);
+    BodyPart& setWidth(float width);
+    BodyPart& setParent(BodyPart* parent);
+    BodyPart& setPivotPoint(const Vector4& pivotPoint);
 
-  // Setters
-  void setOffset(const Vector4& offset);
-  void setPosition(const Vector4& position);
-  void setAngleX(double angleX);
-  void setAngleY(double angleY);
-  void setAngleZ(double angleZ);
-  void setParent(BodyPart* parent);
+    // Methods
+    BodyPart& rotateX(float angle);
+    BodyPart& rotateY(float angle);
+    BodyPart& rotateZ(float angle);
+    BodyPart& translate(float x, float y, float z);
+    // BodyPart& scale(float x, float y, float z);
 
-  // Operator overloads
-  BodyPart& operator=(const BodyPart& other) = delete;
+    BodyPart& addChild(BodyPart* child);
+    void applyTransformation();
 
-  // Methods
-  void addChild(BodyPart* child);
-  void removeChild(BodyPart* child);
-  void updateVertices();
-
-protected:
-  /**
-    * The lines vertices of the body part.
+private:
+    /**
+    * The width of the body part.
     */
-  std::vector<float> _linesVertices;
+    float _width = LENGTH_BASE_UNIT;
 
-  /**
-    * The lines colors of the body part.
+    /**
+    * The height of the body part.
     */
-  std::vector<float> _linesColors;
+    float _height = LENGTH_BASE_UNIT;
 
-  /**
-    * The triangles vertices of the body part.
+    /**
+    * The depth of the body part.
     */
-  std::vector<float> _trianglesVertices;
+    float _depth = LENGTH_BASE_UNIT;
 
-  /**
-    * The triangles colors of the body part.
+    /**
+    * The red value of the body part's color.
     */
-  std::vector<float> _trianglesColors;
+    short int _red = 255;
 
-  /**
-    * The start index of the lines vertices buffer.
+    /**
+    * The green value of the body part's color.
     */
-  unsigned int _startLinesVerticesBufferStartIndex = 0;
+    short int _green = 255;
 
-  /**
-    * The start index of the lines colors buffer.
+    /**
+    * The blue value of the body part's color.
     */
-  unsigned int _startLinesColorBufferStartIndex = 0;
+    short int _blue = 255;
 
-  /**
-    * The start index of the triangles vertices buffer.
+    /**
+    * The sum of all rotation matrices that have been applied to the body part.
     */
-  unsigned int _startTrianglesVerticesBufferStartIndex = 0;
+    Matrix4 _rotationMatrix;
 
-  /**
-    * The start index of the triangles colors buffer.
+    /**
+    * The sum of all translation matrices that have been applied to the body part.
     */
-  unsigned int _startTrianglesColorBufferStartIndex = 0;
+    Matrix4 _translationMatrix;
 
-  /**
-    * The children of the body part.
+    /**
+    * The sum of all scaling matrices that have been applied to the body part.
     */
-  std::vector<BodyPart*> _children;
+    Matrix4 _scaleMatrix;
 
-  /**
+    /**
+    * A list of all the children of the body part.
+    */
+    std::vector<BodyPart*> _children;
+
+    /**
     * The parent of the body part.
     */
-  BodyPart* _parent = nullptr;
+    BodyPart* _parent = nullptr;
 
-  /**
-    * The offset of the body part compare to its parent.
+    /**
+    * The pivot point of the body part.
     */
-  Vector4 _offset;
+    Vector4 _pivotPoint;
 
-  /**
-    * The position of the body part.
+    /**
+    * The matrix stack of the body part.
     */
-  Vector4 _position;
+    std::stack<Matrix4> _matrixStack;
 
-  /**
-    * The x angle of the body part.
+    /**
+    * The buffer's index of lines vertices of the body part.
     */
-  double _angleX = 0;
+    unsigned int _linesVerticesBufferIndex;
 
-  /**
-    * The y angle of the body part.
+    /**
+    * The buffer's index of lines colors of the body part.
     */
-  double _angleY = 0;
+    unsigned int _linesColorsBufferIndex;
 
-  /**
-    * The z angle of the body part.
+    /**
+    * The buffer of lines vertices of the body part.
     */
-  double _angleZ = 0;
+    std::vector<float> _linesVerticesBuffer;
+
+    /**
+    * The buffer of lines colors of the body part.
+    */
+    std::vector<float> _linesColorsBuffer;
+
+    /**
+    * The buffer's index of triangles vertices of the body part.
+    */
+    unsigned int _trianglesVerticesBufferIndex;
+
+    /**
+    * The buffer's index of triangles colors of the body part.
+    */
+    unsigned int _trianglesColorsBufferIndex;
+
+    /**
+    * The buffer of triangles vertices of the body part.
+    */
+    std::vector<float> _trianglesVerticesBuffer;
+
+    /**
+    * The buffer of triangles colors of the body part.
+    */
+    std::vector<float> _trianglesColorsBuffer;
+
+    // Private getters
+    [[nodiscard]] std::vector<float> _getTrianglesVerticesBuffer() const;
+    [[nodiscard]] std::vector<float> _getTrianglesColorsBuffer() const;
+    [[nodiscard]] static std::vector<float> _getLinesVerticesBuffer();
+    [[nodiscard]] static std::vector<float> _getLinesColorsBuffer();
+
+    /**
+    * The number of faces each body part has.
+    */
+    static int _faceCount;
+
+    /**
+    * The number of vertices per face.
+    */
+    static int _verticesPerFace;
 };
 
 #endif //BODY_PART_HPP

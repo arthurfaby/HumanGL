@@ -68,7 +68,7 @@ GLuint ShaderManager::init()
     glDeleteShader(fragmentShader);
     glDeleteShader(geometryShader);
     glUseProgram(programId);
-    glUniform2f(glGetUniformLocation(programId, "screenSize"), (float)1000, (float)700);
+    glUniform2f(glGetUniformLocation(programId, "screenSize"), 1000.0f, 700.0f);
     return programId;
 }
 

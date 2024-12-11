@@ -1,28 +1,30 @@
-#include <BodyPart.hpp>
+#include "BodyPart.hpp"
+
 #include <BufferManager.hpp>
-#include <cmath>
-#include <Matrix4.hpp>
+#include <Logger.hpp>
+
+int BodyPart::_faceCount = 6;
+int BodyPart::_verticesPerFace = 6;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Constructors
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/**
- * Constructor.
- *
- * @param position The position of the body part
- * @param offset The offset of the body part
- */
-BodyPart::BodyPart(const Vector4& position, const Vector4& offset)
+BodyPart::BodyPart() : _rotationMatrix(Matrix4::identity()),
+                       _translationMatrix(Matrix4::identity()),
+                       _scaleMatrix(Matrix4::identity())
 {
-    _position = position;
-    _offset = offset;
+    _pivotPoint = Vector4(0.0f, 0.0f, 0.0f, 1.0f);
 
-    _startLinesVerticesBufferStartIndex = BufferManager::add(LINES_VERTICES, _linesVertices);
-    _startLinesColorBufferStartIndex = BufferManager::add(LINES_COLORS, _linesColors);
-    _startTrianglesVerticesBufferStartIndex = BufferManager::add(TRIANGLES_VERTICES, _trianglesVertices);
-    _startTrianglesColorBufferStartIndex = BufferManager::add(TRIANGLES_COLORS, _trianglesColors);
-    updateVertices();
+    _linesColorsBuffer = _getLinesColorsBuffer();
+    _linesVerticesBuffer = _getLinesVerticesBuffer();
+    _trianglesColorsBuffer = _getTrianglesColorsBuffer();
+    _trianglesVerticesBuffer = _getTrianglesVerticesBuffer();
+
+    _linesVerticesBufferIndex = BufferManager::add(LINES_VERTICES, _linesVerticesBuffer);
+    _linesColorsBufferIndex = BufferManager::add(LINES_COLORS, _linesColorsBuffer);
+    _trianglesVerticesBufferIndex = BufferManager::add(TRIANGLES_VERTICES, _trianglesVerticesBuffer);
+    _trianglesColorsBufferIndex = BufferManager::add(TRIANGLES_COLORS, _trianglesColorsBuffer);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -30,59 +32,57 @@ BodyPart::BodyPart(const Vector4& position, const Vector4& offset)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @return The offset of the body part
+ * @return The depth of the body part
  */
-[[nodiscard]] Vector4 BodyPart::getOffset() const
+[[nodiscard]] float BodyPart::getDepth() const
 {
-    return _offset;
+    return _depth;
 }
 
 /**
- * @return The position of the body part
+ * @return The height of the body part
  */
-[[nodiscard]] Vector4 BodyPart::getPosition() const
+[[nodiscard]] float BodyPart::getHeight() const
 {
-    return _position;
+    return _height;
 }
 
 /**
- * @return The angle on the X axis of the body part
+ * @return The width of the body part
  */
-[[nodiscard]] double BodyPart::getAngleX() const
+[[nodiscard]] float BodyPart::getWidth() const
 {
-    return _angleX;
+    return _width;
 }
 
 /**
- * @return The angle on the Y axis of the body part
+ * @return The matrix stack of the body part
  */
-[[nodiscard]] double BodyPart::getAngleY() const
+[[nodiscard]] Matrix4 BodyPart::getMatrixStack() const
 {
-    return _angleY;
+    return _matrixStack.top();
 }
 
 /**
- * @return The angle on the Z axis of the body part
+ * @return The transformation matrix of the body part
  */
-[[nodiscard]] double BodyPart::getAngleZ() const
+[[nodiscard]] Matrix4 BodyPart::getTransformationMatrix() const
 {
-    return _angleZ;
-}
+    // Translation to bring the object to the pivot point
+    const Matrix4 translationToPivot = Matrix4::createTranslationMatrix(-_pivotPoint.getX(),
+                                                                        -_pivotPoint.getY(),
+                                                                        -_pivotPoint.getZ());
 
-/**
- * @return The parent of the body part
- */
-[[nodiscard]] BodyPart* BodyPart::getParent() const
-{
-    return _parent;
-}
+    // Apply all transformation : translation, rotation, etc.
+    const Matrix4 combinedTransformation = _translationMatrix * _rotationMatrix;
 
-/**
- * @return The children of the body part
- */
-[[nodiscard]] std::vector<BodyPart*> BodyPart::getChildren() const
-{
-    return _children;
+    // Translation to bring back the object to its origin point
+    const Matrix4 translationBackFromPivot = Matrix4::createTranslationMatrix(
+        _pivotPoint.getX(),
+        _pivotPoint.getY(),
+        _pivotPoint.getZ());
+
+    return translationBackFromPivot * combinedTransformation * translationToPivot;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90,68 +90,85 @@ BodyPart::BodyPart(const Vector4& position, const Vector4& offset)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Set the offset of the body part.
+ * Set the color of the body part using RGB values.
  *
- * @param offset The new offset of the body part
+ * @param red   The new red value
+ * @param green The new green value
+ * @param blue  The new blue value
+ *
+ * @return itself
  */
-void BodyPart::setOffset(const Vector4& offset)
+BodyPart& BodyPart::setColor(const short int red, const short int green, const short int blue)
 {
-    _offset = offset;
-    updateVertices();
+    _red = red;
+    _green = green;
+    _blue = blue;
+    return *this;
 }
 
 /**
- * Set the position of the body part.
+ * Set the depth of the body part.
  *
- * @param position The new position of the body part.
+ * @param depth The new red value
+ *
+ * @return itself
  */
-void BodyPart::setPosition(const Vector4& position)
+BodyPart& BodyPart::setDepth(const float depth)
 {
-    _position = position;
-    updateVertices();
+    this->_depth = depth;
+    return *this;
 }
 
 /**
- * Set the angle on the X axis of the body part.
+ * Set the height of the body part.
  *
- * @param angleX The new angle on the X axis of the body part
+ * @param height The new red value
+ *
+ * @return itself
  */
-void BodyPart::setAngleX(const double angleX)
+BodyPart& BodyPart::setHeight(const float height)
 {
-    _angleX = fmod(angleX + std::numbers::pi, 2 * std::numbers::pi) - std::numbers::pi;
-    updateVertices();
+    this->_height = height;
+    return *this;
 }
 
 /**
- * Set the angle on the Y axis of the body part.
+ * Set the width of the body part.
  *
- * @param angleY The new angle on the Y axis of the body part
- */
-void BodyPart::setAngleY(const double angleY)
-{
-    _angleY = fmod(angleY + std::numbers::pi, 2 * std::numbers::pi) - std::numbers::pi;;
-    updateVertices();
-}
-
-/**
- * Set the angle on the Z axis of the body part.
+ * @param width The new red value
  *
- * @param angleZ The new angle on the Z axis of the body part
+ * @return itself
  */
-void BodyPart::setAngleZ(const double angleZ)
+BodyPart& BodyPart::setWidth(const float width)
 {
-    _angleZ = fmod(angleZ + std::numbers::pi, 2 * std::numbers::pi) - std::numbers::pi;;
-    updateVertices();
+    this->_width = width;
+    return *this;
 }
 
 /**
  * Set the parent of the body part.
  *
- * @param parent The new parent of the body part
+ * @param parent The new red value
+ *
+ * @return itself
  */
-void BodyPart::setParent(BodyPart* parent)
+BodyPart& BodyPart::setParent(BodyPart* parent)
 {
     _parent = parent;
+    return *this;
+}
+
+/**
+ * Set the pivot point of the body part.
+ *
+ * @param pivotPoint The new red value
+ *
+ * @return itself
+ */
+BodyPart& BodyPart::setPivotPoint(const Vector4& pivotPoint)
+{
+    _pivotPoint = pivotPoint;
+    return *this;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -159,173 +176,266 @@ void BodyPart::setParent(BodyPart* parent)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * Apply a rotation on the x-axis to the body part.
+ *
+ * @param angle The angle in radians to apply
+ *
+ * @return itself
+ */
+BodyPart& BodyPart::rotateX(const float angle)
+{
+    _rotationMatrix = _rotationMatrix * Matrix4::createRotationXMatrix(angle);
+    return *this;
+}
+
+/**
+ * Apply a rotation on the y-axis to the body part.
+ *
+ * @param angle The angle in radians to apply
+ *
+ * @return itself
+ */
+BodyPart& BodyPart::rotateY(const float angle)
+{
+    _rotationMatrix = _rotationMatrix * Matrix4::createRotationYMatrix(angle);
+    return *this;
+}
+
+/**
+ * Apply a rotation on the z-axis to the body part.
+ *
+ * @param angle The angle in radians to apply
+ *
+ * @return itself
+ */
+BodyPart& BodyPart::rotateZ(const float angle)
+{
+    _rotationMatrix = _rotationMatrix * Matrix4::createRotationZMatrix(angle);
+    return *this;
+}
+
+/**
+ * Apply a translation to the body part.
+ *
+ * @param x The x translation
+ * @param y The y translation
+ * @param z The z translation
+ *
+ * @return itself
+ */
+BodyPart& BodyPart::translate(const float x, const float y, const float z)
+{
+    if (_parent)
+    {
+        Logger::warning("Cannot translate an axis that has a parent.");
+        return *this;
+    }
+    _translationMatrix = _translationMatrix * Matrix4::createTranslationMatrix(x, y, z);
+    return *this;
+}
+
+// /**
+//  * Apply a scaling to the body part.
+//  *
+//  * @param x The x scale
+//  * @param y The y scale
+//  * @param z The z scale
+//  *
+//  * @return itself
+//  */
+// BodyPart& BodyPart::scale(const float x, const float y, const float z)
+// {
+//     _scaleMatrix = _scaleMatrix * Matrix4::createScalingMatrix(x, y, z);
+//     return *this;
+// }
+
+/**
  * Add a child to the body part.
  *
  * @param child The child to add
+ *
+ * @return itself
  */
-void BodyPart::addChild(BodyPart* child)
+BodyPart& BodyPart::addChild(BodyPart* child)
 {
     _children.push_back(child);
     child->setParent(this);
-    updateVertices();
+    return *this;
 }
 
 /**
- * Remove a child from the body part.
- *
- * @param child The child to remove
+ * Apply all transformation to the body part.
  */
-void BodyPart::removeChild(BodyPart* child)
+void BodyPart::applyTransformation()
 {
-    std::erase(_children, child);
-    child->setParent(nullptr);
-    updateVertices();
+    // If node does not have a parent, it is the target axis so it must not go through any additional transformation
+    const Matrix4 parentMatrix = this->_parent ? this->_parent->getMatrixStack() : Matrix4::identity();
+    const Matrix4 ownMatrix = parentMatrix * getTransformationMatrix();
+
+    _matrixStack.push(ownMatrix);
+
+    for (BodyPart* child: _children)
+    {
+        child->applyTransformation();
+    }
+
+    _linesVerticesBuffer = _getLinesVerticesBuffer();
+
+    for (int i = 0; i < _linesVerticesBuffer.size(); i += 3)
+    {
+        const float x = _linesVerticesBuffer[i + 0];
+        const float y = _linesVerticesBuffer[i + 1];
+        const float z = _linesVerticesBuffer[i + 2];
+        Vector4 vertex = Vector4(x, y, z, 1.0f);
+        vertex = _matrixStack.top() * vertex;
+        _linesVerticesBuffer[i + 0] = vertex.getX();
+        _linesVerticesBuffer[i + 1] = vertex.getY();
+        _linesVerticesBuffer[i + 2] = vertex.getZ();
+    }
+
+    // Draw the cube
+    _trianglesVerticesBuffer = _getTrianglesVerticesBuffer();
+    for (int i = 0; i < _trianglesVerticesBuffer.size(); i += 3)
+    {
+        const float x = _trianglesVerticesBuffer[i + 0];
+        const float y = _trianglesVerticesBuffer[i + 1];
+        const float z = _trianglesVerticesBuffer[i + 2];
+        Vector4 vertex = Vector4(x, y, z, 1.0f);
+        vertex = _matrixStack.top() * vertex;
+        // vertex = _scaleMatrix * vertex;
+        _trianglesVerticesBuffer[i + 0] = vertex.getX();
+        _trianglesVerticesBuffer[i + 1] = vertex.getY();
+        _trianglesVerticesBuffer[i + 2] = vertex.getZ();
+    }
+    _trianglesColorsBuffer = _getTrianglesColorsBuffer();
+
+    _trianglesVerticesBufferIndex = BufferManager::modify(TRIANGLES_VERTICES,
+                                                          _trianglesVerticesBufferIndex,
+                                                          _trianglesVerticesBuffer);
+    _trianglesColorsBufferIndex = BufferManager::modify(TRIANGLES_COLORS,
+                                                        _trianglesColorsBufferIndex,
+                                                        _trianglesColorsBuffer);
+    _linesVerticesBufferIndex = BufferManager::modify(LINES_VERTICES,
+                                                      _linesVerticesBufferIndex,
+                                                      _linesVerticesBuffer);
+    _linesColorsBufferIndex = BufferManager::modify(LINES_COLORS, _linesColorsBufferIndex, _linesColorsBuffer);
+
+    _matrixStack.pop();
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Private getters
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /**
- * Update the vertices of the body part.
+ * @return The buffer containing all the triangles vertices
  */
-void BodyPart::updateVertices()
+std::vector<float> BodyPart::_getTrianglesVerticesBuffer() const
 {
-    constexpr float cubeSize = 0.15f;
-    const Matrix4 rotationMatrix = Matrix4::createRotationMatrix(_angleX, _angleY, _angleZ);
-
-    Vector4 frontTopLeft = Vector4(-cubeSize, cubeSize, cubeSize);
-    Vector4 frontTopRight = Vector4(cubeSize, cubeSize, cubeSize);
-    Vector4 frontBottomLeft = Vector4(-cubeSize, -cubeSize, cubeSize);
-    Vector4 frontBottomRight = Vector4(cubeSize, -cubeSize, cubeSize);
-
-    Vector4 backTopLeft = Vector4(-cubeSize, cubeSize, -cubeSize);
-    Vector4 backTopRight = Vector4(cubeSize, cubeSize, -cubeSize);
-    Vector4 backBottomLeft = Vector4(-cubeSize, -cubeSize, -cubeSize);
-    Vector4 backBottomRight = Vector4(cubeSize, -cubeSize, -cubeSize);
-
-    frontTopLeft = rotationMatrix * frontTopLeft + _position;
-    frontTopRight = rotationMatrix * frontTopRight + _position;
-    frontBottomLeft = rotationMatrix * frontBottomLeft + _position;
-    frontBottomRight = rotationMatrix * frontBottomRight + _position;
-
-    backTopLeft = rotationMatrix * backTopLeft + _position;
-    backTopRight = rotationMatrix * backTopRight + _position;
-    backBottomLeft = rotationMatrix * backBottomLeft + _position;
-    backBottomRight = rotationMatrix * backBottomRight + _position;
+    float halfWidth = _width / 2.0f;
+    float halfHeight = _height / 2.0f;
+    float halfDepth = _depth / 2.0f;
 
     //@formatter:off
-    _trianglesVertices = {
-        // Front face
-        frontTopLeft.getX(), frontTopLeft.getY(), frontTopLeft.getZ(),
-        frontBottomLeft.getX(), frontBottomLeft.getY(), frontBottomLeft.getZ(),
-        frontBottomRight.getX(), frontBottomRight.getY(), frontBottomRight.getZ(),
-        frontTopLeft.getX(), frontTopLeft.getY(), frontTopLeft.getZ(),
-        frontTopRight.getX(), frontTopRight.getY(), frontTopRight.getZ(),
-        frontBottomRight.getX(), frontBottomRight.getY(), frontBottomRight.getZ(),
+    return {
+        // Face avant
+        -halfWidth, -halfHeight, halfDepth,
+         halfWidth, -halfHeight, halfDepth,
+         halfWidth,  halfHeight, halfDepth,
+        -halfWidth, -halfHeight, halfDepth,
+         halfWidth,  halfHeight, halfDepth,
+        -halfWidth,  halfHeight, halfDepth,
 
-        // Back face
-        backTopLeft.getX(), backTopLeft.getY(), backTopLeft.getZ(),
-        backBottomLeft.getX(), backBottomLeft.getY(), backBottomLeft.getZ(),
-        backBottomRight.getX(), backBottomRight.getY(), backBottomRight.getZ(),
-        backTopLeft.getX(), backTopLeft.getY(), backTopLeft.getZ(),
-        backTopRight.getX(), backTopRight.getY(), backTopRight.getZ(),
-        backBottomRight.getX(), backBottomRight.getY(), backBottomRight.getZ(),
+        // Face arrière
+        -halfWidth, -halfHeight, -halfDepth,
+        -halfWidth,  halfHeight, -halfDepth,
+         halfWidth,  halfHeight, -halfDepth,
+        -halfWidth, -halfHeight, -halfDepth,
+         halfWidth,  halfHeight, -halfDepth,
+         halfWidth, -halfHeight, -halfDepth,
 
-        // Left face
-        backTopLeft.getX(), backTopLeft.getY(), backTopLeft.getZ(),
-        backBottomLeft.getX(), backBottomLeft.getY(), backBottomLeft.getZ(),
-        frontBottomLeft.getX(), frontBottomLeft.getY(), frontBottomLeft.getZ(),
-        backTopLeft.getX(), backTopLeft.getY(), backTopLeft.getZ(),
-        frontTopLeft.getX(), frontTopLeft.getY(), frontTopLeft.getZ(),
-        frontBottomLeft.getX(), frontBottomLeft.getY(), frontBottomLeft.getZ(),
+        // Face gauche
+        -halfWidth, -halfHeight, -halfDepth,
+        -halfWidth, -halfHeight,  halfDepth,
+        -halfWidth,  halfHeight,  halfDepth,
+        -halfWidth, -halfHeight, -halfDepth,
+        -halfWidth,  halfHeight,  halfDepth,
+        -halfWidth,  halfHeight, -halfDepth,
 
-        // Right face
-        frontTopRight.getX(), frontTopRight.getY(), frontTopRight.getZ(),
-        frontBottomRight.getX(), frontBottomRight.getY(), frontBottomRight.getZ(),
-        backBottomRight.getX(), backBottomRight.getY(), backBottomRight.getZ(),
-        frontTopRight.getX(), frontTopRight.getY(), frontTopRight.getZ(),
-        backTopRight.getX(), backTopRight.getY(), backTopRight.getZ(),
-        backBottomRight.getX(), backBottomRight.getY(), backBottomRight.getZ(),
+        // Face droite
+         halfWidth, -halfHeight, -halfDepth,
+         halfWidth,  halfHeight, -halfDepth,
+         halfWidth,  halfHeight,  halfDepth,
+         halfWidth, -halfHeight, -halfDepth,
+         halfWidth,  halfHeight,  halfDepth,
+         halfWidth, -halfHeight,  halfDepth,
 
-        // Top face
-        frontTopLeft.getX(), frontTopLeft.getY(), frontTopLeft.getZ(),
-        backTopLeft.getX(), backTopLeft.getY(), backTopLeft.getZ(),
-        backTopRight.getX(), backTopRight.getY(), backTopRight.getZ(),
-        frontTopLeft.getX(), frontTopLeft.getY(), frontTopLeft.getZ(),
-        frontTopRight.getX(), frontTopRight.getY(), frontTopRight.getZ(),
-        backTopRight.getX(), backTopRight.getY(), backTopRight.getZ(),
+        // Face supérieure
+        -halfWidth,  halfHeight, -halfDepth,
+        -halfWidth,  halfHeight,  halfDepth,
+         halfWidth,  halfHeight,  halfDepth,
+        -halfWidth,  halfHeight, -halfDepth,
+         halfWidth,  halfHeight,  halfDepth,
+         halfWidth,  halfHeight, -halfDepth,
 
-        // Bottom face
-        frontBottomLeft.getX(), frontBottomLeft.getY(), frontBottomLeft.getZ(),
-        backBottomLeft.getX(), backBottomLeft.getY(), backBottomLeft.getZ(),
-        backBottomRight.getX(), backBottomRight.getY(), backBottomRight.getZ(),
-        frontBottomLeft.getX(), frontBottomLeft.getY(), frontBottomLeft.getZ(),
-        frontBottomRight.getX(), frontBottomRight.getY(), frontBottomRight.getZ(),
-        backBottomRight.getX(), backBottomRight.getY(), backBottomRight.getZ()
+        // Face inférieure
+        -halfWidth, -halfHeight, -halfDepth,
+         halfWidth, -halfHeight, -halfDepth,
+         halfWidth, -halfHeight,  halfDepth,
+        -halfWidth, -halfHeight, -halfDepth,
+         halfWidth, -halfHeight,  halfDepth,
+        -halfWidth, -halfHeight,  halfDepth
     };
-
-    _trianglesColors = {
-        // Front face
-        1.0f, 0.2f, 0.2f,
-        1.0f, 0.2f, 0.2f,
-        0.9f, 0.2f, 0.2f,
-        1.0f, 0.2f, 0.2f,
-        0.9f, 0.2f, 0.2f,
-        0.9f, 0.2f, 0.2f,
-
-        // Back face
-        0.2f, 1.0f, 0.2f,
-        0.2f, 1.0f, 0.2f,
-        0.2f, 0.9f, 0.2f,
-        0.2f, 1.0f, 0.2f,
-        0.2f, 0.9f, 0.2f,
-        0.2f, 0.9f, 0.2f,
-
-        // Left face
-        0.2f, 0.2f, 1.0f,
-        0.2f, 0.2f, 1.0f,
-        0.2f, 0.2f, 0.9f,
-        0.2f, 0.2f, 1.0f,
-        0.2f, 0.2f, 0.9f,
-        0.2f, 0.2f, 0.9f,
-
-        // Right face
-        1.0f, 1.0f, 0.2f,
-        1.0f, 1.0f, 0.2f,
-        0.9f, 0.9f, 0.2f,
-        1.0f, 1.0f, 0.2f,
-        0.9f, 0.9f, 0.2f,
-        0.9f, 0.9f, 0.2f,
-
-        // Top face
-        1.0f, 0.2f, 1.0f,
-        1.0f, 0.2f, 1.0f,
-        0.9f, 0.2f, 0.9f,
-        1.0f, 0.2f, 1.0f,
-        0.9f, 0.2f, 0.9f,
-        0.9f, 0.2f, 0.9f,
-
-        // Bottom face
-        0.2f, 1.0f, 1.0f,
-        0.2f, 1.0f, 1.0f,
-        0.2f, 0.9f, 0.9f,
-        0.2f, 1.0f, 1.0f,
-        0.2f, 0.9f, 0.9f,
-        0.2f, 0.9f, 0.9f
-    };
-
     //@formatter:on
+}
 
-    _startTrianglesVerticesBufferStartIndex = BufferManager::modify(TRIANGLES_VERTICES,
-                                                                    _startTrianglesVerticesBufferStartIndex,
-                                                                    _trianglesVertices);
-    _startTrianglesColorBufferStartIndex = BufferManager::modify(TRIANGLES_COLORS,
-                                                                 _startTrianglesColorBufferStartIndex,
-                                                                 _trianglesColors);
-    for (const auto& child: _children)
+/**
+ * @return The buffer containing all the triangles colors
+ */
+std::vector<float> BodyPart::_getTrianglesColorsBuffer() const
+{
+    const auto nbLoops = _faceCount * _verticesPerFace;
+
+    std::vector<float> colors;
+    for (int i = 0; i < nbLoops; i++)
     {
-        child->setAngleX(getAngleX());
-        child->setAngleY(getAngleY());
-        child->setAngleZ(getAngleZ());
-        Vector4 childLocalPosition = child->getOffset();
-        Vector4 newChildPosition = rotationMatrix * childLocalPosition + _position;
-        child->setPosition(newChildPosition);
+        colors.push_back(static_cast<float>(_red) / 255.0f);
+        colors.push_back(static_cast<float>(_green) / 255.0f);
+        colors.push_back(static_cast<float>(_blue) / 255.0f);
     }
+    return colors;
+}
+
+/**
+ * @return The buffer containing all the lines vertices
+ */
+std::vector<float> BodyPart::_getLinesVerticesBuffer()
+{
+    //@formatter:off
+    return {
+        0.0f, 0.0f, 0.0f,
+        0.5f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f,
+        0.0f, 0.5f, 0.0f,
+        0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.5f
+    };
+    //@formatter:on
+}
+
+/**
+ * @return The buffer containing all the lines colors
+ */
+std::vector<float> BodyPart::_getLinesColorsBuffer()
+{
+    //@formatter:off
+    return {
+        1.0f, 0.0f, 0.0f,
+        1.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, 1.0f
+    };
+    //@formatter:on
 }
