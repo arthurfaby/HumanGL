@@ -10,7 +10,7 @@
 /**
  * Default constructor.
  */
-Vector4::Vector4(): Vector4(0.0f, 0.0f, 0.0f)
+Vector4::Vector4(): Vector4(0.0f, 0.0f, 0.0f, 1.0f)
 {
 }
 
@@ -22,7 +22,7 @@ Vector4::Vector4(): Vector4(0.0f, 0.0f, 0.0f)
  * @param z The z component of the vector
  * @param w The w component of the vector (default to 1.0f)
  */
-Vector4::Vector4(const float x, const float y, const float z, const float w /*= 1.0f*/)
+Vector4::Vector4(const float x, const float y, const float z, const float w)
 {
     _data[0] = x;
     _data[1] = y;
@@ -513,6 +513,25 @@ std::ostream& operator<<(std::ostream& os, const Vector4& vector)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * Calculate the cross product of the vector with another vector.
+ *
+ * @param other The other vector
+ *
+ * @return The cross product of the two vectors
+ */
+Vector4 Vector4::cross(const Vector4& other) const
+{
+    const auto a = getX();
+    const auto b = getY();
+    const auto c = getZ();
+    const auto d = other.getX();
+    const auto e = other.getY();
+    const auto f = other.getZ();
+
+    return Vector4(b * f - c * e, c * d - a * f, a * e - b * d);
+}
+
+/**
  * Check if the vector is normalized (has a magnitude of 1) with a precision of 1.e-6.
  *
  * @return true if the vector is normalized, false otherwise
@@ -529,7 +548,7 @@ std::ostream& operator<<(std::ostream& os, const Vector4& vector)
  */
 [[nodiscard]] float Vector4::magnitude() const
 {
-    return sqrtf(powf(_data[0], 2) + powf(_data[1], 2) + powf(_data[2], 2) + powf(_data[3], 2));
+    return sqrtf(powf(_data[0], 2) + powf(_data[1], 2) + powf(_data[2], 2));
 }
 
 /**

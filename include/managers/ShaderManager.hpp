@@ -18,6 +18,9 @@ public:
     // Destructor
     ~ShaderManager() = delete;
 
+    // Getters
+    static GLuint getProgramId();
+
     // Operator overloads
     ShaderManager& operator=(const ShaderManager&) = delete;
 
@@ -25,6 +28,11 @@ public:
     static GLuint init();
 
 private:
+    /**
+    * The program object to which shader objects are attached.
+    */
+    static GLuint _programId;
+
     // Private methods
     static GLuint _compileShader(const std::string& fileName, GLenum shaderId);
     static const char* _loadShader(const std::string& fileName);
