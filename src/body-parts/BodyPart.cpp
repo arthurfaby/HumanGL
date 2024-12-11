@@ -98,7 +98,7 @@ BodyPart::BodyPart() : _rotationMatrix(Matrix4::identity()),
  *
  * @return itself
  */
-BodyPart& BodyPart::setColor(const short int red, const short int green, const short int blue)
+BodyPart& BodyPart::setColor(const float red, const float green, const float blue)
 {
     _red = red;
     _green = green;
@@ -109,7 +109,7 @@ BodyPart& BodyPart::setColor(const short int red, const short int green, const s
 /**
  * Set the depth of the body part.
  *
- * @param depth The new red value
+ * @param depth The new depth value
  *
  * @return itself
  */
@@ -122,7 +122,7 @@ BodyPart& BodyPart::setDepth(const float depth)
 /**
  * Set the height of the body part.
  *
- * @param height The new red value
+ * @param height The new height value
  *
  * @return itself
  */
@@ -135,7 +135,7 @@ BodyPart& BodyPart::setHeight(const float height)
 /**
  * Set the width of the body part.
  *
- * @param width The new red value
+ * @param width The new width value
  *
  * @return itself
  */
@@ -148,7 +148,7 @@ BodyPart& BodyPart::setWidth(const float width)
 /**
  * Set the parent of the body part.
  *
- * @param parent The new red value
+ * @param parent The new parent value
  *
  * @return itself
  */
@@ -161,7 +161,7 @@ BodyPart& BodyPart::setParent(BodyPart* parent)
 /**
  * Set the pivot point of the body part.
  *
- * @param pivotPoint The new red value
+ * @param pivotPoint The new pivot point value
  *
  * @return itself
  */
@@ -399,9 +399,9 @@ std::vector<float> BodyPart::_getTrianglesColorsBuffer() const
     std::vector<float> colors;
     for (int i = 0; i < nbLoops; i++)
     {
-        colors.push_back(static_cast<float>(_red) / 255.0f);
-        colors.push_back(static_cast<float>(_green) / 255.0f);
-        colors.push_back(static_cast<float>(_blue) / 255.0f);
+        colors.push_back(_red / 255.0f);
+        colors.push_back(_green / 255.0f);
+        colors.push_back(_blue / 255.0f);
     }
     return colors;
 }

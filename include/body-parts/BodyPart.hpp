@@ -21,7 +21,7 @@ public:
     [[nodiscard]] Matrix4 getTransformationMatrix() const;
 
     // Setters
-    BodyPart& setColor(short int red, short int green, short int blue);
+    BodyPart& setColor(float red, float green, float blue);
     BodyPart& setHeight(float height);
     BodyPart& setDepth(float depth);
     BodyPart& setWidth(float width);
@@ -57,17 +57,17 @@ private:
     /**
     * The red value of the body part's color.
     */
-    short int _red = 255;
+    float _red = 255;
 
     /**
     * The green value of the body part's color.
     */
-    short int _green = 255;
+    float _green = 255;
 
     /**
     * The blue value of the body part's color.
     */
-    short int _blue = 255;
+    float _blue = 255;
 
     /**
     * The sum of all rotation matrices that have been applied to the body part.
