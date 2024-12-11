@@ -31,52 +31,62 @@ void handleBodyPartKeys(GLFWwindow* window)
     {
         return;
     }
-    if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+
+    // Rotate the target body part on the positive x-axis
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
     {
-        speed = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? -ROTATION_SPEED : ROTATION_SPEED;
-        targetBodyPart->rotateX(speed);
+        targetBodyPart->rotateX(ROTATION_SPEED);
     }
-    if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS)
+    // Rotate the target body part on the negative x-axis
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
     {
-        speed = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? -ROTATION_SPEED : ROTATION_SPEED;
-        targetBodyPart->rotateY(speed);
+        targetBodyPart->rotateX(-ROTATION_SPEED);
     }
+    // Rotate the target body part on the positive y-axis
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+    {
+        targetBodyPart->rotateY(-ROTATION_SPEED);
+    }
+    // Rotate the target body part on the negative y-axis
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+    {
+        targetBodyPart->rotateY(ROTATION_SPEED);
+    }
+    // Rotate the target body part on the z-axis
     if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
     {
         speed = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? -ROTATION_SPEED : ROTATION_SPEED;
         targetBodyPart->rotateZ(speed);
     }
+    // Move the camera forward
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
-        targetBodyPart->translate(0.0f, TRANSLATION_SPEED, 0.0f);
+        Camera::getInstance().updateCameraPos(FORWARD);
     }
+    // Move the camera backward
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
     {
-        targetBodyPart->translate(0.0f, -TRANSLATION_SPEED, 0.0f);
+        Camera::getInstance().updateCameraPos(BACKWARD);
     }
+    // Move the camera to the left
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
     {
-        targetBodyPart->translate(-TRANSLATION_SPEED, 0.0f, 0.0f);
+        Camera::getInstance().updateCameraPos(LEFT);
     }
+    // Move the camera to the right
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     {
-        targetBodyPart->translate(TRANSLATION_SPEED, 0.0f, 0.0f);
+        Camera::getInstance().updateCameraPos(RIGHT);
     }
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+    // Move the camera downward
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
     {
-        root->rotateY(-0.01f);
+        Camera::getInstance().updateCameraPos(DOWN);
     }
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+    // Move the camera upward
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
     {
-        root->rotateY(0.01f);
-    }
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-    {
-        root->rotateX(0.01f);
-    }
-    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-    {
-        root->rotateX(-0.01f);
+        Camera::getInstance().updateCameraPos(UP);
     }
 }
 
@@ -92,7 +102,6 @@ void render(GLFWwindow* window)
 {
     handleBodyPartKeys(window);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    root->rotateY(ROTATION_SPEED / 10);
 
     root->applyTransformation();
 
@@ -276,62 +285,6 @@ int main(const int argc, char** argv)
         // Limit the frame rate to FPS_LIMIT
         if (now - lastRenderTime >= 1.0 / FPS_LIMIT)
         {
-            // Move the camera forward
-            if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-            {
-                Camera::getInstance().updateCameraPos(FORWARD);
-            }
-
-            // Move the camera backward
-            if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-            {
-                Camera::getInstance().updateCameraPos(BACKWARD);
-            }
-
-            // Move the camera to the right
-            if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-            {
-                Camera::getInstance().updateCameraPos(RIGHT);
-            }
-
-            // Move the camera to the left
-            if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-            {
-                Camera::getInstance().updateCameraPos(LEFT);
-            }
-
-            // Move the camera upward
-            if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-            {
-                Camera::getInstance().updateCameraPos(UP);
-            }
-
-            // Move the camera downward
-            if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-            {
-                Camera::getInstance().updateCameraPos(DOWN);
-            }
-
-            if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-            {
-                Camera::getInstance().setXRotation(UP);
-            }
-
-            if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-            {
-                Camera::getInstance().setXRotation(DOWN);
-            }
-
-            if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-            {
-                Camera::getInstance().setYRotation(RIGHT);
-            }
-
-            if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-            {
-                Camera::getInstance().setYRotation(LEFT);
-            }
-
             render(window);
             frameCount++;
             lastRenderTime = now;

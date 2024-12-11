@@ -1,11 +1,9 @@
 #version 450 core
 
-//layout (location = 0) in vec3 fragColor; // Couleur du geometry shader
-//layout (location = 0) out vec4 finalColor; // Couleur finale
-in vec3 fragmentColor;  // Vertex shader output
+in vec3 fragColor;      // Color from the geometry shader
 
 out vec3 finalColor;    // Final color of the fragment
 
 void main() {
-    finalColor = vec3(fragmentColor.r, fragmentColor.g, fragmentColor.b);
+    finalColor = vec3(fragColor.r, fragColor.g, fragColor.b);
 }

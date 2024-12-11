@@ -14,4 +14,6 @@
 
 #define LENGTH_BASE_UNIT 0.3f
 
+#define ROTATION_SPEED 0.1f    // Rotation speed of the body parts
+
 #endif // BODYPART_DEFINES_HPP

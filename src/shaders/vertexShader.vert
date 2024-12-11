@@ -3,9 +3,7 @@
 layout (location = 0) in vec3 vertexPosition;
 layout (location = 1) in vec3 vertexColor;
 
-// layout (location = 0) out vec3 fragmentColor; // Output to geometry shader
-
-out vec3 fragmentColor;     // Output to fragment shader
+out vec3 fragmentColor;     // Output to geometry shader
 
 uniform mat4 projection;    // Projection matrix
 

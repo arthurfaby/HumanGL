@@ -29,12 +29,6 @@ public:
     [[nodiscard]] static Camera& getInstance();
     [[nodiscard]] const Vector4& getPosition() const;
     [[nodiscard]] const Matrix4& getProjectionMatrix() const;
-    [[nodiscard]] float getXRotation() const;
-    [[nodiscard]] float getYRotation() const;
-
-    // Setters
-    void setXRotation(CameraDirection dir);
-    void setYRotation(CameraDirection dir);
 
     // Methods
     void updateCameraPos(CameraDirection dir);
@@ -78,18 +72,6 @@ private:
     * screen.
     */
     Matrix4 _projectionMatrix;
-
-    /**
-    * The value representing the x-axis rotation of the camera. Its opposite value will be applied to the whole world
-    * to simulate the camera rotation.
-    */
-    float _cameraXRotation;
-
-    /**
-    * The value representing the y-axis rotation of the camera. Its opposite value will be applied to the whole world
-    * to simulate the camera rotation.
-    */
-    float _cameraYRotation;
 
     /**
     * The x-axis rotation.

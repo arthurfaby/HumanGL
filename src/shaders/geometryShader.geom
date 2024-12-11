@@ -3,8 +3,8 @@
 layout(triangles) in;
 layout(triangle_strip, max_vertices = 12) out;
 
-layout (location = 0) in vec3 fragmentColor[];
-layout (location = 0) out vec3 fragColor;
+in vec3 fragmentColor[];
+out vec3 fragColor;
 
 uniform vec2 screenSize; // Taille de l’écran en pixels
 const float borderWidth = 1.0; // Largeur de la bordure en pixels
