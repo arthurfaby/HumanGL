@@ -73,6 +73,7 @@ unsigned int BufferManager::add(const ManipulableBuffer bufferToManipulate, cons
     }
     const unsigned int startIndex = buffer->size();
     buffer->insert(buffer->end(), data.begin(), data.end());
+
     return startIndex;
 }
 
@@ -100,9 +101,11 @@ unsigned int BufferManager::modify(const ManipulableBuffer bufferToManipulate,
         buffer->erase(buffer->begin() + startIndex, buffer->end());
         const unsigned int newStartIndex = buffer->size();
         buffer->insert(buffer->end(), data.begin(), data.end());
+
         return newStartIndex;
     }
     std::ranges::copy(data, buffer->begin() + startIndex);
+
     return startIndex;
 }
 
@@ -185,7 +188,7 @@ void BufferManager::drawLines()
     glDisableVertexAttribArray(1);
 }
 
-std::vector<float>* BufferManager::_getBuffer(ManipulableBuffer bufferToGet)
+std::vector<float>* BufferManager::_getBuffer(const ManipulableBuffer bufferToGet)
 {
     switch (bufferToGet)
     {

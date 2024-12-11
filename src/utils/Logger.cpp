@@ -1,5 +1,6 @@
 #include "Logger.hpp"
 #include <cstdarg>
+#include <iomanip>
 
 std::mutex Logger::_logMutex;
 bool Logger::_isDebug = false;
@@ -81,10 +82,21 @@ std::ostream& Logger::getOutput(const LogLevel level)
 */
 std::string Logger::currentTime()
 {
-    const std::time_t now = std::time(nullptr);
-    char buf[80];
-    std::strftime(buf, sizeof(buf), "%H:%M:%S", std::localtime(&now));
-    return {buf};
+    // Get the current system time
+    const auto now = std::chrono::system_clock::now();
+
+    // Convert to time_t for breaking into hh:mm:ss
+    const auto now_time_t = std::chrono::system_clock::to_time_t(now);
+    const auto local_time = *std::localtime(&now_time_t);
+
+    // Extract milliseconds
+    const auto milliseconds = duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
+
+    // Format the time
+    std::ostringstream oss;
+    oss << std::put_time(&local_time, "%H:%M:%S") << ":"
+              << std::setfill('0') << std::setw(3) << milliseconds.count();
+    return oss.str();
 }
 
 /**

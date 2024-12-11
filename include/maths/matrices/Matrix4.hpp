@@ -33,6 +33,7 @@ public:
     static Matrix4 createRotationZMatrix(double angle);
     static Matrix4 createScalingMatrix(float sx, float sy, float sz);
     static Matrix4 createTranslationMatrix(float tx, float ty, float tz);
+    static Matrix4 identity();
     [[nodiscard]] std::string toString() const;
 
 private:

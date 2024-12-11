@@ -43,7 +43,7 @@ Matrix4::Matrix4(const std::array<float, 16>& list)
  *
  * @return The row of the matrix at the index
  */
-Vector4 Matrix4::getRow(const unsigned int index) const
+[[nodiscard]] Vector4 Matrix4::getRow(const unsigned int index) const
 {
     if (index > 3)
     {
@@ -61,7 +61,7 @@ Vector4 Matrix4::getRow(const unsigned int index) const
  *
  * @return The column of the matrix at the index
  */
-Vector4 Matrix4::getColumn(const unsigned int index) const
+[[nodiscard]] Vector4 Matrix4::getColumn(const unsigned int index) const
 {
     if (index > 3)
     {
@@ -318,6 +318,27 @@ Matrix4 Matrix4::createTranslationMatrix(const float tx, const float ty, const f
         1, 0, 0, tx,
         0, 1, 0, ty,
         0, 0, 1, tz,
+        0, 0, 0, 1,
+    });
+    //@formatter:on
+}
+
+/**
+ * Create an identity matrix such as :<br>
+ *  [1, 0, 0, 0]<br>
+ *  [0, 1, 0, 0]<br>
+ *  [0, 0, 1, 0]<br>
+ *  [0, 0, 0, 1]<br>
+ *
+ * @return The created identity matrix
+ */
+Matrix4 Matrix4::identity()
+{
+    //@formatter:off
+    return Matrix4({
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
         0, 0, 0, 1,
     });
     //@formatter:on

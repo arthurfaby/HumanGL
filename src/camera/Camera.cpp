@@ -23,8 +23,6 @@ Camera::Camera(const Vector4& position): _cameraPosition(position),
                                              0, 0, 1, 0,
                                          })),
                                          // @formatter:on
-                                         _cameraXRotation(0.0f),
-                                         _cameraYRotation(0.0f),
                                          _pitch(0.0f),
                                          _speed(0.015f),
                                          _yaw(-90.0f)
@@ -64,66 +62,6 @@ const Matrix4& Camera::getProjectionMatrix() const
     return _projectionMatrix;
 }
 
-/**
- * @return The x rotation value of the camera
- */
-float Camera::getXRotation() const
-{
-    return _cameraXRotation;
-}
-
-/**
- * @return The y rotation value of the camera
- */
-float Camera::getYRotation() const
-{
-    return _cameraYRotation;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Setters
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- * Modify x rotation value of the camera depending on the provided direction.
- *
- * @param dir The direction towards which the camera is going
- */
-void Camera::setXRotation(const CameraDirection dir)
-{
-    switch (dir)
-    {
-        case UP:
-            _cameraXRotation -= _speed;
-            break;
-        case DOWN:
-            _cameraXRotation += _speed;
-            break;
-        default:
-            break;
-    }
-}
-
-/**
- * Modify y rotation value of the camera depending on the provided direction.
- *
- * @param dir The direction towards which the camera is going
- */
-void Camera::setYRotation(const CameraDirection dir)
-{
-    switch (dir)
-    {
-        case LEFT:
-            _cameraYRotation -= _speed;
-            break;
-        case RIGHT:
-            _cameraYRotation += _speed;
-            break;
-        default:
-            break;
-    }
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Public Methods
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -144,10 +82,10 @@ void Camera::updateCameraPos(const CameraDirection dir)
             _cameraPosition -= _cameraFront * _speed;
             break;
         case RIGHT:
-            _cameraPosition += _cameraRight * _speed;
+            _cameraPosition -= _cameraRight * _speed;
             break;
         case LEFT:
-            _cameraPosition -= _cameraRight * _speed;
+            _cameraPosition += _cameraRight * _speed;
             break;
         case UP:
             _cameraPosition += _cameraUp * _speed;
@@ -168,10 +106,7 @@ Matrix4 Camera::getFinalMatrix()
         getInstance().getPosition().getZ()
     );
 
-    const Matrix4 rotationMatrix = Matrix4::createRotationYMatrix(-getInstance().getYRotation()) *
-                                   Matrix4::createRotationXMatrix(-getInstance().getXRotation());
-
-    return getInstance().getProjectionMatrix() * translationMatrix * rotationMatrix;
+    return getInstance().getProjectionMatrix() * translationMatrix;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
