@@ -12,7 +12,7 @@
 #define LEFT_LEG_COLOR 13, 113, 173
 #define LEFT_LOWER_LEG_COLOR 218, 152, 102
 
-#define LENGTH_BASE_UNIT 0.3f
+#define LENGTH_BASE_UNIT 1.0f
 
 #define ROTATION_SPEED 0.1f    // Rotation speed of the body parts
 

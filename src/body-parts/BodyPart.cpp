@@ -28,35 +28,16 @@ BodyPart::BodyPart() : _rotationMatrix(Matrix4::identity()),
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @return The depth of the body part
- */
-[[nodiscard]] float BodyPart::getDepth() const
-{
-    return _depth;
-}
-
-/**
- * @return The height of the body part
- */
-[[nodiscard]] float BodyPart::getHeight() const
-{
-    return _height;
-}
-
-/**
- * @return The width of the body part
- */
-[[nodiscard]] float BodyPart::getWidth() const
-{
-    return _width;
-}
-
-/**
  * @return The matrix stack of the body part
  */
 [[nodiscard]] Matrix4 BodyPart::getMatrixStack() const
 {
     return _matrixStack.top();
+}
+
+[[nodiscard]] Matrix4 BodyPart::getScaleMatrix() const
+{
+    return _scaleMatrix;
 }
 
 /**
@@ -99,45 +80,6 @@ BodyPart& BodyPart::setColor(const float red, const float green, const float blu
     _red = red;
     _green = green;
     _blue = blue;
-    return *this;
-}
-
-/**
- * Set the depth of the body part.
- *
- * @param depth The new depth value
- *
- * @return itself
- */
-BodyPart& BodyPart::setDepth(const float depth)
-{
-    this->_depth = depth;
-    return *this;
-}
-
-/**
- * Set the height of the body part.
- *
- * @param height The new height value
- *
- * @return itself
- */
-BodyPart& BodyPart::setHeight(const float height)
-{
-    this->_height = height;
-    return *this;
-}
-
-/**
- * Set the width of the body part.
- *
- * @param width The new width value
- *
- * @return itself
- */
-BodyPart& BodyPart::setWidth(const float width)
-{
-    this->_width = width;
     return *this;
 }
 
@@ -251,6 +193,13 @@ BodyPart& BodyPart::setTranslateZ(const float z)
     return *this;
 }
 
+BodyPart& BodyPart::setDefaultTranslate(float x, float y, float z)
+{
+    _defaultTranslateX = x;
+    _defaultTranslateY = y;
+    _defaultTranslateZ = z;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Methods
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -320,20 +269,20 @@ BodyPart& BodyPart::translate(const float x, const float y, const float z)
     return *this;
 }
 
-// /**
-//  * Apply a scaling to the body part.
-//  *
-//  * @param x The x scale
-//  * @param y The y scale
-//  * @param z The z scale
-//  *
-//  * @return itself
-//  */
-// BodyPart& BodyPart::scale(const float x, const float y, const float z)
-// {
-//     _scaleMatrix = _scaleMatrix * Matrix4::createScalingMatrix(x, y, z);
-//     return *this;
-// }
+/**
+  * Apply a scaling to the body part.
+  *
+  * @param x The x scale
+  * @param y The y scale
+  * @param z The z scale
+  *
+  * @return itself
+  */
+BodyPart& BodyPart::scale(const float x, const float y, const float z)
+{
+    _scaleMatrix = Matrix4::createScalingMatrix(x, y, z);
+    return *this;
+}
 
 /**
  * Add a child to the body part.
@@ -399,9 +348,10 @@ void BodyPart::applyTransformation()
  */
 std::vector<float> BodyPart::_getTrianglesVerticesBuffer() const
 {
-    float halfWidth = _width / 2.0f;
-    float halfHeight = _height / 2.0f;
-    float halfDepth = _depth / 2.0f;
+    const Vector4 scaleVector = _scaleMatrix * Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+    float halfWidth = LENGTH_BASE_UNIT * scaleVector.getX() / 2.0f;
+    float halfHeight = LENGTH_BASE_UNIT * scaleVector.getY() / 2.0f;
+    float halfDepth = LENGTH_BASE_UNIT * scaleVector.getZ() / 2.0f;
 
     //@formatter:off
     return {

@@ -14,17 +14,12 @@ public:
     BodyPart();
 
     // Getters
-    [[nodiscard]] float getDepth() const;
-    [[nodiscard]] float getHeight() const;
-    [[nodiscard]] float getWidth() const;
     [[nodiscard]] Matrix4 getMatrixStack() const;
     [[nodiscard]] Matrix4 getTransformationMatrix() const;
+    [[nodiscard]] Matrix4 getScaleMatrix() const;
 
     // Setters
     BodyPart& setColor(float red, float green, float blue);
-    BodyPart& setHeight(float height);
-    BodyPart& setDepth(float depth);
-    BodyPart& setWidth(float width);
     BodyPart& setParent(BodyPart* parent);
     BodyPart& setPivotPoint(const Vector4& pivotPoint);
     BodyPart& setXRotation(float angle);
@@ -33,32 +28,22 @@ public:
     BodyPart& setTranslateX(float x);
     BodyPart& setTranslateY(float y);
     BodyPart& setTranslateZ(float z);
+    BodyPart& setDefaultTranslate(float x, float y, float z);
 
     // Methods
     BodyPart& rotateX(float angle);
     BodyPart& rotateY(float angle);
     BodyPart& rotateZ(float angle);
     BodyPart& translate(float x, float y, float z);
-    // BodyPart& scale(float x, float y, float z);
+    BodyPart& scale(float x, float y, float z);
 
     BodyPart& addChild(BodyPart* child);
     void applyTransformation();
 
 private:
-    /**
-    * The width of the body part.
-    */
-    float _width = LENGTH_BASE_UNIT;
-
-    /**
-    * The height of the body part.
-    */
-    float _height = LENGTH_BASE_UNIT;
-
-    /**
-    * The depth of the body part.
-    */
-    float _depth = LENGTH_BASE_UNIT;
+    float _defaultTranslateX = 0;
+    float _defaultTranslateY = 0;
+    float _defaultTranslateZ = 0;
 
     /**
     * The angle of rotation around the X axis.
