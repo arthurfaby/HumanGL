@@ -27,6 +27,12 @@ public:
     BodyPart& setWidth(float width);
     BodyPart& setParent(BodyPart* parent);
     BodyPart& setPivotPoint(const Vector4& pivotPoint);
+    BodyPart& setXRotation(float angle);
+    BodyPart& setYRotation(float angle);
+    BodyPart& setZRotation(float angle);
+    BodyPart& setTranslateX(float x);
+    BodyPart& setTranslateY(float y);
+    BodyPart& setTranslateZ(float z);
 
     // Methods
     BodyPart& rotateX(float angle);
@@ -53,6 +59,36 @@ private:
     * The depth of the body part.
     */
     float _depth = LENGTH_BASE_UNIT;
+
+    /**
+    * The angle of rotation around the X axis.
+    */
+    float _angleX = 0;
+
+    /**
+    * The angle of rotation around the Y axis.
+    */
+    float _angleY = 0;
+
+    /**
+    * The angle of rotation around the Z axis.
+    */
+    float _angleZ = 0;
+
+    /**
+     * The translate x value.
+     */
+    float _translateX = 0;
+
+    /**
+     * The translate y value.
+     */
+    float _translateY = 0;
+
+    /**
+     * The translate z value.
+     */
+    float _translateZ = 0;
 
     /**
     * The red value of the body part's color.
@@ -105,26 +141,6 @@ private:
     std::stack<Matrix4> _matrixStack;
 
     /**
-    * The buffer's index of lines vertices of the body part.
-    */
-    unsigned int _linesVerticesBufferIndex;
-
-    /**
-    * The buffer's index of lines colors of the body part.
-    */
-    unsigned int _linesColorsBufferIndex;
-
-    /**
-    * The buffer of lines vertices of the body part.
-    */
-    std::vector<float> _linesVerticesBuffer;
-
-    /**
-    * The buffer of lines colors of the body part.
-    */
-    std::vector<float> _linesColorsBuffer;
-
-    /**
     * The buffer's index of triangles vertices of the body part.
     */
     unsigned int _trianglesVerticesBufferIndex;
@@ -147,8 +163,6 @@ private:
     // Private getters
     [[nodiscard]] std::vector<float> _getTrianglesVerticesBuffer() const;
     [[nodiscard]] std::vector<float> _getTrianglesColorsBuffer() const;
-    [[nodiscard]] static std::vector<float> _getLinesVerticesBuffer();
-    [[nodiscard]] static std::vector<float> _getLinesColorsBuffer();
 
     /**
     * The number of faces each body part has.

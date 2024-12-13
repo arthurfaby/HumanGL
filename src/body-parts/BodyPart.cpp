@@ -16,13 +16,9 @@ BodyPart::BodyPart() : _rotationMatrix(Matrix4::identity()),
 {
     _pivotPoint = Vector4(0.0f, 0.0f, 0.0f, 1.0f);
 
-    _linesColorsBuffer = _getLinesColorsBuffer();
-    _linesVerticesBuffer = _getLinesVerticesBuffer();
     _trianglesColorsBuffer = _getTrianglesColorsBuffer();
     _trianglesVerticesBuffer = _getTrianglesVerticesBuffer();
 
-    _linesVerticesBufferIndex = BufferManager::add(LINES_VERTICES, _linesVerticesBuffer);
-    _linesColorsBufferIndex = BufferManager::add(LINES_COLORS, _linesColorsBuffer);
     _trianglesVerticesBufferIndex = BufferManager::add(TRIANGLES_VERTICES, _trianglesVerticesBuffer);
     _trianglesColorsBufferIndex = BufferManager::add(TRIANGLES_COLORS, _trianglesColorsBuffer);
 }
@@ -171,6 +167,90 @@ BodyPart& BodyPart::setPivotPoint(const Vector4& pivotPoint)
     return *this;
 }
 
+/**
+ * Set the X angle of the body part.
+ *
+ * @param angle The new angle value
+ *
+ * @return itself
+ */
+BodyPart& BodyPart::setXRotation(const float angle)
+{
+    _angleX = angle;
+    _rotationMatrix = Matrix4::createRotationMatrix(angle, _angleY, _angleZ);
+    return *this;
+}
+
+/**
+ * Set the Y angle of the body part.
+ *
+ * @param angle The new angle value
+ *
+ * @return itself
+ */
+BodyPart& BodyPart::setYRotation(const float angle)
+{
+    _angleY = angle;
+    _rotationMatrix = Matrix4::createRotationMatrix(_angleX, angle, _angleZ);
+    return *this;
+}
+
+/**
+ * Set the Z angle of the body part.
+ *
+ * @param angle The new angle value
+ *
+ * @return itself
+ */
+BodyPart& BodyPart::setZRotation(const float angle)
+{
+    _angleZ = angle;
+    _rotationMatrix = Matrix4::createRotationMatrix(_angleX, _angleY, angle);
+    return *this;
+}
+
+/**
+ * Set the X translation of the body part.
+ *
+ * @param x The new x value
+ *
+ * @return itself
+ */
+BodyPart& BodyPart::setTranslateX(const float x)
+{
+    _translateX = x;
+    _translationMatrix = Matrix4::createTranslationMatrix(x, _translateY, _translateZ);
+    return *this;
+}
+
+/**
+ * Set the Y translation of the body part.
+ *
+ * @param y The new y value
+ *
+ * @return itself
+ */
+BodyPart& BodyPart::setTranslateY(const float y)
+{
+    _translateY = y;
+    _translationMatrix = Matrix4::createTranslationMatrix(_translateX, y, _translateZ);
+    return *this;
+}
+
+/**
+ * Set the Z translation of the body part.
+ *
+ * @param z The new z value
+ *
+ * @return itself
+ */
+BodyPart& BodyPart::setTranslateZ(const float z)
+{
+    _translateZ = z;
+    _translationMatrix = Matrix4::createTranslationMatrix(_translateX, _translateY, z);
+    return *this;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Methods
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -184,6 +264,7 @@ BodyPart& BodyPart::setPivotPoint(const Vector4& pivotPoint)
  */
 BodyPart& BodyPart::rotateX(const float angle)
 {
+    _angleX += angle;
     _rotationMatrix = _rotationMatrix * Matrix4::createRotationXMatrix(angle);
     return *this;
 }
@@ -197,6 +278,7 @@ BodyPart& BodyPart::rotateX(const float angle)
  */
 BodyPart& BodyPart::rotateY(const float angle)
 {
+    _angleY += angle;
     _rotationMatrix = _rotationMatrix * Matrix4::createRotationYMatrix(angle);
     return *this;
 }
@@ -210,6 +292,7 @@ BodyPart& BodyPart::rotateY(const float angle)
  */
 BodyPart& BodyPart::rotateZ(const float angle)
 {
+    _angleZ += angle;
     _rotationMatrix = _rotationMatrix * Matrix4::createRotationZMatrix(angle);
     return *this;
 }
@@ -230,6 +313,9 @@ BodyPart& BodyPart::translate(const float x, const float y, const float z)
         Logger::warning("Cannot translate an axis that has a parent.");
         return *this;
     }
+    _translateX += x;
+    _translateY += y;
+    _translateZ += z;
     _translationMatrix = _translationMatrix * Matrix4::createTranslationMatrix(x, y, z);
     return *this;
 }
@@ -278,21 +364,6 @@ void BodyPart::applyTransformation()
     {
         child->applyTransformation();
     }
-
-    _linesVerticesBuffer = _getLinesVerticesBuffer();
-
-    for (int i = 0; i < _linesVerticesBuffer.size(); i += 3)
-    {
-        const float x = _linesVerticesBuffer[i + 0];
-        const float y = _linesVerticesBuffer[i + 1];
-        const float z = _linesVerticesBuffer[i + 2];
-        Vector4 vertex = Vector4(x, y, z, 1.0f);
-        vertex = _matrixStack.top() * vertex;
-        _linesVerticesBuffer[i + 0] = vertex.getX();
-        _linesVerticesBuffer[i + 1] = vertex.getY();
-        _linesVerticesBuffer[i + 2] = vertex.getZ();
-    }
-
     // Draw the cube
     _trianglesVerticesBuffer = _getTrianglesVerticesBuffer();
     for (int i = 0; i < _trianglesVerticesBuffer.size(); i += 3)
@@ -315,10 +386,6 @@ void BodyPart::applyTransformation()
     _trianglesColorsBufferIndex = BufferManager::modify(TRIANGLES_COLORS,
                                                         _trianglesColorsBufferIndex,
                                                         _trianglesColorsBuffer);
-    _linesVerticesBufferIndex = BufferManager::modify(LINES_VERTICES,
-                                                      _linesVerticesBufferIndex,
-                                                      _linesVerticesBuffer);
-    _linesColorsBufferIndex = BufferManager::modify(LINES_COLORS, _linesColorsBufferIndex, _linesColorsBuffer);
 
     _matrixStack.pop();
 }
@@ -404,38 +471,4 @@ std::vector<float> BodyPart::_getTrianglesColorsBuffer() const
         colors.push_back(_blue / 255.0f);
     }
     return colors;
-}
-
-/**
- * @return The buffer containing all the lines vertices
- */
-std::vector<float> BodyPart::_getLinesVerticesBuffer()
-{
-    //@formatter:off
-    return {
-        0.0f, 0.0f, 0.0f,
-        0.5f, 0.0f, 0.0f,
-        0.0f, 0.0f, 0.0f,
-        0.0f, 0.5f, 0.0f,
-        0.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 0.5f
-    };
-    //@formatter:on
-}
-
-/**
- * @return The buffer containing all the lines colors
- */
-std::vector<float> BodyPart::_getLinesColorsBuffer()
-{
-    //@formatter:off
-    return {
-        1.0f, 0.0f, 0.0f,
-        1.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 1.0f
-    };
-    //@formatter:on
 }
