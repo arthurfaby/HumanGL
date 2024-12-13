@@ -4,7 +4,6 @@
 #include <string>
 #include <GL/glew.h>
 
-#define GEOMETRY_SHADER_SOURCE_PATH "../src/shaders/geometryShader.geom"
 #define VERTEX_SHADER_SOURCE_PATH "../src/shaders/vertexShader.glsl"
 #define FRAGMENT_SHADER_SOURCE_PATH "../src/shaders/fragmentShader.glsl"
 
