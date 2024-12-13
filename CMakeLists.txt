@@ -23,6 +23,9 @@ set(BODY_PARTS_SOURCE_FILES
         src/body-parts/Human.cpp
 )
 
+# Contain all cpp files within src/animations
+set(ANIMATIONS_SOURCE_FILES
+        src/animations/Animation.cpp
 )
 
 # Contain all cpp files within src/camera
@@ -50,6 +53,7 @@ set(UTILS_SOURCE_FILES
 # Contain all source files
 set(ALL_SOURCE_FILES
         ${SOURCE_FILES}
+        ${ANIMATIONS_SOURCE_FILES}
         ${BODY_PARTS_SOURCE_FILES}
         ${CAMERA_SOURCE_FILES}
         ${MANAGERS_SOURCE_FILES}
@@ -67,6 +71,7 @@ add_executable(${PROJECT_NAME} ${ALL_SOURCE_FILES})
 
 target_include_directories(${PROJECT_NAME}
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include
+        PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/animations
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/body-parts
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/camera
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/defines
