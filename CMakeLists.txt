@@ -20,6 +20,9 @@ set(SOURCE_FILES
 # Contain all cpp files within src/body-parts
 set(BODY_PARTS_SOURCE_FILES
         src/body-parts/BodyPart.cpp
+        src/body-parts/Human.cpp
+)
+
 )
 
 # Contain all cpp files within src/camera
