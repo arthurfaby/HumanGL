@@ -166,6 +166,11 @@ void Human::resetMemberRotations() const
     resetRotation(_leftLowerLeg);
 }
 
+/**
+ *  Reset the rotation of a body part.
+ *
+ * @param bodyPart The body part to reset the rotation.
+ */
 void Human::resetRotation(BodyPart* bodyPart)
 {
     if (!bodyPart) return;
