@@ -3,7 +3,6 @@
 #include <CameraDefines.hpp>
 #include <cmath>
 #include <MathsDefines.hpp>
-#include <tuple>
 #include <WindowDefines.hpp>
 
 Camera* Camera::_instance = nullptr;
