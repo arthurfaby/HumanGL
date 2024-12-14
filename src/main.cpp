@@ -1,5 +1,6 @@
 #include <Animation.hpp>
 #include <BodyPart.hpp>
+#include <BodyPartDefines.hpp>
 #include <BufferManager.hpp>
 #include <Camera.hpp>
 #include <cmath>
@@ -19,6 +20,30 @@ void handleBodyPartKeys(GLFWwindow* window, Human* selectedHuman)
 {
     float speed = 0;
 
+    if (glfwGetKey(window, GLFW_KEY_KP_4) == GLFW_PRESS)
+    {
+        selectedHuman->getRoot()->scale(1.01f, 1.0f, 1.0f);
+    }
+    if (glfwGetKey(window, GLFW_KEY_KP_1) == GLFW_PRESS)
+    {
+        selectedHuman->getRoot()->scale(0.99f, 1.0f, 1.0f);
+    }
+    if (glfwGetKey(window, GLFW_KEY_KP_5) == GLFW_PRESS)
+    {
+        selectedHuman->getRoot()->scale(1.0f, 1.01f, 1.0f);
+    }
+    if (glfwGetKey(window, GLFW_KEY_KP_2) == GLFW_PRESS)
+    {
+        selectedHuman->getRoot()->scale(1.0f, 0.99f, 1.0f);
+    }
+    if (glfwGetKey(window, GLFW_KEY_KP_6) == GLFW_PRESS)
+    {
+        selectedHuman->getRoot()->scale(1.0f, 1.0f, 1.01f);
+    }
+    if (glfwGetKey(window, GLFW_KEY_KP_3) == GLFW_PRESS)
+    {
+        selectedHuman->getRoot()->scale(1.0f, 1.0f, 0.99f);
+    }
     if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
     {
         selectedAnimation = &stayingPutAnimation;
@@ -58,7 +83,7 @@ void handleBodyPartKeys(GLFWwindow* window, Human* selectedHuman)
     if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
     {
         speed = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? -ROTATION_SPEED : ROTATION_SPEED;
-        selectedHuman->getRoot()->rotateZ(speed);
+        selectedHuman->getLeftLowerArm()->rotateZ(speed);
     }
     // Move the camera forward
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -155,9 +180,9 @@ void generateStayingPutKeyframes(Human* human)
                                         human->resetTranslations();
                                         human->resetMemberRotations();
                                         human->getRightArm()->setXRotation(angle)
-                                                .setZRotation(M_PI / 2);
+                                                .setZRotation(M_PI / 2 - M_PI / 50);
                                         human->getLeftArm()->setXRotation(-angle)
-                                                .setZRotation(-M_PI / 2);
+                                                .setZRotation(-M_PI / 2 + M_PI / 50);
                                     });
 
     stayingPutAnimation.addKeyframe(1.0f,
@@ -260,9 +285,9 @@ void generateWalkingKeyframes(Human* human)
                                      human->getRightLowerLeg()->setXRotation(-angle / 2);
                                      human->getLeftLowerLeg()->setXRotation(angle / 2);
 
-                                     human->getRightArm()->setZRotation(M_PI / 2)
+                                     human->getRightArm()->setZRotation(M_PI / 2 - M_PI / 50)
                                              .setXRotation(-angle);
-                                     human->getLeftArm()->setZRotation(-M_PI / 2)
+                                     human->getLeftArm()->setZRotation(-M_PI / 2 + M_PI / 50)
                                              .setXRotation(angle);
 
                                      human->getRightLowerArm()->setXRotation(-angle);
