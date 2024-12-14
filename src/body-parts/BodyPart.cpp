@@ -1,5 +1,4 @@
 #include "BodyPart.hpp"
-
 #include <BufferManager.hpp>
 #include <Logger.hpp>
 
@@ -51,7 +50,13 @@ BodyPart::BodyPart() : _rotationMatrix(Matrix4::identity()),
                                                                         -_pivotPoint.getZ());
 
     // Apply all transformation : translation, rotation, etc.
-    const Matrix4 combinedTransformation = _translationMatrix * _rotationMatrix;
+    const Matrix4 ownShift = Matrix4::createTranslationMatrix(_ownRelativeShiftX,
+                                                              _ownRelativeShiftY,
+                                                              _ownRelativeShiftZ);
+    const Matrix4 parentShift = Matrix4::createTranslationMatrix(_parentRelativeShiftX,
+                                                                 _parentRelativeShiftY,
+                                                                 _parentRelativeShiftZ);
+    const Matrix4 combinedTransformation = ownShift * parentShift * _translationMatrix * _rotationMatrix;
 
     // Translation to bring back the object to its origin point
     const Matrix4 translationBackFromPivot = Matrix4::createTranslationMatrix(
@@ -59,7 +64,9 @@ BodyPart::BodyPart() : _rotationMatrix(Matrix4::identity()),
         _pivotPoint.getY(),
         _pivotPoint.getZ());
 
-    return translationBackFromPivot * combinedTransformation * translationToPivot;
+    const Matrix4 transformMatrix = translationBackFromPivot * combinedTransformation * translationToPivot;
+
+    return transformMatrix;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -193,11 +200,38 @@ BodyPart& BodyPart::setTranslateZ(const float z)
     return *this;
 }
 
-BodyPart& BodyPart::setDefaultTranslate(float x, float y, float z)
+/**
+ * Set the parent relative shift of the body part.
+ *
+ * @param x The new x value
+ * @param y The new y value
+ * @param z The new z value
+ *
+ * @return itself
+ */
+BodyPart& BodyPart::setParentRelativeShift(const float x, const float y, const float z)
 {
-    _defaultTranslateX = x;
-    _defaultTranslateY = y;
-    _defaultTranslateZ = z;
+    _parentRelativeShiftX = x;
+    _parentRelativeShiftY = y;
+    _parentRelativeShiftZ = z;
+    return *this;
+}
+
+/**
+ * Set the own relative shift of the body part.
+ *
+ * @param x The new x value
+ * @param y The new y value
+ * @param z The new z value
+ *
+ * @return itself
+ */
+BodyPart& BodyPart::setOwnRelativeShift(const float x, const float y, const float z)
+{
+    _ownRelativeShiftX = x;
+    _ownRelativeShiftY = y;
+    _ownRelativeShiftZ = z;
+    return *this;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -280,7 +314,20 @@ BodyPart& BodyPart::translate(const float x, const float y, const float z)
   */
 BodyPart& BodyPart::scale(const float x, const float y, const float z)
 {
-    _scaleMatrix = Matrix4::createScalingMatrix(x, y, z);
+    _scaleMatrix = _scaleMatrix * Matrix4::createScalingMatrix(x, y, z);
+    setOwnRelativeShift(_ownRelativeShiftX * x, _ownRelativeShiftY * y, _ownRelativeShiftZ * z);
+    const Vector4 scaledPivotPoint = Vector4(_pivotPoint.getX() * x,
+                                             _pivotPoint.getY() * y,
+                                             _pivotPoint.getZ() * z,
+                                             1.0f);
+    setPivotPoint(scaledPivotPoint);
+    for (auto& child: _children)
+    {
+        // Update translate to match the new scale
+        child->setParentRelativeShift(child->_parentRelativeShiftX * x,
+                                      child->_parentRelativeShiftY * y,
+                                      child->_parentRelativeShiftZ * z);
+    }
     return *this;
 }
 

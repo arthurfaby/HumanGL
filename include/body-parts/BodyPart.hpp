@@ -28,7 +28,8 @@ public:
     BodyPart& setTranslateX(float x);
     BodyPart& setTranslateY(float y);
     BodyPart& setTranslateZ(float z);
-    BodyPart& setDefaultTranslate(float x, float y, float z);
+    BodyPart& setParentRelativeShift(float x, float y, float z);
+    BodyPart& setOwnRelativeShift(float x, float y, float z);
 
     // Methods
     BodyPart& rotateX(float angle);
@@ -41,9 +42,35 @@ public:
     void applyTransformation();
 
 private:
-    float _defaultTranslateX = 0;
-    float _defaultTranslateY = 0;
-    float _defaultTranslateZ = 0;
+    /**
+    * The relative shift of the body part with respect to its parent.
+    */
+    float _parentRelativeShiftX = 0;
+
+    /**
+    * The relative shift of the body part with respect to its parent.
+    */
+    float _parentRelativeShiftY = 0;
+
+    /**
+    * The relative shift of the body part with respect to its parent.
+    */
+    float _parentRelativeShiftZ = 0;
+
+    /**
+    * The relative shift of the body part with respect to its own pivot point.
+    */
+    float _ownRelativeShiftX = 0;
+
+    /**
+    * The relative shift of the body part with respect to its own pivot point.
+    */
+    float _ownRelativeShiftY = 0;
+
+    /**
+    * The relative shift of the body part with respect to its own pivot point.
+    */
+    float _ownRelativeShiftZ = 0;
 
     /**
     * The angle of rotation around the X axis.
