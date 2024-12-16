@@ -8,14 +8,8 @@
 #include <keybindings.hpp>
 #include <GLFW/glfw3.h>
 
-void handleBodyPartKeys(GLFWwindow* window, const Human* selectedHuman)
+void handleAnimationKeys(GLFWwindow* window)
 {
-    if (selectedHuman->getTarget() == nullptr)
-    {
-        return;
-    }
-
-    // Animation keybindings
     if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)
     {
         AnimationManager::select(NO_ANIMATION);
@@ -36,8 +30,14 @@ void handleBodyPartKeys(GLFWwindow* window, const Human* selectedHuman)
     {
         AnimationManager::select(SNOW_ANGEL);
     }
+}
 
-    // Target body part keybindings
+void handleBodyPartKeys(GLFWwindow* window, const Human* selectedHuman)
+{
+    if (selectedHuman->getTarget() == nullptr)
+    {
+        return;
+    }
     if (glfwGetKey(window, GLFW_KEY_KP_4) == GLFW_PRESS)
     {
         selectedHuman->getTarget()->scale(1.01f, 1.0f, 1.0f);
@@ -89,8 +89,10 @@ void handleBodyPartKeys(GLFWwindow* window, const Human* selectedHuman)
         speed = glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS ? -ROTATION_SPEED : ROTATION_SPEED;
         selectedHuman->getTarget()->rotateZ(speed);
     }
+}
 
-    // Camera keybindings
+void handleCameraKeys(GLFWwindow* window)
+{
     // Move the camera forward
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
@@ -121,10 +123,21 @@ void handleBodyPartKeys(GLFWwindow* window, const Human* selectedHuman)
     {
         Camera::getInstance().updateCameraPos(UP);
     }
+}
+
+void handleKeys(GLFWwindow* window, const Human* selectedHuman)
+{
+    if (selectedHuman == nullptr)
+    {
+        return;
+    }
+    handleAnimationKeys(window);
+    handleBodyPartKeys(window, selectedHuman);
+    handleCameraKeys(window);
 
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
     {
-        Camera::getInstance().resetCamera();
+        Camera::resetCamera();
         selectedHuman->resetMembersTranslations();
         selectedHuman->resetMembersRotations();
         selectedHuman->getRoot()->setXRotation(0.0f);

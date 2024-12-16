@@ -33,7 +33,7 @@ public:
     // Methods
     void updateCameraPos(CameraDirection dir);
     [[nodiscard]] static Matrix4 getFinalMatrix();
-    void resetCamera();
+    static void resetCamera();
     static void deleteCamera();
 
 private:

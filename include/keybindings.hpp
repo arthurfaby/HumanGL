@@ -3,6 +3,6 @@
 #include <Human.hpp>
 #include <GLFW/glfw3.h>
 
-void handleBodyPartKeys(GLFWwindow* window, const Human* selectedHuman);
+void handleKeys(GLFWwindow* window, const Human* selectedHuman);
 
 #endif // KEYBINDINGS_HPP

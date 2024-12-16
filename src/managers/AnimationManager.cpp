@@ -10,6 +10,10 @@ Animation* AnimationManager::_selectedAnimation = nullptr;
  */
 void AnimationManager::init(Human* human)
 {
+    if (human == nullptr)
+    {
+        return;
+    }
     _generateAndAddStayingPutKeyframes(human);
     _generateAndAddWalkingKeyframes(human);
     _generateAndAddJumpingKeyframes(human);

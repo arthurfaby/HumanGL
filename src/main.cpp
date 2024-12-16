@@ -62,10 +62,13 @@ static void key_callback(GLFWwindow* window, const int key, const int scancode, 
 
 void render(GLFWwindow* window, const Human* selectedHuman)
 {
-    handleBodyPartKeys(window, selectedHuman);
+    handleKeys(window, selectedHuman);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    selectedHuman->getRoot()->applyTransformation();
+    if (selectedHuman)
+    {
+        selectedHuman->getRoot()->applyTransformation();
+    }
 
     const Matrix4 finalMatrix = Camera::getFinalMatrix();
 
@@ -139,7 +142,7 @@ int main(const int argc, char** argv)
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
-    Human* steve = new Human();
+    auto* steve = new Human();
     AnimationManager::init(steve);
     BufferManager::init();
     ShaderManager::init();
