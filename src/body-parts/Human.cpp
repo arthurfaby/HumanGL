@@ -57,6 +57,16 @@ Human::~Human()
     delete _rightLowerLeg;
     delete _leftLeg;
     delete _leftLowerLeg;
+
+    delete _rightShoe;
+    delete _leftShoe;
+
+    delete _hatBrim;
+    delete _hatBrimGreenBand;
+    delete _hatBrimRedBand;
+    delete _hatBrimYellowBand;
+
+    delete _hatCrown;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
