@@ -13,10 +13,10 @@ Animation::Animation() : _startTime(std::chrono::high_resolution_clock::now())
 {
 }
 
-Animation::Keyframe::Keyframe(float _time, std::function<void(double)> _action)
+Animation::Keyframe::Keyframe(const float time, const std::function<void(double)>& newAction)
 {
-    timestamp = _time;
-    action = std::move(_action);
+    timestamp = time;
+    action = newAction;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -56,12 +56,11 @@ void Animation::update()
 {
     if (_keyframes.empty()) return;
 
-    auto now = std::chrono::high_resolution_clock::now();
+    const auto now = std::chrono::high_resolution_clock::now();
     float elapsed = std::chrono::duration<float>(now - _startTime).count();
 
     // Adjust elapsed time for looping
-    float totalDuration = _keyframes.back().timestamp;
-    if (totalDuration > 0.0f)
+    if (const float totalDuration = _keyframes.back().timestamp; totalDuration > 0.0f)
     {
         elapsed = std::fmod(elapsed, totalDuration);
     }
@@ -86,7 +85,7 @@ void Animation::update()
     if (prevKeyframe && nextKeyframe)
     {
         // Interpolate between prevKeyframe and nextKeyframe
-        float range = nextKeyframe->timestamp - prevKeyframe->timestamp;
+        const float range = nextKeyframe->timestamp - prevKeyframe->timestamp;
         float factor = (elapsed - prevKeyframe->timestamp) / range;
 
         // Clamp factor between 0 and 1
