@@ -9,7 +9,8 @@ enum AnimationType
     NO_ANIMATION = -1,
     STAYING_PUT = 0,
     WALKING = 1,
-    JUMPING = 2
+    JUMPING = 2,
+    SNOW_ANGEL = 3
 };
 
 class AnimationManager
@@ -42,6 +43,7 @@ private:
     static void _generateAndAddStayingPutKeyframes(Human* human);
     static void _generateAndAddWalkingKeyframes(Human* human);
     static void _generateAndAddJumpingKeyframes(Human* human);
+    static void _generateAndAddSnowAngelKeyframes(Human* human);
 };
 
 #endif //ANIMATION_MANAGER_HPP

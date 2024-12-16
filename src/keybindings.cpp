@@ -15,6 +15,11 @@ void handleBodyPartKeys(GLFWwindow* window, const Human* selectedHuman)
         return;
     }
 
+    // Animation keybindings
+    if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)
+    {
+        AnimationManager::select(NO_ANIMATION);
+    }
     if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
     {
         AnimationManager::select(STAYING_PUT);
@@ -27,10 +32,12 @@ void handleBodyPartKeys(GLFWwindow* window, const Human* selectedHuman)
     {
         AnimationManager::select(JUMPING);
     }
-    if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
     {
-        AnimationManager::select(NO_ANIMATION);
+        AnimationManager::select(SNOW_ANGEL);
     }
+
+    // Target body part keybindings
     if (glfwGetKey(window, GLFW_KEY_KP_4) == GLFW_PRESS)
     {
         selectedHuman->getTarget()->scale(1.01f, 1.0f, 1.0f);
@@ -82,6 +89,8 @@ void handleBodyPartKeys(GLFWwindow* window, const Human* selectedHuman)
         speed = glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS ? -ROTATION_SPEED : ROTATION_SPEED;
         selectedHuman->getTarget()->rotateZ(speed);
     }
+
+    // Camera keybindings
     // Move the camera forward
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
