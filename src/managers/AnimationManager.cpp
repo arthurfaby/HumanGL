@@ -35,6 +35,11 @@ void AnimationManager::update()
  */
 void AnimationManager::select(const int index)
 {
+    if (index == NO_ANIMATION)
+    {
+        _selectedAnimation = nullptr;
+        return ;
+    }
     if (index > _animations.size() - 1)
     {
         return;
@@ -69,9 +74,9 @@ void AnimationManager::_generateAndAddStayingPutKeyframes(Human* human)
     stayingPutAnimation->addKeyframe(0.0f,
                                      [human](const double factor)
                                      {
-                                         auto angle = 0.0f + factor * M_PI / 64;
-                                         human->resetTranslations();
-                                         human->resetMemberRotations();
+                                         const auto angle = 0.0f + factor * M_PI / 64;
+                                         human->resetMembersTranslations();
+                                         human->resetMembersRotations();
                                          human->getRightArm()->setXRotation(angle)
                                                  .setZRotation(M_PI / 2 - M_PI / 50);
                                          human->getLeftArm()->setXRotation(-angle)
@@ -81,14 +86,14 @@ void AnimationManager::_generateAndAddStayingPutKeyframes(Human* human)
     stayingPutAnimation->addKeyframe(1.0f,
                                      [human](const double factor)
                                      {
-                                         auto angle = M_PI / 64 - 2 * factor * M_PI / 64;
+                                         const auto angle = M_PI / 64 - 2 * factor * M_PI / 64;
                                          human->getRightArm()->setXRotation(angle);
                                          human->getLeftArm()->setXRotation(-angle);
                                      });
     stayingPutAnimation->addKeyframe(3.0f,
                                      [human](const double factor)
                                      {
-                                         auto angle = -M_PI / 64 + factor * M_PI / 64;
+                                         const auto angle = -M_PI / 64 + factor * M_PI / 64;
                                          human->getRightArm()->setXRotation(angle);
                                          human->getLeftArm()->setXRotation(-angle);
                                      });
@@ -110,8 +115,8 @@ void AnimationManager::_generateAndAddJumpingKeyframes(Human* human)
     jumpingAnimation->addKeyframe(0.0f,
                                   [human](const float factor)
                                   {
-                                      human->resetMemberRotations();
-                                      human->resetTranslations();
+                                      human->resetMembersRotations();
+                                      human->resetMembersTranslations();
                                       human->getRightLeg()->setXRotation(factor * M_PI / 4);
                                       human->getLeftLeg()->setXRotation(factor * M_PI / 4);
 
@@ -175,8 +180,8 @@ void AnimationManager::_generateAndAddWalkingKeyframes(Human* human)
                                   [human](const double factor)
                                   {
                                       const auto angle = static_cast<float>(factor * M_PI / 8);
-                                      human->resetMemberRotations();
-                                      human->resetTranslations();
+                                      human->resetMembersRotations();
+                                      human->resetMembersTranslations();
                                       human->getRightLeg()->setXRotation(angle);
                                       human->getLeftLeg()->setXRotation(-angle);
 
@@ -233,7 +238,7 @@ void AnimationManager::_generateAndAddWalkingKeyframes(Human* human)
                                   });
 
     walkingAnimation->addKeyframe(2.0f,
-                                  [human](const double factor)
+                                  [human](const double)
                                   {
                                       human->getRightLeg()->setXRotation(0.0f);
                                       human->getLeftLeg()->setXRotation(0.0f);

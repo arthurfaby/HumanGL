@@ -6,6 +6,7 @@
 
 enum AnimationType
 {
+    NO_ANIMATION = -1,
     STAYING_PUT = 0,
     WALKING = 1,
     JUMPING = 2

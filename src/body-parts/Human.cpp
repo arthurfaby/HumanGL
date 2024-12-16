@@ -2,6 +2,8 @@
 #include "BodyPartDefines.hpp"
 #include "HumanDefines.hpp"
 
+std::map<std::array<int, 3>, BodyPart*> Human::_colorToBodyPartMap;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Constructors
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,9 +55,25 @@ Human::~Human()
 /**
   * @return The root of the human.
   */
+std::map<std::array<int, 3>, BodyPart*> Human::getColorToBodyPartMap()
+{
+    return _colorToBodyPartMap;
+}
+
+/**
+  * @return The root of the human.
+  */
 BodyPart* Human::getRoot() const
 {
     return _root;
+}
+
+/**
+  * @return The targeted body part of the human.
+  */
+BodyPart* Human::getTarget() const
+{
+    return _target;
 }
 
 /**
@@ -139,13 +157,38 @@ BodyPart* Human::getLeftLowerLeg() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Setter
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Human::setTarget(BodyPart* target)
+{
+    _target = target;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Methods
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Human::addToColorToBodyPartMap(const std::array<int, 3> colors, BodyPart* bodyPart)
+{
+    _colorToBodyPartMap[colors] = bodyPart;
+}
 
 /**
  * Reset the translations of the human body parts.
  */
-void Human::resetTranslations() const
+void Human::resetMembersTranslations() const
+{
+    if (!_root) return;
+    _root->setTranslateX(0);
+    _root->setTranslateY(0);
+    _root->setTranslateZ(0);
+}
+
+/**
+ * Reset the scaling of the human body parts.
+ */
+void Human::resetMembersScaling() const
 {
     if (!_root) return;
     _root->setTranslateX(0);
@@ -156,7 +199,7 @@ void Human::resetTranslations() const
 /**
   * Reset rotations of the human body parts.
   */
-void Human::resetMemberRotations() const
+void Human::resetMembersRotations() const
 {
     resetRotation(_head);
     resetRotation(_rightArm);
@@ -202,6 +245,7 @@ void Human::_initBodyParts()
     _initLeftLeg();
     _initLeftLowerLeg();
     _initRoot();
+    _initTarget();
 }
 
 /**
@@ -216,7 +260,8 @@ void Human::_initHead() const
 
     _head->setPivotPoint(Vector4(0.0f, -HEAD_SCALE_Y / 2, 0.0f, 1.0f));
 
-    _head->setColor(HEAD_COLOR);
+    _head->setDefaultColor(HEAD_COLOR);
+    _colorToBodyPartMap[{HEAD_COLOR}] = _head;
 }
 
 /**
@@ -226,7 +271,8 @@ void Human::_initTorso() const
 {
     if (!_torso) return;
     _torso->scale(TORSO_SCALE_X, TORSO_SCALE_Y, TORSO_SCALE_Z);
-    _torso->setColor(TORSO_COLOR);
+    _torso->setDefaultColor(TORSO_COLOR);
+    _colorToBodyPartMap[{TORSO_COLOR}] = _torso;
 }
 
 /**
@@ -241,7 +287,8 @@ void Human::_initRightArm() const
 
     _rightArm->setPivotPoint(Vector4(RIGHT_ARM_SCALE_X / 2, -RIGHT_ARM_SCALE_Y / 2, 0, 1));
 
-    _rightArm->setColor(RIGHT_ARM_COLOR);
+    _rightArm->setDefaultColor(RIGHT_ARM_COLOR);
+    _colorToBodyPartMap[{RIGHT_ARM_COLOR}] = _rightArm;
 }
 
 /**
@@ -255,7 +302,8 @@ void Human::_initRightLowerArm() const
     _rightLowerArm->setParentRelativeShift(-RIGHT_ARM_SCALE_X / 2, 0, 0);
 
     _rightLowerArm->setPivotPoint(Vector4(RIGHT_LOWER_ARM_SCALE_X / 2, 0, 0, 1));
-    _rightLowerArm->setColor(RIGHT_LOWER_ARM_COLOR);
+    _rightLowerArm->setDefaultColor(RIGHT_LOWER_ARM_COLOR);
+    _colorToBodyPartMap[{RIGHT_LOWER_ARM_COLOR}] = _rightLowerArm;
 }
 
 /**
@@ -270,7 +318,8 @@ void Human::_initLeftArm() const
 
     _leftArm->setPivotPoint(Vector4(-LEFT_ARM_SCALE_X / 2, -LEFT_ARM_SCALE_Y / 2, 0, 1));
 
-    _leftArm->setColor(LEFT_ARM_COLOR);
+    _leftArm->setDefaultColor(LEFT_ARM_COLOR);
+    _colorToBodyPartMap[{LEFT_ARM_COLOR}] = _leftArm;
 }
 
 /**
@@ -284,7 +333,8 @@ void Human::_initLeftLowerArm() const
     _leftLowerArm->setParentRelativeShift(LEFT_ARM_SCALE_X / 2, 0, 0);
 
     _leftLowerArm->setPivotPoint(Vector4(-LEFT_LOWER_ARM_SCALE_X / 2, 0, 0, 1));
-    _leftLowerArm->setColor(LEFT_LOWER_ARM_COLOR);
+    _leftLowerArm->setDefaultColor(LEFT_LOWER_ARM_COLOR);
+    _colorToBodyPartMap[{LEFT_LOWER_ARM_COLOR}] = _leftLowerArm;
 }
 
 /**
@@ -299,7 +349,8 @@ void Human::_initRightLeg() const
 
     _rightLeg->setPivotPoint(Vector4(0, RIGHT_LEG_SCALE_Y / 2, 0, 1));
 
-    _rightLeg->setColor(RIGHT_LEG_COLOR);
+    _rightLeg->setDefaultColor(RIGHT_LEG_COLOR);
+    _colorToBodyPartMap[{RIGHT_LEG_COLOR}] = _rightLeg;
 }
 
 /**
@@ -314,7 +365,8 @@ void Human::_initRightLowerLeg() const
 
     _rightLowerLeg->setPivotPoint(Vector4(0, RIGHT_LOWER_LEG_SCALE_Y / 2, 0, 1));
 
-    _rightLowerLeg->setColor(RIGHT_LOWER_LEG_COLOR);
+    _rightLowerLeg->setDefaultColor(RIGHT_LOWER_LEG_COLOR);
+    _colorToBodyPartMap[{RIGHT_LOWER_LEG_COLOR}] = _rightLowerLeg;
 }
 
 /**
@@ -329,7 +381,8 @@ void Human::_initLeftLeg() const
 
     _leftLeg->setPivotPoint(Vector4(0, LEFT_LEG_SCALE_Y / 2, 0, 1));
 
-    _leftLeg->setColor(LEFT_LEG_COLOR);
+    _leftLeg->setDefaultColor(LEFT_LEG_COLOR);
+    _colorToBodyPartMap[{LEFT_LEG_COLOR}] = _leftLeg;
 }
 
 /**
@@ -344,7 +397,8 @@ void Human::_initLeftLowerLeg() const
 
     _leftLowerLeg->setPivotPoint(Vector4(0, LEFT_LOWER_LEG_SCALE_Y / 2, 0, 1));
 
-    _leftLowerLeg->setColor(LEFT_LOWER_LEG_COLOR);
+    _leftLowerLeg->setDefaultColor(LEFT_LOWER_LEG_COLOR);
+    _colorToBodyPartMap[{LEFT_LOWER_LEG_COLOR}] = _leftLowerLeg;
 }
 
 /**
@@ -353,6 +407,14 @@ void Human::_initLeftLowerLeg() const
 void Human::_initRoot()
 {
     _root = _torso;
+}
+
+/**
+ * Initialize the targeted body part of the human.
+ */
+void Human::_initTarget()
+{
+    _target = _torso;
 }
 
 /**

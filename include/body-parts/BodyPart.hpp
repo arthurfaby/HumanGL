@@ -4,7 +4,6 @@
 #include <stack>
 #include <Vector4.hpp>
 #include <vector>
-#include "BodyPartDefines.hpp"
 #include "Matrix4.hpp"
 
 class BodyPart
@@ -20,6 +19,8 @@ public:
 
     // Setters
     BodyPart& setColor(float red, float green, float blue);
+    BodyPart& setDefaultColor(float red, float green, float blue);
+    BodyPart& resetColor();
     BodyPart& setParent(BodyPart* parent);
     BodyPart& setPivotPoint(const Vector4& pivotPoint);
     BodyPart& setXRotation(float angle);
@@ -42,6 +43,21 @@ public:
     void applyTransformation();
 
 private:
+    /**
+    * The number of faces each body part has.
+    */
+    static int _faceCount;
+
+    /**
+    * The number of vertices per face.
+    */
+    static int _verticesPerFace;
+
+    /**
+    * The number of vertices per body parts.
+    */
+    static int _verticesPerBodyPart;
+
     /**
     * The relative shift of the body part with respect to its parent.
     */
@@ -105,17 +121,32 @@ private:
     /**
     * The red value of the body part's color.
     */
-    float _red = 255;
+    float _red;
+
+    /**
+    * The default red value of the body part's color.
+    */
+    float _defaultRed = 255;
 
     /**
     * The green value of the body part's color.
     */
-    float _green = 255;
+    float _green;
+
+    /**
+    * The default green value of the body part's color.
+    */
+    float _defaultGreen = 255;
 
     /**
     * The blue value of the body part's color.
     */
-    float _blue = 255;
+    float _blue;
+
+    /**
+    * The default blue value of the body part's color.
+    */
+    float _defaultBlue = 255;
 
     /**
     * The sum of all rotation matrices that have been applied to the body part.
@@ -175,16 +206,6 @@ private:
     // Private getters
     [[nodiscard]] std::vector<float> _getTrianglesVerticesBuffer() const;
     [[nodiscard]] std::vector<float> _getTrianglesColorsBuffer() const;
-
-    /**
-    * The number of faces each body part has.
-    */
-    static int _faceCount;
-
-    /**
-    * The number of vertices per face.
-    */
-    static int _verticesPerFace;
 };
 
 #endif //BODY_PART_HPP

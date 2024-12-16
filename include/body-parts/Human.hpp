@@ -1,6 +1,7 @@
 #ifndef HUMAN_HPP
 #define HUMAN_HPP
 #include <BodyPart.hpp>
+#include <map>
 
 class Human
 {
@@ -12,7 +13,9 @@ public:
     ~Human();
 
     // Getters
+    [[nodiscard]] static std::map<std::array<int, 3>, BodyPart*> getColorToBodyPartMap() ;
     [[nodiscard]] BodyPart* getRoot() const;
+    [[nodiscard]] BodyPart* getTarget() const;
     [[nodiscard]] BodyPart* getHead() const;
     [[nodiscard]] BodyPart* getTorso() const;
     [[nodiscard]] BodyPart* getRightArm() const;
@@ -23,15 +26,21 @@ public:
     [[nodiscard]] BodyPart* getRightLowerLeg() const;
     [[nodiscard]] BodyPart* getLeftLeg() const;
     [[nodiscard]] BodyPart* getLeftLowerLeg() const;
-    void resetTranslations() const;
+
+    // Setter
+    void setTarget(BodyPart* target);
 
     // Methods
-    void resetMemberRotations() const;
+    static void addToColorToBodyPartMap(std::array<int, 3> colors, BodyPart* bodyPart);
+    void resetMembersRotations() const;
+    void resetMembersTranslations() const;
+    void resetMembersScaling() const;
     static void resetRotation(BodyPart* bodyPart);
 
 private:
     // Body parts of the human
     BodyPart* _root = nullptr;
+    BodyPart* _target = nullptr;
     BodyPart* _head = nullptr;
     BodyPart* _torso = nullptr;
     BodyPart* _rightArm = nullptr;
@@ -56,8 +65,11 @@ private:
     void _initLeftLeg() const;
     void _initLeftLowerLeg() const;
     void _initRoot();
+    void _initTarget();
 
     void _linkChildren() const;
+
+    static std::map<std::array<int, 3>, BodyPart*> _colorToBodyPartMap;
 };
 
 #endif //HUMAN_HPP
