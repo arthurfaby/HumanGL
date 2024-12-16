@@ -24,7 +24,7 @@ Camera::Camera(const Vector4& position): _cameraPosition(position),
                                          })),
                                          // @formatter:on
                                          _pitch(0.0f),
-                                         _speed(0.015f),
+                                         _speed(0.15f),
                                          _yaw(-90.0f)
 {
     _updateCameraVectors();
@@ -44,6 +44,15 @@ Camera& Camera::getInstance()
         _instance = new Camera(Vector4(0.0, 0.0, 1.0));
     }
     return *_instance;
+}
+
+/**
+ * Delete the instance of the camera
+ */
+void Camera::deleteCamera()
+{
+    delete _instance;
+    _instance = nullptr;
 }
 
 /**
@@ -107,6 +116,28 @@ Matrix4 Camera::getFinalMatrix()
     );
 
     return getInstance().getProjectionMatrix() * translationMatrix;
+}
+
+/**
+ * Reset the camera to its initial position.
+ */
+void Camera::resetCamera()
+{
+    getInstance()._cameraPosition = Vector4(0.0, 0.0, 1.0);
+    getInstance()._cameraFront = Vector4(0.0f, 0.0f, -1.0f);
+    getInstance()._cameraUp = Vector4(0.0f, 1.0f, 0.0f);
+    getInstance()._worldUp = Vector4(0.0f, 1.0f, 0.0f);
+    //@formatter:off
+    getInstance()._projectionMatrix = Matrix4({
+        PROJECTION_FORMULA / ASPECT_RATIO, 0, 0, 0,
+        0, PROJECTION_FORMULA, 0, 0,
+        0, 0, (-FAR_PLANE_Z - NEAR_PLANE_Z) / Z_RANGE, (2 * FAR_PLANE_Z * NEAR_PLANE_Z) / Z_RANGE,
+        0, 0, 1, 0,
+    });
+    //@formatter:on
+    getInstance()._pitch = 0.0f;
+    getInstance()._speed = 0.15f;
+    getInstance()._yaw = -90.0f;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

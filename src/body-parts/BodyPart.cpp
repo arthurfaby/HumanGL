@@ -1,5 +1,4 @@
 #include "BodyPart.hpp"
-
 #include <BufferManager.hpp>
 #include <Logger.hpp>
 
@@ -16,13 +15,9 @@ BodyPart::BodyPart() : _rotationMatrix(Matrix4::identity()),
 {
     _pivotPoint = Vector4(0.0f, 0.0f, 0.0f, 1.0f);
 
-    _linesColorsBuffer = _getLinesColorsBuffer();
-    _linesVerticesBuffer = _getLinesVerticesBuffer();
     _trianglesColorsBuffer = _getTrianglesColorsBuffer();
     _trianglesVerticesBuffer = _getTrianglesVerticesBuffer();
 
-    _linesVerticesBufferIndex = BufferManager::add(LINES_VERTICES, _linesVerticesBuffer);
-    _linesColorsBufferIndex = BufferManager::add(LINES_COLORS, _linesColorsBuffer);
     _trianglesVerticesBufferIndex = BufferManager::add(TRIANGLES_VERTICES, _trianglesVerticesBuffer);
     _trianglesColorsBufferIndex = BufferManager::add(TRIANGLES_COLORS, _trianglesColorsBuffer);
 }
@@ -32,35 +27,16 @@ BodyPart::BodyPart() : _rotationMatrix(Matrix4::identity()),
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @return The depth of the body part
- */
-[[nodiscard]] float BodyPart::getDepth() const
-{
-    return _depth;
-}
-
-/**
- * @return The height of the body part
- */
-[[nodiscard]] float BodyPart::getHeight() const
-{
-    return _height;
-}
-
-/**
- * @return The width of the body part
- */
-[[nodiscard]] float BodyPart::getWidth() const
-{
-    return _width;
-}
-
-/**
  * @return The matrix stack of the body part
  */
 [[nodiscard]] Matrix4 BodyPart::getMatrixStack() const
 {
     return _matrixStack.top();
+}
+
+[[nodiscard]] Matrix4 BodyPart::getScaleMatrix() const
+{
+    return _scaleMatrix;
 }
 
 /**
@@ -74,7 +50,13 @@ BodyPart::BodyPart() : _rotationMatrix(Matrix4::identity()),
                                                                         -_pivotPoint.getZ());
 
     // Apply all transformation : translation, rotation, etc.
-    const Matrix4 combinedTransformation = _translationMatrix * _rotationMatrix;
+    const Matrix4 ownShift = Matrix4::createTranslationMatrix(_ownRelativeShiftX,
+                                                              _ownRelativeShiftY,
+                                                              _ownRelativeShiftZ);
+    const Matrix4 parentShift = Matrix4::createTranslationMatrix(_parentRelativeShiftX,
+                                                                 _parentRelativeShiftY,
+                                                                 _parentRelativeShiftZ);
+    const Matrix4 combinedTransformation = ownShift * parentShift * _translationMatrix * _rotationMatrix;
 
     // Translation to bring back the object to its origin point
     const Matrix4 translationBackFromPivot = Matrix4::createTranslationMatrix(
@@ -82,7 +64,9 @@ BodyPart::BodyPart() : _rotationMatrix(Matrix4::identity()),
         _pivotPoint.getY(),
         _pivotPoint.getZ());
 
-    return translationBackFromPivot * combinedTransformation * translationToPivot;
+    const Matrix4 transformMatrix = translationBackFromPivot * combinedTransformation * translationToPivot;
+
+    return transformMatrix;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -103,45 +87,6 @@ BodyPart& BodyPart::setColor(const float red, const float green, const float blu
     _red = red;
     _green = green;
     _blue = blue;
-    return *this;
-}
-
-/**
- * Set the depth of the body part.
- *
- * @param depth The new depth value
- *
- * @return itself
- */
-BodyPart& BodyPart::setDepth(const float depth)
-{
-    this->_depth = depth;
-    return *this;
-}
-
-/**
- * Set the height of the body part.
- *
- * @param height The new height value
- *
- * @return itself
- */
-BodyPart& BodyPart::setHeight(const float height)
-{
-    this->_height = height;
-    return *this;
-}
-
-/**
- * Set the width of the body part.
- *
- * @param width The new width value
- *
- * @return itself
- */
-BodyPart& BodyPart::setWidth(const float width)
-{
-    this->_width = width;
     return *this;
 }
 
@@ -171,6 +116,124 @@ BodyPart& BodyPart::setPivotPoint(const Vector4& pivotPoint)
     return *this;
 }
 
+/**
+ * Set the X angle of the body part.
+ *
+ * @param angle The new angle value
+ *
+ * @return itself
+ */
+BodyPart& BodyPart::setXRotation(const float angle)
+{
+    _angleX = angle;
+    _rotationMatrix = Matrix4::createRotationMatrix(angle, _angleY, _angleZ);
+    return *this;
+}
+
+/**
+ * Set the Y angle of the body part.
+ *
+ * @param angle The new angle value
+ *
+ * @return itself
+ */
+BodyPart& BodyPart::setYRotation(const float angle)
+{
+    _angleY = angle;
+    _rotationMatrix = Matrix4::createRotationMatrix(_angleX, angle, _angleZ);
+    return *this;
+}
+
+/**
+ * Set the Z angle of the body part.
+ *
+ * @param angle The new angle value
+ *
+ * @return itself
+ */
+BodyPart& BodyPart::setZRotation(const float angle)
+{
+    _angleZ = angle;
+    _rotationMatrix = Matrix4::createRotationMatrix(_angleX, _angleY, angle);
+    return *this;
+}
+
+/**
+ * Set the X translation of the body part.
+ *
+ * @param x The new x value
+ *
+ * @return itself
+ */
+BodyPart& BodyPart::setTranslateX(const float x)
+{
+    _translateX = x;
+    _translationMatrix = Matrix4::createTranslationMatrix(x, _translateY, _translateZ);
+    return *this;
+}
+
+/**
+ * Set the Y translation of the body part.
+ *
+ * @param y The new y value
+ *
+ * @return itself
+ */
+BodyPart& BodyPart::setTranslateY(const float y)
+{
+    _translateY = y;
+    _translationMatrix = Matrix4::createTranslationMatrix(_translateX, y, _translateZ);
+    return *this;
+}
+
+/**
+ * Set the Z translation of the body part.
+ *
+ * @param z The new z value
+ *
+ * @return itself
+ */
+BodyPart& BodyPart::setTranslateZ(const float z)
+{
+    _translateZ = z;
+    _translationMatrix = Matrix4::createTranslationMatrix(_translateX, _translateY, z);
+    return *this;
+}
+
+/**
+ * Set the parent relative shift of the body part.
+ *
+ * @param x The new x value
+ * @param y The new y value
+ * @param z The new z value
+ *
+ * @return itself
+ */
+BodyPart& BodyPart::setParentRelativeShift(const float x, const float y, const float z)
+{
+    _parentRelativeShiftX = x;
+    _parentRelativeShiftY = y;
+    _parentRelativeShiftZ = z;
+    return *this;
+}
+
+/**
+ * Set the own relative shift of the body part.
+ *
+ * @param x The new x value
+ * @param y The new y value
+ * @param z The new z value
+ *
+ * @return itself
+ */
+BodyPart& BodyPart::setOwnRelativeShift(const float x, const float y, const float z)
+{
+    _ownRelativeShiftX = x;
+    _ownRelativeShiftY = y;
+    _ownRelativeShiftZ = z;
+    return *this;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Methods
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -184,6 +247,7 @@ BodyPart& BodyPart::setPivotPoint(const Vector4& pivotPoint)
  */
 BodyPart& BodyPart::rotateX(const float angle)
 {
+    _angleX += angle;
     _rotationMatrix = _rotationMatrix * Matrix4::createRotationXMatrix(angle);
     return *this;
 }
@@ -197,6 +261,7 @@ BodyPart& BodyPart::rotateX(const float angle)
  */
 BodyPart& BodyPart::rotateY(const float angle)
 {
+    _angleY += angle;
     _rotationMatrix = _rotationMatrix * Matrix4::createRotationYMatrix(angle);
     return *this;
 }
@@ -210,6 +275,7 @@ BodyPart& BodyPart::rotateY(const float angle)
  */
 BodyPart& BodyPart::rotateZ(const float angle)
 {
+    _angleZ += angle;
     _rotationMatrix = _rotationMatrix * Matrix4::createRotationZMatrix(angle);
     return *this;
 }
@@ -230,24 +296,40 @@ BodyPart& BodyPart::translate(const float x, const float y, const float z)
         Logger::warning("Cannot translate an axis that has a parent.");
         return *this;
     }
+    _translateX += x;
+    _translateY += y;
+    _translateZ += z;
     _translationMatrix = _translationMatrix * Matrix4::createTranslationMatrix(x, y, z);
     return *this;
 }
 
-// /**
-//  * Apply a scaling to the body part.
-//  *
-//  * @param x The x scale
-//  * @param y The y scale
-//  * @param z The z scale
-//  *
-//  * @return itself
-//  */
-// BodyPart& BodyPart::scale(const float x, const float y, const float z)
-// {
-//     _scaleMatrix = _scaleMatrix * Matrix4::createScalingMatrix(x, y, z);
-//     return *this;
-// }
+/**
+  * Apply a scaling to the body part.
+  *
+  * @param x The x scale
+  * @param y The y scale
+  * @param z The z scale
+  *
+  * @return itself
+  */
+BodyPart& BodyPart::scale(const float x, const float y, const float z)
+{
+    _scaleMatrix = _scaleMatrix * Matrix4::createScalingMatrix(x, y, z);
+    setOwnRelativeShift(_ownRelativeShiftX * x, _ownRelativeShiftY * y, _ownRelativeShiftZ * z);
+    const Vector4 scaledPivotPoint = Vector4(_pivotPoint.getX() * x,
+                                             _pivotPoint.getY() * y,
+                                             _pivotPoint.getZ() * z,
+                                             1.0f);
+    setPivotPoint(scaledPivotPoint);
+    for (auto& child: _children)
+    {
+        // Update translate to match the new scale
+        child->setParentRelativeShift(child->_parentRelativeShiftX * x,
+                                      child->_parentRelativeShiftY * y,
+                                      child->_parentRelativeShiftZ * z);
+    }
+    return *this;
+}
 
 /**
  * Add a child to the body part.
@@ -278,21 +360,6 @@ void BodyPart::applyTransformation()
     {
         child->applyTransformation();
     }
-
-    _linesVerticesBuffer = _getLinesVerticesBuffer();
-
-    for (int i = 0; i < _linesVerticesBuffer.size(); i += 3)
-    {
-        const float x = _linesVerticesBuffer[i + 0];
-        const float y = _linesVerticesBuffer[i + 1];
-        const float z = _linesVerticesBuffer[i + 2];
-        Vector4 vertex = Vector4(x, y, z, 1.0f);
-        vertex = _matrixStack.top() * vertex;
-        _linesVerticesBuffer[i + 0] = vertex.getX();
-        _linesVerticesBuffer[i + 1] = vertex.getY();
-        _linesVerticesBuffer[i + 2] = vertex.getZ();
-    }
-
     // Draw the cube
     _trianglesVerticesBuffer = _getTrianglesVerticesBuffer();
     for (int i = 0; i < _trianglesVerticesBuffer.size(); i += 3)
@@ -315,10 +382,6 @@ void BodyPart::applyTransformation()
     _trianglesColorsBufferIndex = BufferManager::modify(TRIANGLES_COLORS,
                                                         _trianglesColorsBufferIndex,
                                                         _trianglesColorsBuffer);
-    _linesVerticesBufferIndex = BufferManager::modify(LINES_VERTICES,
-                                                      _linesVerticesBufferIndex,
-                                                      _linesVerticesBuffer);
-    _linesColorsBufferIndex = BufferManager::modify(LINES_COLORS, _linesColorsBufferIndex, _linesColorsBuffer);
 
     _matrixStack.pop();
 }
@@ -332,9 +395,10 @@ void BodyPart::applyTransformation()
  */
 std::vector<float> BodyPart::_getTrianglesVerticesBuffer() const
 {
-    float halfWidth = _width / 2.0f;
-    float halfHeight = _height / 2.0f;
-    float halfDepth = _depth / 2.0f;
+    const Vector4 scaleVector = _scaleMatrix * Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+    float halfWidth = LENGTH_BASE_UNIT * scaleVector.getX() / 2.0f;
+    float halfHeight = LENGTH_BASE_UNIT * scaleVector.getY() / 2.0f;
+    float halfDepth = LENGTH_BASE_UNIT * scaleVector.getZ() / 2.0f;
 
     //@formatter:off
     return {
@@ -404,38 +468,4 @@ std::vector<float> BodyPart::_getTrianglesColorsBuffer() const
         colors.push_back(_blue / 255.0f);
     }
     return colors;
-}
-
-/**
- * @return The buffer containing all the lines vertices
- */
-std::vector<float> BodyPart::_getLinesVerticesBuffer()
-{
-    //@formatter:off
-    return {
-        0.0f, 0.0f, 0.0f,
-        0.5f, 0.0f, 0.0f,
-        0.0f, 0.0f, 0.0f,
-        0.0f, 0.5f, 0.0f,
-        0.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 0.5f
-    };
-    //@formatter:on
-}
-
-/**
- * @return The buffer containing all the lines colors
- */
-std::vector<float> BodyPart::_getLinesColorsBuffer()
-{
-    //@formatter:off
-    return {
-        1.0f, 0.0f, 0.0f,
-        1.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 1.0f
-    };
-    //@formatter:on
 }
