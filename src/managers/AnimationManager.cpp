@@ -84,7 +84,7 @@ void AnimationManager::_generateAndAddStayingPutKeyframes(Human* human)
                                          auto angle = M_PI / 64 - 2 * factor * M_PI / 64;
                                          human->getRightArm()->setXRotation(angle);
                                          human->getLeftArm()->setXRotation(-angle);
-                                     });;
+                                     });
     stayingPutAnimation->addKeyframe(3.0f,
                                      [human](const double factor)
                                      {
@@ -95,7 +95,7 @@ void AnimationManager::_generateAndAddStayingPutKeyframes(Human* human)
     stayingPutAnimation->addKeyframe(4.0f,
                                      [human](const double factor)
                                      {
-                                     });;
+                                     });
     _animations.push_back(stayingPutAnimation);
 }
 
