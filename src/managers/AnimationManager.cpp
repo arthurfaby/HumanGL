@@ -212,6 +212,9 @@ void AnimationManager::_generateAndAddJumpingKeyframes(Human* human)
                                               .setZRotation(-3 * M_PI / 8);
                                       human->getLeftLowerArm()->setZRotation(3 * M_PI / 8);
 
+                                      human->getRightShoe()->setXRotation(factor * M_PI / 4);
+                                      human->getLeftShoe()->setXRotation(factor * M_PI / 4);
+
                                       human->getRoot()->setTranslateY(factor * -0.17f);
                                   });
     jumpingAnimation->addKeyframe(0.5f,
@@ -228,6 +231,9 @@ void AnimationManager::_generateAndAddJumpingKeyframes(Human* human)
 
                                       human->getLeftArm()->setZRotation(-3 * M_PI / 8 + factor * 6 * M_PI / 8);
                                       human->getLeftLowerArm()->setZRotation(3 * M_PI / 8 - factor * 3 * M_PI / 8);
+
+                                      human->getRightShoe()->setXRotation(M_PI / 4 - factor * M_PI / 2);
+                                      human->getLeftShoe()->setXRotation(M_PI / 4 - factor * M_PI / 2);
 
                                       human->getRoot()->setTranslateY(-0.17 + factor * 0.3);
                                   });
@@ -246,6 +252,9 @@ void AnimationManager::_generateAndAddJumpingKeyframes(Human* human)
 
                                       human->getLeftArm()->setZRotation(3 * M_PI / 8 - factor * 6 * M_PI / 8);
                                       human->getLeftLowerArm()->setZRotation(factor * 3 * M_PI / 8);
+
+                                      human->getRightShoe()->setXRotation(-M_PI / 4 + factor * M_PI / 4);
+                                      human->getLeftShoe()->setXRotation(-M_PI / 4 + factor * M_PI / 4);
                                   });
     jumpingAnimation->addKeyframe(1.5f,
                                   [](const double)
