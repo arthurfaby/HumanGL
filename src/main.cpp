@@ -14,11 +14,6 @@
 #include "Logger.hpp"
 #include "WindowDefines.hpp"
 
-Animation stayingPutAnimation;
-Animation walkingAnimation;
-Animation jumpingAnimation;
-Animation* selectedAnimation = &stayingPutAnimation;
-
 void handleBodyPartKeys(GLFWwindow* window, Human* selectedHuman)
 {
     float speed = 0;
@@ -171,186 +166,6 @@ static void handleDebugMode(const int argc, char** argv)
     }
 }
 
-void generateStayingPutKeyframes(Human* human)
-{
-    stayingPutAnimation.addKeyframe(0.0f,
-                                    [human](const double factor)
-                                    {
-                                        auto angle = 0.0f + factor * M_PI / 64;
-                                        human->resetTranslations();
-                                        human->resetMemberRotations();
-                                        human->getRightArm()->setXRotation(angle)
-                                                .setZRotation(M_PI / 2 - M_PI / 50);
-                                        human->getLeftArm()->setXRotation(-angle)
-                                                .setZRotation(-M_PI / 2 + M_PI / 50);
-                                    });
-
-    stayingPutAnimation.addKeyframe(1.0f,
-                                    [human](const double factor)
-                                    {
-                                        auto angle = M_PI / 64 - 2 * factor * M_PI / 64;
-                                        human->getRightArm()->setXRotation(angle);
-                                        human->getLeftArm()->setXRotation(-angle);
-                                    });;
-    stayingPutAnimation.addKeyframe(3.0f,
-                                    [human](const double factor)
-                                    {
-                                        auto angle = -M_PI / 64 + factor * M_PI / 64;
-                                        human->getRightArm()->setXRotation(angle);
-                                        human->getLeftArm()->setXRotation(-angle);
-                                    });
-    stayingPutAnimation.addKeyframe(4.0f,
-                                    [human](const double factor)
-                                    {
-                                    });;
-}
-
-void generateJumpingKeyframes(Human* human)
-{
-    jumpingAnimation.addKeyframe(0.0f,
-                                 [human](const float factor)
-                                 {
-                                     human->resetMemberRotations();
-                                     human->resetTranslations();
-                                     human->getRightLeg()->setXRotation(factor * M_PI / 4);
-                                     human->getLeftLeg()->setXRotation(factor * M_PI / 4);
-
-                                     human->getRightLowerLeg()->setXRotation(factor * -M_PI / 2);
-                                     human->getLeftLowerLeg()->setXRotation(factor * -M_PI / 2);
-
-                                     human->getRightArm()->setYRotation(-M_PI / 2).setZRotation(
-                                         3 * M_PI / 8);
-                                     human->getRightLowerArm()->setZRotation(-3 * M_PI / 8);
-
-                                     human->getLeftArm()->setYRotation(M_PI / 2).setZRotation(
-                                         -3 * M_PI / 8);
-                                     human->getLeftLowerArm()->setZRotation(3 * M_PI / 8);
-
-                                     human->getRoot()->setTranslateY(factor * -0.17f);
-                                 });
-    jumpingAnimation.addKeyframe(0.5f,
-                                 [human](const float factor)
-                                 {
-                                     human->getRightLeg()->setXRotation(M_PI / 4 - factor * M_PI / 4);
-                                     human->getLeftLeg()->setXRotation(M_PI / 4 - factor * M_PI / 4);
-
-                                     human->getRightLowerLeg()->setXRotation(-M_PI / 2 + factor * M_PI / 2);
-                                     human->getLeftLowerLeg()->setXRotation(-M_PI / 2 + factor * M_PI / 2);
-
-                                     human->getRightArm()->setZRotation(
-                                         3 * M_PI / 8 - factor * 6 * M_PI / 8);
-                                     human->getRightLowerArm()->setZRotation(-3 * M_PI / 8 + factor * 3 * M_PI / 8);
-
-                                     human->getLeftArm()->setZRotation(
-                                         -3 * M_PI / 8 + factor * 6 * M_PI / 8);
-                                     human->getLeftLowerArm()->setZRotation(3 * M_PI / 8 - factor * 3 * M_PI / 8);
-
-                                     human->getRoot()->setTranslateY(-0.17 + factor * 0.3);
-                                 });
-    jumpingAnimation.addKeyframe(0.75f,
-                                 [human](const float factor)
-                                 {
-                                     human->getRoot()->setTranslateY(0.13f + factor * 0.3f);
-                                 });
-    jumpingAnimation.addKeyframe(1.0f,
-                                 [human](const float factor)
-                                 {
-                                     human->getRoot()->setTranslateY(0.43f - factor * 0.43f);
-
-                                     human->getRightArm()->setZRotation(
-                                         -3 * M_PI / 8 + factor * 6 * M_PI / 8);
-                                     human->getRightLowerArm()->setZRotation(factor * -3 * M_PI / 8);
-
-                                     human->getLeftArm()->setZRotation(
-                                         3 * M_PI / 8 - factor * 6 * M_PI / 8);
-                                     human->getLeftLowerArm()->setZRotation(factor * 3 * M_PI / 8);
-                                 });
-    jumpingAnimation.addKeyframe(1.5f,
-                                 [human](const double factor)
-                                 {
-                                 });
-}
-
-void generateWalkingKeyframes(Human* human)
-{
-    walkingAnimation.addKeyframe(0.0f,
-                                 [human](const double factor)
-                                 {
-                                     const auto angle = static_cast<float>(factor * M_PI / 8);
-                                     human->resetMemberRotations();
-                                     human->resetTranslations();
-                                     human->getRightLeg()->setXRotation(angle);
-                                     human->getLeftLeg()->setXRotation(-angle);
-
-                                     human->getRightLowerLeg()->setXRotation(-angle / 2);
-                                     human->getLeftLowerLeg()->setXRotation(angle / 2);
-
-                                     human->getRightArm()->setZRotation(M_PI / 2 - M_PI / 50)
-                                             .setXRotation(-angle);
-                                     human->getLeftArm()->setZRotation(-M_PI / 2 + M_PI / 50)
-                                             .setXRotation(angle);
-
-                                     human->getRightLowerArm()->setXRotation(-angle);
-                                     human->getLeftLowerArm()->setXRotation(angle);
-
-                                     human->getHead()->setYRotation(factor * M_PI / 16);
-                                 });
-
-    walkingAnimation.addKeyframe(0.5f,
-                                 [human](const double factor)
-                                 {
-                                     const auto angle = static_cast<float>(M_PI / 8 - 2 * factor * M_PI / 8);
-                                     human->getRightLeg()->setXRotation(angle);
-                                     human->getLeftLeg()->setXRotation(-angle);
-
-                                     human->getRightLowerLeg()->setXRotation(-angle / 2);
-                                     human->getLeftLowerLeg()->setXRotation(angle / 2);
-
-                                     human->getRightArm()->setXRotation(-angle);
-                                     human->getLeftArm()->setXRotation(angle);
-
-                                     human->getRightLowerArm()->setXRotation(-angle);
-                                     human->getLeftLowerArm()->setXRotation(angle);
-
-                                     human->getHead()->setYRotation(M_PI / 16 - 2 * factor * M_PI / 16);
-                                 });
-
-    walkingAnimation.addKeyframe(1.5f,
-                                 [human](const double factor)
-                                 {
-                                     const auto angle = static_cast<float>(-M_PI / 8 + factor * M_PI / 8);
-                                     human->getRightLeg()->setXRotation(angle);
-                                     human->getLeftLeg()->setXRotation(-angle);
-
-                                     human->getRightLowerLeg()->setXRotation(-angle / 2);
-                                     human->getLeftLowerLeg()->setXRotation(angle / 2);
-
-                                     human->getRightArm()->setXRotation(-angle);
-                                     human->getLeftArm()->setXRotation(angle);
-
-                                     human->getRightLowerArm()->setXRotation(-angle);
-                                     human->getLeftLowerArm()->setXRotation(angle);
-
-                                     human->getHead()->setYRotation(-M_PI / 16 + factor * M_PI / 16);
-                                 });
-
-    walkingAnimation.addKeyframe(2.0f,
-                                 [human](const double factor)
-                                 {
-                                     human->getRightLeg()->setXRotation(0.0f);
-                                     human->getLeftLeg()->setXRotation(0.0f);
-
-                                     human->getRightLowerLeg()->setXRotation(0.0f);
-                                     human->getLeftLowerLeg()->setXRotation(0.0f);
-
-                                     human->getRightArm()->setXRotation(0.0f);
-                                     human->getLeftArm()->setXRotation(0.0f);
-
-                                     human->getRightLowerArm()->setXRotation(0.0f);
-                                     human->getLeftLowerArm()->setXRotation(0.0f);
-                                 });
-}
-
 int main(const int argc, char** argv)
 {
     handleDebugMode(argc, argv);
@@ -405,9 +220,6 @@ int main(const int argc, char** argv)
     double lastFpsCountTime = glfwGetTime();
     unsigned int frameCount = 0;
 
-    // generateWalkingKeyframes(steve);
-    // generateJumpingKeyframes(steve);
-    // generateStayingPutKeyframes(steve);
     // Loop until the user closes the window
     while (!glfwWindowShouldClose(window))
     {
