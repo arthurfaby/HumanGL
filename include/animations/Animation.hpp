@@ -14,7 +14,7 @@ class Animation
     public:
         // Constructors
         Keyframe() = default;
-        Keyframe(float time, const std::function<void(double)>& newAction);
+        Keyframe(float time, std::function<void(double)>& newAction);
 
         // Destructor
         ~Keyframe() = default;
