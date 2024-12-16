@@ -2,6 +2,7 @@
 #include <BufferManager.hpp>
 #include <Camera.hpp>
 #include <cmath>
+#include <map>
 #include <Matrix4.hpp>
 #include <ShaderManager.hpp>
 #include <Vector4.hpp>
@@ -24,9 +25,12 @@ BodyPart* leftLowerLeg;
 BodyPart* targetBodyPart;
 BodyPart* root;
 
+std::map<std::array<int, 3>, BodyPart*> bodypartMap;
+
+GLuint pickingFramebuffer, pickingTexture;
+
 void handleBodyPartKeys(GLFWwindow* window)
 {
-    float speed = 0;
     if (targetBodyPart == nullptr)
     {
         return;
@@ -55,7 +59,8 @@ void handleBodyPartKeys(GLFWwindow* window)
     // Rotate the target body part on the z-axis
     if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
     {
-        speed = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? -ROTATION_SPEED : ROTATION_SPEED;
+        float speed = 0;
+        speed = glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS ? -ROTATION_SPEED : ROTATION_SPEED;
         targetBodyPart->rotateZ(speed);
     }
     // Move the camera forward
@@ -90,6 +95,40 @@ void handleBodyPartKeys(GLFWwindow* window)
     }
 }
 
+static void mouse_button_callback(GLFWwindow* window, const int button, const int action, const int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
+    {
+        double mouseX, mouseY;
+        unsigned char pixel[3];
+
+        // Get the window based coordinates of the mouse in which (0,0) is the top left corner
+        glfwGetCursorPos(window, &mouseX, &mouseY);
+
+        // Convert the window based coordinates to OpenGL based coordinates in which (0,0) is the bottom left corner
+        mouseY = WINDOW_HEIGHT - mouseY;
+        glReadPixels(static_cast<int>(mouseX), static_cast<int>(mouseY), 1, 1, GL_RGB, GL_UNSIGNED_BYTE, &pixel);
+
+        if (bodypartMap.contains({pixel[0], pixel[1], pixel[2]}))
+        {
+            BodyPart* newTarget = bodypartMap.find({pixel[0], pixel[1], pixel[2]})->second;
+            // Reset the color of the previously targeted body part
+            targetBodyPart->resetColor();
+
+            // Update the targeted body part
+            targetBodyPart = newTarget;
+
+            // Set the color of the new targeted body part
+            newTarget->setColor(TARGET_COLOR);
+        }
+        else // If the user clicked on the background
+        {
+            targetBodyPart->resetColor();
+            targetBodyPart = torso;
+        }
+    }
+}
+
 static void key_callback(GLFWwindow* window, const int key, const int scancode, const int action, const int mods)
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -98,7 +137,7 @@ static void key_callback(GLFWwindow* window, const int key, const int scancode, 
     }
 }
 
-void render(GLFWwindow* window)
+static void render(GLFWwindow* window)
 {
     handleBodyPartKeys(window);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -113,6 +152,7 @@ void render(GLFWwindow* window)
         Logger::error("Uniform 'projection' not found in the shader program.");
     }
     glUniformMatrix4fv(projection, 1, GL_TRUE, finalMatrix.getData());
+    glUniform1i(glGetUniformLocation(ShaderManager::getProgramId(), "isPicked"), GL_FALSE);
 
     // Render here
     BufferManager::drawAll();
@@ -159,8 +199,6 @@ int main(const int argc, char** argv)
 
     // Make the window's context current
     glfwMakeContextCurrent(window);
-    // Hide the cursor within the window
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
     glewExperimental = true;
     if (glewInit() != GLEW_OK)
@@ -181,48 +219,55 @@ int main(const int argc, char** argv)
     BufferManager::init();
 
     glfwSetKeyCallback(window, key_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
 
     double lastRenderTime = glfwGetTime();
     double lastFpsCountTime = glfwGetTime();
     unsigned int frameCount = 0;
 
-    // Human* Steve = new Human();
-
-    // Création des parties du corps
     // TODO libérer mémoire
     torso = new BodyPart();
-    torso->setHeight(0.4f);
-    torso->setWidth(0.2f);
-    torso->setDepth(0.1f);
-    torso->setColor(TORSO_COLOR);
+    torso->setWidth(0.1);
+    torso->setHeight(0.1);
+    torso->setDepth(0.1);
+    torso->setDefaultColor(TORSO_COLOR);
+
+    bodypartMap[{TORSO_COLOR}] = torso;
 
     rightArm = new BodyPart();
+    rightArm->setWidth(0.3f);
     rightArm->setHeight(0.05f);
     rightArm->setDepth(0.05f);
-    rightArm->translate(-0.2f, 0.15f, 0.0f);
-    rightArm->setPivotPoint(Vector4(0.08f, 0, 0, 1));
-    rightArm->setColor(RIGHT_ARM_COLOR);
+    rightArm->setDefaultColor(RIGHT_ARM_COLOR);
+
+    bodypartMap[{RIGHT_ARM_COLOR}] = rightArm;
 
     leftArm = new BodyPart();
     leftArm->setHeight(0.05f);
     leftArm->setDepth(0.05f);
     leftArm->setPivotPoint(Vector4(-0.10f, 0, 0, 1));
     leftArm->translate(0.2f, 0.15f, 0.0f);
-    leftArm->setColor(LEFT_ARM_COLOR);
+    leftArm->setDefaultColor(LEFT_ARM_COLOR);
+
+    bodypartMap[{LEFT_ARM_COLOR}] = leftArm;
 
     rightLowerArm = new BodyPart();
     rightLowerArm->setHeight(rightArm->getHeight() / 2);
     rightLowerArm->setDepth(rightArm->getDepth() / 2);
     rightLowerArm->setPivotPoint(Vector4(0.10f, 0, 0, 1));
     rightLowerArm->translate(-0.2f, 0, 0);
-    rightLowerArm->setColor(RIGHT_LOWER_ARM_COLOR);
+    rightLowerArm->setDefaultColor(RIGHT_LOWER_ARM_COLOR);
+
+    bodypartMap[{RIGHT_LOWER_ARM_COLOR}] = rightLowerArm;
 
     leftLowerArm = new BodyPart();
     leftLowerArm->setHeight(leftArm->getHeight() / 2);
     leftLowerArm->setDepth(leftArm->getDepth() / 2);
     leftLowerArm->setPivotPoint(Vector4(-0.10f, 0, 0, 1));
     leftLowerArm->translate(0.2f, 0, 0);
-    leftLowerArm->setColor(LEFT_LOWER_ARM_COLOR);
+    leftLowerArm->setDefaultColor(LEFT_LOWER_ARM_COLOR);
+
+    bodypartMap[{LEFT_LOWER_ARM_COLOR}] = leftLowerArm;
 
     head = new BodyPart();
     head->setHeight(0.1f);
@@ -230,7 +275,9 @@ int main(const int argc, char** argv)
     head->setDepth(0.1f);
     head->setPivotPoint(Vector4(0, -0.05f, 0, 1));
     head->translate(0.0f, 0.25f, 0.0f);
-    head->setColor(HEAD_COLOR);
+    head->setDefaultColor(HEAD_COLOR);
+
+    bodypartMap[{HEAD_COLOR}] = head;
 
     leftLeg = new BodyPart();
     leftLeg->setHeight(0.2f);
@@ -238,7 +285,9 @@ int main(const int argc, char** argv)
     leftLeg->setDepth(0.05f);
     leftLeg->setPivotPoint(Vector4(0, 0.1f, 0, 1));
     leftLeg->translate(0.05f, -0.3f, 0.0f);
-    leftLeg->setColor(LEFT_LEG_COLOR);
+    leftLeg->setDefaultColor(LEFT_LEG_COLOR);
+
+    bodypartMap[{LEFT_LEG_COLOR}] = leftLeg;
 
     leftLowerLeg = new BodyPart();
     leftLowerLeg->setHeight(0.2f);
@@ -246,7 +295,9 @@ int main(const int argc, char** argv)
     leftLowerLeg->setDepth(0.05f / 2.0f);
     leftLowerLeg->setPivotPoint(Vector4(0, 0.1f, 0, 1));
     leftLowerLeg->translate(0.0f, -0.2f, 0.0f);
-    leftLowerLeg->setColor(LEFT_LOWER_LEG_COLOR);
+    leftLowerLeg->setDefaultColor(LEFT_LOWER_LEG_COLOR);
+
+    bodypartMap[{LEFT_LOWER_LEG_COLOR}] = leftLowerLeg;
 
     rightLeg = new BodyPart();
     rightLeg->setHeight(0.2f);
@@ -254,7 +305,9 @@ int main(const int argc, char** argv)
     rightLeg->setDepth(0.05f);
     rightLeg->setPivotPoint(Vector4(0, 0.1f, 0, 1));
     rightLeg->translate(-0.05f, -0.3f, 0.0f);
-    rightLeg->setColor(RIGHT_LEG_COLOR);
+    rightLeg->setDefaultColor(RIGHT_LEG_COLOR);
+
+    bodypartMap[{RIGHT_LEG_COLOR}] = rightLeg;
 
     rightLowerLeg = new BodyPart();
     rightLowerLeg->setHeight(0.2f);
@@ -262,7 +315,9 @@ int main(const int argc, char** argv)
     rightLowerLeg->setDepth(0.05f / 2.0f);
     rightLowerLeg->setPivotPoint(Vector4(0, 0.1f, 0, 1));
     rightLowerLeg->translate(0.0f, -0.2f, 0.0f);
-    rightLowerLeg->setColor(RIGHT_LOWER_LEG_COLOR);
+    rightLowerLeg->setDefaultColor(RIGHT_LOWER_LEG_COLOR);
+
+    bodypartMap[{RIGHT_LOWER_LEG_COLOR}] = rightLowerLeg;
 
     torso->addChild(head);
     torso->addChild(leftLeg);
@@ -270,8 +325,8 @@ int main(const int argc, char** argv)
     torso->addChild(rightLeg);
     rightLeg->addChild(rightLowerLeg);
     torso->addChild(rightArm);
-    torso->addChild(leftArm);
     rightArm->addChild(rightLowerArm);
+    torso->addChild(leftArm);
     leftArm->addChild(leftLowerArm);
 
     root = torso;

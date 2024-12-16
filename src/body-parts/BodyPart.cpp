@@ -5,7 +5,7 @@
 
 int BodyPart::_faceCount = 6;
 int BodyPart::_verticesPerFace = 6;
-
+int BodyPart::_verticesPerBodyPart = _faceCount * _verticesPerFace;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Constructors
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -14,15 +14,15 @@ BodyPart::BodyPart() : _rotationMatrix(Matrix4::identity()),
                        _translationMatrix(Matrix4::identity()),
                        _scaleMatrix(Matrix4::identity())
 {
+    _red = _defaultRed;
+    _green = _defaultGreen;
+    _blue = _defaultBlue;
+
     _pivotPoint = Vector4(0.0f, 0.0f, 0.0f, 1.0f);
 
-    _linesColorsBuffer = _getLinesColorsBuffer();
-    _linesVerticesBuffer = _getLinesVerticesBuffer();
     _trianglesColorsBuffer = _getTrianglesColorsBuffer();
     _trianglesVerticesBuffer = _getTrianglesVerticesBuffer();
 
-    _linesVerticesBufferIndex = BufferManager::add(LINES_VERTICES, _linesVerticesBuffer);
-    _linesColorsBufferIndex = BufferManager::add(LINES_COLORS, _linesColorsBuffer);
     _trianglesVerticesBufferIndex = BufferManager::add(TRIANGLES_VERTICES, _trianglesVerticesBuffer);
     _trianglesColorsBufferIndex = BufferManager::add(TRIANGLES_COLORS, _trianglesColorsBuffer);
 }
@@ -103,6 +103,37 @@ BodyPart& BodyPart::setColor(const float red, const float green, const float blu
     _red = red;
     _green = green;
     _blue = blue;
+    return *this;
+}
+
+/**
+ * Set the default color of the body part using RGB values.
+ *
+ * @param red   The new red value
+ * @param green The new green value
+ * @param blue  The new blue value
+ *
+ * @return itself
+ */
+BodyPart& BodyPart::setDefaultColor(const float red, const float green, const float blue)
+{
+    _defaultRed = red;
+    _defaultGreen = green;
+    _defaultBlue = blue;
+    resetColor();
+    return *this;
+}
+
+/**
+ * Reset the color of the body part to its default value.
+ *
+ * @return itself
+ */
+BodyPart& BodyPart::resetColor()
+{
+    _red = _defaultRed;
+    _green = _defaultGreen;
+    _blue = _defaultBlue;
     return *this;
 }
 
@@ -234,21 +265,6 @@ BodyPart& BodyPart::translate(const float x, const float y, const float z)
     return *this;
 }
 
-// /**
-//  * Apply a scaling to the body part.
-//  *
-//  * @param x The x scale
-//  * @param y The y scale
-//  * @param z The z scale
-//  *
-//  * @return itself
-//  */
-// BodyPart& BodyPart::scale(const float x, const float y, const float z)
-// {
-//     _scaleMatrix = _scaleMatrix * Matrix4::createScalingMatrix(x, y, z);
-//     return *this;
-// }
-
 /**
  * Add a child to the body part.
  *
@@ -279,20 +295,6 @@ void BodyPart::applyTransformation()
         child->applyTransformation();
     }
 
-    _linesVerticesBuffer = _getLinesVerticesBuffer();
-
-    for (int i = 0; i < _linesVerticesBuffer.size(); i += 3)
-    {
-        const float x = _linesVerticesBuffer[i + 0];
-        const float y = _linesVerticesBuffer[i + 1];
-        const float z = _linesVerticesBuffer[i + 2];
-        Vector4 vertex = Vector4(x, y, z, 1.0f);
-        vertex = _matrixStack.top() * vertex;
-        _linesVerticesBuffer[i + 0] = vertex.getX();
-        _linesVerticesBuffer[i + 1] = vertex.getY();
-        _linesVerticesBuffer[i + 2] = vertex.getZ();
-    }
-
     // Draw the cube
     _trianglesVerticesBuffer = _getTrianglesVerticesBuffer();
     for (int i = 0; i < _trianglesVerticesBuffer.size(); i += 3)
@@ -302,7 +304,6 @@ void BodyPart::applyTransformation()
         const float z = _trianglesVerticesBuffer[i + 2];
         Vector4 vertex = Vector4(x, y, z, 1.0f);
         vertex = _matrixStack.top() * vertex;
-        // vertex = _scaleMatrix * vertex;
         _trianglesVerticesBuffer[i + 0] = vertex.getX();
         _trianglesVerticesBuffer[i + 1] = vertex.getY();
         _trianglesVerticesBuffer[i + 2] = vertex.getZ();
@@ -315,10 +316,6 @@ void BodyPart::applyTransformation()
     _trianglesColorsBufferIndex = BufferManager::modify(TRIANGLES_COLORS,
                                                         _trianglesColorsBufferIndex,
                                                         _trianglesColorsBuffer);
-    _linesVerticesBufferIndex = BufferManager::modify(LINES_VERTICES,
-                                                      _linesVerticesBufferIndex,
-                                                      _linesVerticesBuffer);
-    _linesColorsBufferIndex = BufferManager::modify(LINES_COLORS, _linesColorsBufferIndex, _linesColorsBuffer);
 
     _matrixStack.pop();
 }
@@ -394,48 +391,12 @@ std::vector<float> BodyPart::_getTrianglesVerticesBuffer() const
  */
 std::vector<float> BodyPart::_getTrianglesColorsBuffer() const
 {
-    const auto nbLoops = _faceCount * _verticesPerFace;
-
     std::vector<float> colors;
-    for (int i = 0; i < nbLoops; i++)
+    for (int i = 0; i < _verticesPerBodyPart; i++)
     {
         colors.push_back(_red / 255.0f);
         colors.push_back(_green / 255.0f);
         colors.push_back(_blue / 255.0f);
     }
     return colors;
-}
-
-/**
- * @return The buffer containing all the lines vertices
- */
-std::vector<float> BodyPart::_getLinesVerticesBuffer()
-{
-    //@formatter:off
-    return {
-        0.0f, 0.0f, 0.0f,
-        0.5f, 0.0f, 0.0f,
-        0.0f, 0.0f, 0.0f,
-        0.0f, 0.5f, 0.0f,
-        0.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 0.5f
-    };
-    //@formatter:on
-}
-
-/**
- * @return The buffer containing all the lines colors
- */
-std::vector<float> BodyPart::_getLinesColorsBuffer()
-{
-    //@formatter:off
-    return {
-        1.0f, 0.0f, 0.0f,
-        1.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 1.0f
-    };
-    //@formatter:on
 }

@@ -22,6 +22,8 @@ public:
 
     // Setters
     BodyPart& setColor(float red, float green, float blue);
+    BodyPart& setDefaultColor(float red, float green, float blue);
+    BodyPart& resetColor();
     BodyPart& setHeight(float height);
     BodyPart& setDepth(float depth);
     BodyPart& setWidth(float width);
@@ -33,12 +35,26 @@ public:
     BodyPart& rotateY(float angle);
     BodyPart& rotateZ(float angle);
     BodyPart& translate(float x, float y, float z);
-    // BodyPart& scale(float x, float y, float z);
 
     BodyPart& addChild(BodyPart* child);
     void applyTransformation();
 
 private:
+    /**
+    * The number of faces each body part has.
+    */
+    static int _faceCount;
+
+    /**
+    * The number of vertices per face.
+    */
+    static int _verticesPerFace;
+
+    /**
+    * The number of vertices per body parts.
+    */
+    static int _verticesPerBodyPart;
+
     /**
     * The width of the body part.
     */
@@ -57,17 +73,32 @@ private:
     /**
     * The red value of the body part's color.
     */
-    float _red = 255;
+    float _red;
+
+    /**
+    * The default red value of the body part's color.
+    */
+    float _defaultRed = 255;
 
     /**
     * The green value of the body part's color.
     */
-    float _green = 255;
+    float _green;
+
+    /**
+    * The default green value of the body part's color.
+    */
+    float _defaultGreen = 255;
 
     /**
     * The blue value of the body part's color.
     */
-    float _blue = 255;
+    float _blue;
+
+    /**
+    * The default blue value of the body part's color.
+    */
+    float _defaultBlue = 255;
 
     /**
     * The sum of all rotation matrices that have been applied to the body part.
@@ -105,26 +136,6 @@ private:
     std::stack<Matrix4> _matrixStack;
 
     /**
-    * The buffer's index of lines vertices of the body part.
-    */
-    unsigned int _linesVerticesBufferIndex;
-
-    /**
-    * The buffer's index of lines colors of the body part.
-    */
-    unsigned int _linesColorsBufferIndex;
-
-    /**
-    * The buffer of lines vertices of the body part.
-    */
-    std::vector<float> _linesVerticesBuffer;
-
-    /**
-    * The buffer of lines colors of the body part.
-    */
-    std::vector<float> _linesColorsBuffer;
-
-    /**
     * The buffer's index of triangles vertices of the body part.
     */
     unsigned int _trianglesVerticesBufferIndex;
@@ -147,18 +158,6 @@ private:
     // Private getters
     [[nodiscard]] std::vector<float> _getTrianglesVerticesBuffer() const;
     [[nodiscard]] std::vector<float> _getTrianglesColorsBuffer() const;
-    [[nodiscard]] static std::vector<float> _getLinesVerticesBuffer();
-    [[nodiscard]] static std::vector<float> _getLinesColorsBuffer();
-
-    /**
-    * The number of faces each body part has.
-    */
-    static int _faceCount;
-
-    /**
-    * The number of vertices per face.
-    */
-    static int _verticesPerFace;
 };
 
 #endif //BODY_PART_HPP
