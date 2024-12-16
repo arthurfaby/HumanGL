@@ -358,7 +358,7 @@ BodyPart& BodyPart::scale(const float x, const float y, const float z)
                                              _pivotPoint.getZ() * z,
                                              1.0f);
     setPivotPoint(scaledPivotPoint);
-    for (auto& child: _children)
+    for (const auto& child: _children)
     {
         // Update translate to match the new scale
         child->setParentRelativeShift(child->_parentRelativeShiftX * x,
