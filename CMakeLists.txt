@@ -12,9 +12,10 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(LIBS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/libs)
 
-# Contain all cpp files within src/
-set(SOURCE_FILES
-        src/main.cpp
+
+# Contain all cpp files within src/animations
+set(ANIMATIONS_SOURCE_FILES
+        src/animations/Animation.cpp
 )
 
 # Contain all cpp files within src/body-parts
@@ -23,10 +24,6 @@ set(BODY_PARTS_SOURCE_FILES
         src/body-parts/Human.cpp
 )
 
-# Contain all cpp files within src/animations
-set(ANIMATIONS_SOURCE_FILES
-        src/animations/Animation.cpp
-)
 
 # Contain all cpp files within src/camera
 set(CAMERA_SOURCE_FILES
@@ -45,6 +42,11 @@ set(MATHS_SOURCE_FILES
         src/maths/matrices/Matrix4.cpp
 )
 
+# Contain all cpp files within src/
+set(SOURCE_FILES
+        src/main.cpp
+)
+
 # Contain all cpp files within src/utils
 set(UTILS_SOURCE_FILES
         src/utils/Logger.cpp
@@ -52,13 +54,13 @@ set(UTILS_SOURCE_FILES
 
 # Contain all source files
 set(ALL_SOURCE_FILES
-        ${SOURCE_FILES}
         ${ANIMATIONS_SOURCE_FILES}
         ${BODY_PARTS_SOURCE_FILES}
         ${CAMERA_SOURCE_FILES}
         ${MANAGERS_SOURCE_FILES}
         ${MATHS_SOURCE_FILES}
         ${UTILS_SOURCE_FILES}
+        ${SOURCE_FILES}
 )
 
 find_package(OpenGL REQUIRED)
