@@ -19,7 +19,7 @@ GLuint BufferManager::_vertexArrayID = -1;
 
 /**
  * Initialize the buffer manager.<br>
- * Create the 4 OpenGL buffers (triangles vertices, triangles colors, lines vertices, lines colors).
+ * Create the 4 OpenGL buffers (triangles vertices, triangles colors).
  */
 void BufferManager::init()
 {
@@ -43,7 +43,7 @@ void BufferManager::clean()
 
 /**
  * Draw all the buffers.<br>
- * Draw the lines and the triangles with their colors.<br>
+ * Draw the triangles with their colors.<br>
  * Don't draw if the buffer manager is not initialized.
  */
 void BufferManager::drawAll()
