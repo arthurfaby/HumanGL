@@ -57,6 +57,16 @@ Human::~Human()
     delete _rightLowerLeg;
     delete _leftLeg;
     delete _leftLowerLeg;
+
+    delete _rightShoe;
+    delete _leftShoe;
+
+    delete _hatBrim;
+    delete _hatBrimGreenBand;
+    delete _hatBrimRedBand;
+    delete _hatBrimYellowBand;
+
+    delete _hatCrown;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -293,7 +303,6 @@ void Human::_initBodyParts()
   */
 void Human::_initHead() const
 {
-    if (!_head) return;
     _head->scale(HEAD_SCALE_X, HEAD_SCALE_Y, HEAD_SCALE_Z);
     _head->setOwnRelativeShift(0, HEAD_SCALE_Y / 2, 0);
     _head->setParentRelativeShift(0, TORSO_SCALE_Y / 2, 0);
@@ -309,7 +318,6 @@ void Human::_initHead() const
   */
 void Human::_initTorso() const
 {
-    if (!_torso) return;
     _torso->scale(TORSO_SCALE_X, TORSO_SCALE_Y, TORSO_SCALE_Z);
     _torso->setDefaultColor(TORSO_COLOR);
     _colorToBodyPartMap[{TORSO_COLOR}] = _torso;
@@ -320,7 +328,6 @@ void Human::_initTorso() const
   */
 void Human::_initRightArm() const
 {
-    if (!_rightArm) return;
     _rightArm->scale(RIGHT_ARM_SCALE_X, RIGHT_ARM_SCALE_Y, RIGHT_ARM_SCALE_Z);
     _rightArm->setOwnRelativeShift(-RIGHT_ARM_SCALE_X / 2, RIGHT_ARM_SCALE_Y / 2, 0);
     _rightArm->setParentRelativeShift(-TORSO_SCALE_X / 2, TORSO_SCALE_Y / 2, 0);
@@ -336,7 +343,6 @@ void Human::_initRightArm() const
   */
 void Human::_initRightLowerArm() const
 {
-    if (!_rightLowerArm) return;
     _rightLowerArm->scale(RIGHT_LOWER_ARM_SCALE_X, RIGHT_LOWER_ARM_SCALE_Y, RIGHT_LOWER_ARM_SCALE_Z);
     _rightLowerArm->setOwnRelativeShift(-RIGHT_LOWER_ARM_SCALE_X / 2, 0, 0);
     _rightLowerArm->setParentRelativeShift(-RIGHT_ARM_SCALE_X / 2, 0, 0);
@@ -351,7 +357,6 @@ void Human::_initRightLowerArm() const
   */
 void Human::_initLeftArm() const
 {
-    if (!_leftArm) return;
     _leftArm->scale(-LEFT_ARM_SCALE_X, LEFT_ARM_SCALE_Y, LEFT_ARM_SCALE_Z);
     _leftArm->setOwnRelativeShift(LEFT_ARM_SCALE_X / 2, LEFT_ARM_SCALE_Y / 2, 0);
     _leftArm->setParentRelativeShift(TORSO_SCALE_X / 2, TORSO_SCALE_Y / 2, 0);
@@ -367,7 +372,6 @@ void Human::_initLeftArm() const
  */
 void Human::_initLeftLowerArm() const
 {
-    if (!_leftLowerArm) return;
     _leftLowerArm->scale(-LEFT_LOWER_ARM_SCALE_X, LEFT_LOWER_ARM_SCALE_Y, LEFT_LOWER_ARM_SCALE_Z);
     _leftLowerArm->setOwnRelativeShift(LEFT_LOWER_ARM_SCALE_X / 2, 0, 0);
     _leftLowerArm->setParentRelativeShift(LEFT_ARM_SCALE_X / 2, 0, 0);
@@ -382,7 +386,6 @@ void Human::_initLeftLowerArm() const
  */
 void Human::_initRightLeg() const
 {
-    if (!_rightLeg) return;
     _rightLeg->scale(RIGHT_LEG_SCALE_X, RIGHT_LEG_SCALE_Y, RIGHT_LEG_SCALE_Z);
     _rightLeg->setOwnRelativeShift(0, -RIGHT_LEG_SCALE_Y / 2, 0);
     _rightLeg->setParentRelativeShift(-TORSO_SCALE_X / 2, -TORSO_SCALE_Y / 2, 0);
@@ -398,7 +401,6 @@ void Human::_initRightLeg() const
  */
 void Human::_initRightLowerLeg() const
 {
-    if (!_rightLowerLeg) return;
     _rightLowerLeg->scale(RIGHT_LOWER_LEG_SCALE_X, RIGHT_LOWER_LEG_SCALE_Y, RIGHT_LOWER_LEG_SCALE_Z);
     _rightLowerLeg->setOwnRelativeShift(0, -RIGHT_LOWER_LEG_SCALE_Y / 2, 0);
     _rightLowerLeg->setParentRelativeShift(0, -RIGHT_LEG_SCALE_Y / 2, 0);
@@ -414,7 +416,6 @@ void Human::_initRightLowerLeg() const
  */
 void Human::_initLeftLeg() const
 {
-    if (!_leftLeg) return;
     _leftLeg->scale(LEFT_LEG_SCALE_X, LEFT_LEG_SCALE_Y, LEFT_LEG_SCALE_Z);
     _leftLeg->setOwnRelativeShift(0, -LEFT_LEG_SCALE_Y / 2, 0);
     _leftLeg->setParentRelativeShift(TORSO_SCALE_X / 2, -TORSO_SCALE_Y / 2, 0);
@@ -430,7 +431,6 @@ void Human::_initLeftLeg() const
  */
 void Human::_initLeftLowerLeg() const
 {
-    if (!_leftLowerLeg) return;
     _leftLowerLeg->scale(LEFT_LOWER_LEG_SCALE_X, LEFT_LOWER_LEG_SCALE_Y, LEFT_LOWER_LEG_SCALE_Z);
     _leftLowerLeg->setOwnRelativeShift(0, -LEFT_LOWER_LEG_SCALE_Y / 2, 0);
     _leftLowerLeg->setParentRelativeShift(0, -LEFT_LEG_SCALE_Y / 2, 0);

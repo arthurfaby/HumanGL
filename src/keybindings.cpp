@@ -8,13 +8,12 @@
 #include <keybindings.hpp>
 #include <GLFW/glfw3.h>
 
-void handleBodyPartKeys(GLFWwindow* window, const Human* selectedHuman)
+void handleAnimationKeys(GLFWwindow* window)
 {
-    if (selectedHuman->getTarget() == nullptr)
+    if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)
     {
-        return;
+        AnimationManager::select(NO_ANIMATION);
     }
-
     if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
     {
         AnimationManager::select(STAYING_PUT);
@@ -27,9 +26,17 @@ void handleBodyPartKeys(GLFWwindow* window, const Human* selectedHuman)
     {
         AnimationManager::select(JUMPING);
     }
-    if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
     {
-        AnimationManager::select(NO_ANIMATION);
+        AnimationManager::select(SNOW_ANGEL);
+    }
+}
+
+void handleBodyPartKeys(GLFWwindow* window, const Human* selectedHuman)
+{
+    if (selectedHuman->getTarget() == nullptr)
+    {
+        return;
     }
     if (glfwGetKey(window, GLFW_KEY_KP_4) == GLFW_PRESS)
     {
@@ -82,6 +89,10 @@ void handleBodyPartKeys(GLFWwindow* window, const Human* selectedHuman)
         speed = glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS ? -ROTATION_SPEED : ROTATION_SPEED;
         selectedHuman->getTarget()->rotateZ(speed);
     }
+}
+
+void handleCameraKeys(GLFWwindow* window)
+{
     // Move the camera forward
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
@@ -112,10 +123,21 @@ void handleBodyPartKeys(GLFWwindow* window, const Human* selectedHuman)
     {
         Camera::getInstance().updateCameraPos(UP);
     }
+}
+
+void handleKeys(GLFWwindow* window, const Human* selectedHuman)
+{
+    if (selectedHuman == nullptr)
+    {
+        return;
+    }
+    handleAnimationKeys(window);
+    handleBodyPartKeys(window, selectedHuman);
+    handleCameraKeys(window);
 
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
     {
-        Camera::getInstance().resetCamera();
+        Camera::resetCamera();
         selectedHuman->resetMembersTranslations();
         selectedHuman->resetMembersRotations();
         selectedHuman->getRoot()->setXRotation(0.0f);

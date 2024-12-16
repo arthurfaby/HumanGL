@@ -9,7 +9,7 @@
 #define TORSO_SCALE_Y 0.4f
 #define TORSO_SCALE_Z 0.1f
 
-#define RIGHT_ARM_SCALE_X 0.3f
+#define RIGHT_ARM_SCALE_X 0.25f
 #define RIGHT_ARM_SCALE_Y 0.04f
 #define RIGHT_ARM_SCALE_Z 0.04f
 
@@ -17,7 +17,7 @@
 #define RIGHT_LOWER_ARM_SCALE_Y 0.025f
 #define RIGHT_LOWER_ARM_SCALE_Z 0.025f
 
-#define LEFT_ARM_SCALE_X 0.3f
+#define LEFT_ARM_SCALE_X 0.25f
 #define LEFT_ARM_SCALE_Y 0.04f
 #define LEFT_ARM_SCALE_Z 0.04f
 

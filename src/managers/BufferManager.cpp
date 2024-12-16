@@ -7,13 +7,9 @@ bool BufferManager::_initialized = false;
 
 std::vector<float> BufferManager::_trianglesVerticesBuffer = {};
 std::vector<float> BufferManager::_trianglesColorsBuffer = {};
-std::vector<float> BufferManager::_linesVerticesBuffer = {};
-std::vector<float> BufferManager::_linesColorsBuffer = {};
 
 GLuint BufferManager::_glTrianglesVerticesBuffer = 0;
 GLuint BufferManager::_glTrianglesColorsBuffer = 0;
-GLuint BufferManager::_glLinesVerticesBuffer = 0;
-GLuint BufferManager::_glLinesColorsBuffer = 0;
 
 GLuint BufferManager::_vertexArrayID = -1;
 
@@ -23,7 +19,7 @@ GLuint BufferManager::_vertexArrayID = -1;
 
 /**
  * Initialize the buffer manager.<br>
- * Create the 4 OpenGL buffers (triangles vertices, triangles colors, lines vertices, lines colors).
+ * Create the 2 OpenGL buffers (triangles vertices, triangles colors).
  */
 void BufferManager::init()
 {
@@ -36,8 +32,6 @@ void BufferManager::init()
     _initialized = true;
     glGenBuffers(1, &_glTrianglesVerticesBuffer);
     glGenBuffers(1, &_glTrianglesColorsBuffer);
-    glGenBuffers(1, &_glLinesVerticesBuffer);
-    glGenBuffers(1, &_glLinesColorsBuffer);
 }
 
 void BufferManager::clean()
@@ -45,13 +39,11 @@ void BufferManager::clean()
     glDeleteVertexArrays(1, &_vertexArrayID);
     glDeleteBuffers(1, &_glTrianglesVerticesBuffer);
     glDeleteBuffers(1, &_glTrianglesColorsBuffer);
-    glDeleteBuffers(1, &_glLinesVerticesBuffer);
-    glDeleteBuffers(1, &_glLinesColorsBuffer);
 }
 
 /**
  * Draw all the buffers.<br>
- * Draw the lines and the triangles with their colors.<br>
+ * Draw the triangles with their colors.<br>
  * Don't draw if the buffer manager is not initialized.
  */
 void BufferManager::drawAll()
@@ -62,7 +54,6 @@ void BufferManager::drawAll()
         return;
     }
     // Draw the buffers
-    drawLines();
     drawTriangles();
 }
 
@@ -158,46 +149,6 @@ void BufferManager::drawTriangles()
     glDisableVertexAttribArray(1);
 }
 
-/**
- * Draw the lines.<br>
- * 1. Bind the lines vertices buffer.<br>
- * 2. Enable the vertex attribute array with index 0 for vertices.<br>
- * 3. Configure the vertex attribute array with index 0 for vertices.<br>
- * 4. Bind the lines colors buffer.<br>
- * 5. Enable the vertex attribute array with index 1 for colors.<br>
- * 6. Configure the vertex attribute array with index 1 for colors.<br>
- * 7. Calculate the total length of the vertices and colors buffers.<br>
- * 8. Draw the lines.<br>
- * 9. Disable the vertex attribute arrays with index 0 and 1.
- */
-void BufferManager::drawLines()
-{
-    glBindBuffer(GL_ARRAY_BUFFER, _glLinesVerticesBuffer);
-    glBufferData(GL_ARRAY_BUFFER,
-                 static_cast<long>(_linesVerticesBuffer.size() * sizeof(float)),
-                 _linesVerticesBuffer.data(),
-                 GL_STATIC_DRAW);
-
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-
-    glBindBuffer(GL_ARRAY_BUFFER, _glLinesColorsBuffer);
-    glBufferData(GL_ARRAY_BUFFER,
-                 static_cast<long>(_linesColorsBuffer.size() * sizeof(float)),
-                 _linesColorsBuffer.data(),
-                 GL_STATIC_DRAW);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-
-    const int totalLength = static_cast<int>(_linesVerticesBuffer.size() / 2
-                                             + _linesColorsBuffer.size() / 2);
-
-    glDrawArrays(GL_LINES, 0, totalLength);
-
-    glDisableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
-}
-
 std::vector<float>* BufferManager::_getBuffer(const ManipulableBuffer bufferToGet)
 {
     switch (bufferToGet)
@@ -206,12 +157,7 @@ std::vector<float>* BufferManager::_getBuffer(const ManipulableBuffer bufferToGe
             return &_trianglesVerticesBuffer;
         case TRIANGLES_COLORS:
             return &_trianglesColorsBuffer;
-        case LINES_VERTICES:
-            return &_linesVerticesBuffer;
-        case LINES_COLORS:
-            return &_linesColorsBuffer;
         default:
-            //TODO: Throw ?
             Logger::error("BufferManager::add(): Invalid buffer type.");
             return nullptr;
     }
