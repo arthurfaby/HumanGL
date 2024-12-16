@@ -27,7 +27,6 @@ public:
 
     // Getters
     [[nodiscard]] static Camera& getInstance();
-    static void deleteCamera();
     [[nodiscard]] const Vector4& getPosition() const;
     [[nodiscard]] const Matrix4& getProjectionMatrix() const;
 
@@ -35,6 +34,7 @@ public:
     void updateCameraPos(CameraDirection dir);
     [[nodiscard]] static Matrix4 getFinalMatrix();
     void resetCamera();
+    static void deleteCamera();
 
 private:
     explicit Camera(const Vector4& position);
