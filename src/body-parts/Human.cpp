@@ -23,6 +23,17 @@ Human::Human()
     _rightLowerLeg = new BodyPart();
     _leftLeg = new BodyPart();
     _leftLowerLeg = new BodyPart();
+
+    _rightShoe = new BodyPart();
+    _leftShoe = new BodyPart();
+
+    _hatBrim = new BodyPart();
+    _hatBrimGreenBand = new BodyPart();
+    _hatBrimRedBand = new BodyPart();
+    _hatBrimYellowBand = new BodyPart();
+
+    _hatCrown = new BodyPart();
+
     _initBodyParts();
     _linkChildren();
 }
@@ -156,6 +167,22 @@ BodyPart* Human::getLeftLowerLeg() const
     return _leftLowerLeg;
 }
 
+/**
+  * @return The right shoe of the human.
+  */
+BodyPart* Human::getRightShoe() const
+{
+    return _rightShoe;
+}
+
+/**
+  * @return The left shoe of the human.
+  */
+BodyPart* Human::getLeftShoe() const
+{
+    return _leftShoe;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Setter
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -210,6 +237,8 @@ void Human::resetMembersRotations() const
     resetRotation(_rightLowerLeg);
     resetRotation(_leftLeg);
     resetRotation(_leftLowerLeg);
+    resetRotation(_rightShoe);
+    resetRotation(_leftShoe);
 }
 
 /**
@@ -244,6 +273,17 @@ void Human::_initBodyParts()
     _initRightLowerLeg();
     _initLeftLeg();
     _initLeftLowerLeg();
+
+    _initRightShoe();
+    _initLeftShoe();
+
+    _initHatBrim();
+    _initHatBrimGreenBand();
+    _initHatBrimRedBand();
+    _initHatBrimYellowBand();
+
+    _initHatCrown();
+
     _initRoot();
     _initTarget();
 }
@@ -392,6 +432,111 @@ void Human::_initLeftLowerLeg() const
 }
 
 /**
+ * Initialize the right shoe of the human.
+ */
+void Human::_initRightShoe() const
+{
+    _rightShoe->scale(RIGHT_SHOE_SCALE_X, RIGHT_SHOE_SCALE_Y, RIGHT_SHOE_SCALE_Z);
+    _rightShoe->setOwnRelativeShift(0, -RIGHT_SHOE_SCALE_Y / 2, -RIGHT_SHOE_SCALE_Z / 2);
+    _rightShoe->setParentRelativeShift(0, -RIGHT_LOWER_LEG_SCALE_Y / 2, RIGHT_LOWER_LEG_SCALE_Z / 2);
+
+    _rightShoe->setPivotPoint(Vector4(0, RIGHT_SHOE_SCALE_Y / 2, RIGHT_SHOE_SCALE_Z / 2, 1));
+
+    _rightShoe->setDefaultColor(RIGHT_SHOE_COLOR);
+    _colorToBodyPartMap[{RIGHT_SHOE_COLOR}] = _rightShoe;
+}
+
+/**
+ * Initialize the left shoe of the human.
+ */
+void Human::_initLeftShoe() const
+{
+    _leftShoe->scale(LEFT_SHOE_SCALE_X, LEFT_SHOE_SCALE_Y, LEFT_SHOE_SCALE_Z);
+    _leftShoe->setOwnRelativeShift(0, -LEFT_SHOE_SCALE_Y / 2, -LEFT_SHOE_SCALE_Z / 2);
+    _leftShoe->setParentRelativeShift(0, -LEFT_LOWER_LEG_SCALE_Y / 2, LEFT_LOWER_LEG_SCALE_Z / 2);
+
+    _leftShoe->setPivotPoint(Vector4(0, LEFT_SHOE_SCALE_Y / 2, LEFT_SHOE_SCALE_Z / 2, 1));
+
+    _leftShoe->setDefaultColor(LEFT_SHOE_COLOR);
+    _colorToBodyPartMap[{LEFT_SHOE_COLOR}] = _leftShoe;
+}
+
+/**
+ * Initialize the brim of the hat.
+ */
+void Human::_initHatBrim() const
+{
+    _hatBrim->scale(HAT_BRIM_SCALE_X, HAT_BRIM_SCALE_Y, HAT_BRIM_SCALE_Z);
+    _hatBrim->setOwnRelativeShift(0, HAT_BRIM_SCALE_Y / 2, 0);
+    _hatBrim->setParentRelativeShift(0, HEAD_SCALE_Y / 2, 0);
+
+    _hatBrim->setPivotPoint(Vector4(0.0f, -HAT_BRIM_SCALE_Y / 2, 0.0f, 1.0f));
+
+    _hatBrim->setDefaultColor(HAT_BRIM_COLOR);
+    _colorToBodyPartMap[{HAT_BRIM_COLOR}] = _hatBrim;
+}
+
+/**
+ * Initialize the green band of the hat's brim.
+ */
+void Human::_initHatBrimGreenBand() const
+{
+    _hatBrimGreenBand->scale(HAT_BRIM_GREEN_SCALE_X, HAT_BRIM_GREEN_SCALE_Y, HAT_BRIM_GREEN_SCALE_Z);
+    _hatBrimGreenBand->setOwnRelativeShift(0, HAT_BRIM_GREEN_SCALE_Y / 2, 0);
+    _hatBrimGreenBand->setParentRelativeShift(0, HAT_BRIM_SCALE_Y / 2, 0);
+
+    _hatBrimGreenBand->setPivotPoint(Vector4(0.0f, -HAT_BRIM_GREEN_SCALE_Y / 2, 0.0f, 1.0f));
+
+    _hatBrimGreenBand->setDefaultColor(HAT_GREEN_BAND_COLOR);
+    _colorToBodyPartMap[{HAT_GREEN_BAND_COLOR}] = _hatBrimGreenBand;
+}
+
+/**
+ * Initialize the red band of the hat's brim.
+ */
+void Human::_initHatBrimRedBand() const
+{
+    _hatBrimRedBand->scale(HAT_BRIM_RED_SCALE_X, HAT_BRIM_RED_SCALE_Y, HAT_BRIM_RED_SCALE_Z);
+    _hatBrimRedBand->setOwnRelativeShift(0, HAT_BRIM_RED_SCALE_Y / 2, 0);
+    _hatBrimRedBand->setParentRelativeShift(0, HAT_BRIM_GREEN_SCALE_Y / 2, 0);
+
+    _hatBrimRedBand->setPivotPoint(Vector4(0.0f, -HAT_BRIM_RED_SCALE_Y / 2, 0.0f, 1.0f));
+
+    _hatBrimRedBand->setDefaultColor(HAT_RED_BAND_COLOR);
+    _colorToBodyPartMap[{HAT_RED_BAND_COLOR}] = _hatBrimRedBand;
+}
+
+/**
+ * Initialize the yellow band of the hat's brim.
+ */
+void Human::_initHatBrimYellowBand() const
+{
+    _hatBrimYellowBand->scale(HAT_BRIM_YELLOW_SCALE_X, HAT_BRIM_YELLOW_SCALE_Y, HAT_BRIM_YELLOW_SCALE_Z);
+    _hatBrimYellowBand->setOwnRelativeShift(0, HAT_BRIM_YELLOW_SCALE_Y / 2, 0);
+    _hatBrimYellowBand->setParentRelativeShift(0, HAT_BRIM_GREEN_SCALE_Y / 2, 0);
+
+    _hatBrimYellowBand->setPivotPoint(Vector4(0.0f, -HAT_BRIM_YELLOW_SCALE_Y / 2, 0.0f, 1.0f));
+
+    _hatBrimYellowBand->setDefaultColor(HAT_YELLOW_BAND_COLOR);
+    _colorToBodyPartMap[{HAT_YELLOW_BAND_COLOR}] = _hatBrimYellowBand;
+}
+
+/**
+ * Initialize the crown of the hat.
+ */
+void Human::_initHatCrown() const
+{
+    _hatCrown->scale(HAT_CROWN_SCALE_X, HAT_CROWN_SCALE_Y, HAT_CROWN_SCALE_Z);
+    _hatCrown->setOwnRelativeShift(0, HAT_CROWN_SCALE_Y / 2, 0);
+    _hatCrown->setParentRelativeShift(0, HAT_BRIM_YELLOW_SCALE_Y / 2, 0);
+
+    _hatCrown->setPivotPoint(Vector4(0.0f, -HAT_CROWN_SCALE_Y / 2, 0.0f, 1.0f));
+
+    _hatCrown->setDefaultColor(HAT_CROWN_COLOR);
+    _colorToBodyPartMap[{HAT_CROWN_COLOR}] = _hatCrown;
+}
+
+/**
  * Initialize the root of the human.
  */
 void Human::_initRoot()
@@ -422,5 +567,14 @@ void Human::_linkChildren() const
     _leftArm->addChild(_leftLowerArm);
     _rightLeg->addChild(_rightLowerLeg);
     _leftLeg->addChild(_leftLowerLeg);
-}
 
+    _rightLowerLeg->addChild(_rightShoe);
+    _leftLowerLeg->addChild(_leftShoe);
+
+    _head->addChild(_hatBrim);
+
+    _hatBrim->addChild(_hatBrimGreenBand);
+    _hatBrimGreenBand->addChild(_hatBrimRedBand);
+    _hatBrimRedBand->addChild(_hatBrimYellowBand);
+    _hatBrimYellowBand->addChild(_hatCrown);
+}

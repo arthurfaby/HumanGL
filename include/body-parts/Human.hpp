@@ -26,6 +26,9 @@ public:
     [[nodiscard]] BodyPart* getRightLowerLeg() const;
     [[nodiscard]] BodyPart* getLeftLeg() const;
     [[nodiscard]] BodyPart* getLeftLowerLeg() const;
+    [[nodiscard]] BodyPart* getRightShoe() const;
+    [[nodiscard]] BodyPart* getLeftShoe() const;
+    [[nodiscard]] BodyPart* getHatBrim() const;
 
     // Setter
     void setTarget(BodyPart* target);
@@ -52,6 +55,16 @@ private:
     BodyPart* _leftLeg = nullptr;
     BodyPart* _leftLowerLeg = nullptr;
 
+    BodyPart* _rightShoe = nullptr;
+    BodyPart* _leftShoe = nullptr;
+
+    BodyPart* _hatBrim = nullptr;
+    BodyPart* _hatBrimGreenBand = nullptr;
+    BodyPart* _hatBrimRedBand = nullptr;
+    BodyPart* _hatBrimYellowBand = nullptr;
+
+    BodyPart* _hatCrown = nullptr;
+
     // Methods
     void _initBodyParts();
     void _initHead() const;
@@ -64,6 +77,17 @@ private:
     void _initRightLowerLeg() const;
     void _initLeftLeg() const;
     void _initLeftLowerLeg() const;
+
+    void _initRightShoe() const;
+    void _initLeftShoe() const;
+
+    void _initHatBrim() const;
+    void _initHatBrimGreenBand() const;
+    void _initHatBrimRedBand() const;
+    void _initHatBrimYellowBand() const;
+
+    void _initHatCrown() const;
+
     void _initRoot();
     void _initTarget();
 
