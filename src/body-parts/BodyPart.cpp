@@ -1,4 +1,6 @@
 #include "BodyPart.hpp"
+
+#include <BodyPartDefines.hpp>
 #include <BufferManager.hpp>
 #include <Logger.hpp>
 

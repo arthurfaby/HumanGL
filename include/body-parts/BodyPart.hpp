@@ -4,7 +4,6 @@
 #include <stack>
 #include <Vector4.hpp>
 #include <vector>
-#include "BodyPartDefines.hpp"
 #include "Matrix4.hpp"
 
 class BodyPart
