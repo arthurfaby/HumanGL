@@ -38,7 +38,7 @@ void AnimationManager::select(const int index)
     if (index == NO_ANIMATION)
     {
         _selectedAnimation = nullptr;
-        return ;
+        return;
     }
     if (index > _animations.size() - 1)
     {
@@ -123,6 +123,9 @@ void AnimationManager::_generateAndAddJumpingKeyframes(Human* human)
                                       human->getRightLowerLeg()->setXRotation(factor * -M_PI / 2);
                                       human->getLeftLowerLeg()->setXRotation(factor * -M_PI / 2);
 
+                                      human->getRightShoe()->setXRotation(factor * M_PI / 4);
+                                      human->getLeftShoe()->setXRotation(factor * M_PI / 4);
+
                                       human->getRightArm()->setYRotation(-M_PI / 2)
                                               .setZRotation(3 * M_PI / 8);
                                       human->getRightLowerArm()->setZRotation(-3 * M_PI / 8);
@@ -141,6 +144,9 @@ void AnimationManager::_generateAndAddJumpingKeyframes(Human* human)
 
                                       human->getRightLowerLeg()->setXRotation(-M_PI / 2 + factor * M_PI / 2);
                                       human->getLeftLowerLeg()->setXRotation(-M_PI / 2 + factor * M_PI / 2);
+
+                                      human->getRightShoe()->setXRotation(M_PI / 4 - factor * M_PI / 2);
+                                      human->getLeftShoe()->setXRotation(M_PI / 4 - factor * M_PI / 2);
 
                                       human->getRightArm()->setZRotation(3 * M_PI / 8 - factor * 6 * M_PI / 8);
                                       human->getRightLowerArm()->setZRotation(-3 * M_PI / 8 + factor * 3 * M_PI / 8);
@@ -165,6 +171,9 @@ void AnimationManager::_generateAndAddJumpingKeyframes(Human* human)
 
                                       human->getLeftArm()->setZRotation(3 * M_PI / 8 - factor * 6 * M_PI / 8);
                                       human->getLeftLowerArm()->setZRotation(factor * 3 * M_PI / 8);
+
+                                      human->getRightShoe()->setXRotation(-M_PI / 4 + factor * M_PI / 4);
+                                      human->getLeftShoe()->setXRotation(-M_PI / 4 + factor * M_PI / 4);
                                   });
     jumpingAnimation->addKeyframe(1.5f,
                                   [human](const double factor)
@@ -254,4 +263,3 @@ void AnimationManager::_generateAndAddWalkingKeyframes(Human* human)
                                   });
     _animations.push_back(walkingAnimation);
 }
-
