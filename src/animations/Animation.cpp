@@ -37,7 +37,7 @@ void Animation::resetAnimation()
  * @param time - The timestamp of the keyframe in seconds.
  * @param action - The action to perform at this keyframe.
  */
-void Animation::addKeyframe(float time, const std::function<void(double)>& action)
+void Animation::addKeyframe(const float time, const std::function<void(double)>& action)
 {
     _keyframes.push_back({time, action});
     std::sort(_keyframes.begin(),
