@@ -33,6 +33,8 @@ public:
     // Methods
     void updateCameraPos(CameraDirection dir);
     [[nodiscard]] static Matrix4 getFinalMatrix();
+    void resetCamera();
+    static void deleteCamera();
 
 private:
     explicit Camera(const Vector4& position);

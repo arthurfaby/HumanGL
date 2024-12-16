@@ -14,27 +14,31 @@ public:
     BodyPart();
 
     // Getters
-    [[nodiscard]] float getDepth() const;
-    [[nodiscard]] float getHeight() const;
-    [[nodiscard]] float getWidth() const;
     [[nodiscard]] Matrix4 getMatrixStack() const;
     [[nodiscard]] Matrix4 getTransformationMatrix() const;
+    [[nodiscard]] Matrix4 getScaleMatrix() const;
 
     // Setters
     BodyPart& setColor(float red, float green, float blue);
     BodyPart& setDefaultColor(float red, float green, float blue);
     BodyPart& resetColor();
-    BodyPart& setHeight(float height);
-    BodyPart& setDepth(float depth);
-    BodyPart& setWidth(float width);
     BodyPart& setParent(BodyPart* parent);
     BodyPart& setPivotPoint(const Vector4& pivotPoint);
+    BodyPart& setXRotation(float angle);
+    BodyPart& setYRotation(float angle);
+    BodyPart& setZRotation(float angle);
+    BodyPart& setTranslateX(float x);
+    BodyPart& setTranslateY(float y);
+    BodyPart& setTranslateZ(float z);
+    BodyPart& setParentRelativeShift(float x, float y, float z);
+    BodyPart& setOwnRelativeShift(float x, float y, float z);
 
     // Methods
     BodyPart& rotateX(float angle);
     BodyPart& rotateY(float angle);
     BodyPart& rotateZ(float angle);
     BodyPart& translate(float x, float y, float z);
+    BodyPart& scale(float x, float y, float z);
 
     BodyPart& addChild(BodyPart* child);
     void applyTransformation();
@@ -56,19 +60,64 @@ private:
     static int _verticesPerBodyPart;
 
     /**
-    * The width of the body part.
+    * The relative shift of the body part with respect to its parent.
     */
-    float _width = LENGTH_BASE_UNIT;
+    float _parentRelativeShiftX = 0;
 
     /**
-    * The height of the body part.
+    * The relative shift of the body part with respect to its parent.
     */
-    float _height = LENGTH_BASE_UNIT;
+    float _parentRelativeShiftY = 0;
 
     /**
-    * The depth of the body part.
+    * The relative shift of the body part with respect to its parent.
     */
-    float _depth = LENGTH_BASE_UNIT;
+    float _parentRelativeShiftZ = 0;
+
+    /**
+    * The relative shift of the body part with respect to its own pivot point.
+    */
+    float _ownRelativeShiftX = 0;
+
+    /**
+    * The relative shift of the body part with respect to its own pivot point.
+    */
+    float _ownRelativeShiftY = 0;
+
+    /**
+    * The relative shift of the body part with respect to its own pivot point.
+    */
+    float _ownRelativeShiftZ = 0;
+
+    /**
+    * The angle of rotation around the X axis.
+    */
+    float _angleX = 0;
+
+    /**
+    * The angle of rotation around the Y axis.
+    */
+    float _angleY = 0;
+
+    /**
+    * The angle of rotation around the Z axis.
+    */
+    float _angleZ = 0;
+
+    /**
+     * The translate x value.
+     */
+    float _translateX = 0;
+
+    /**
+     * The translate y value.
+     */
+    float _translateY = 0;
+
+    /**
+     * The translate z value.
+     */
+    float _translateZ = 0;
 
     /**
     * The red value of the body part's color.

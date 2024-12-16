@@ -15,6 +15,8 @@ GLuint BufferManager::_glTrianglesColorsBuffer = 0;
 GLuint BufferManager::_glLinesVerticesBuffer = 0;
 GLuint BufferManager::_glLinesColorsBuffer = 0;
 
+GLuint BufferManager::_vertexArrayID = -1;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Methods
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -28,15 +30,23 @@ void BufferManager::init()
     Logger::debug("BufferManager::init(): Initializing buffer manager.");
 
     // Init VAO
-    GLuint VertexArrayID;
-    glGenVertexArrays(1, &VertexArrayID);
-    glBindVertexArray(VertexArrayID);
+    glGenVertexArrays(1, &_vertexArrayID);
+    glBindVertexArray(_vertexArrayID);
 
     _initialized = true;
     glGenBuffers(1, &_glTrianglesVerticesBuffer);
     glGenBuffers(1, &_glTrianglesColorsBuffer);
     glGenBuffers(1, &_glLinesVerticesBuffer);
     glGenBuffers(1, &_glLinesColorsBuffer);
+}
+
+void BufferManager::clean()
+{
+    glDeleteVertexArrays(1, &_vertexArrayID);
+    glDeleteBuffers(1, &_glTrianglesVerticesBuffer);
+    glDeleteBuffers(1, &_glTrianglesColorsBuffer);
+    glDeleteBuffers(1, &_glLinesVerticesBuffer);
+    glDeleteBuffers(1, &_glLinesColorsBuffer);
 }
 
 /**

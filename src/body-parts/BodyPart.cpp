@@ -1,5 +1,4 @@
 #include "BodyPart.hpp"
-
 #include <BufferManager.hpp>
 #include <Logger.hpp>
 
@@ -32,35 +31,16 @@ BodyPart::BodyPart() : _rotationMatrix(Matrix4::identity()),
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @return The depth of the body part
- */
-[[nodiscard]] float BodyPart::getDepth() const
-{
-    return _depth;
-}
-
-/**
- * @return The height of the body part
- */
-[[nodiscard]] float BodyPart::getHeight() const
-{
-    return _height;
-}
-
-/**
- * @return The width of the body part
- */
-[[nodiscard]] float BodyPart::getWidth() const
-{
-    return _width;
-}
-
-/**
  * @return The matrix stack of the body part
  */
 [[nodiscard]] Matrix4 BodyPart::getMatrixStack() const
 {
     return _matrixStack.top();
+}
+
+[[nodiscard]] Matrix4 BodyPart::getScaleMatrix() const
+{
+    return _scaleMatrix;
 }
 
 /**
@@ -74,7 +54,13 @@ BodyPart::BodyPart() : _rotationMatrix(Matrix4::identity()),
                                                                         -_pivotPoint.getZ());
 
     // Apply all transformation : translation, rotation, etc.
-    const Matrix4 combinedTransformation = _translationMatrix * _rotationMatrix;
+    const Matrix4 ownShift = Matrix4::createTranslationMatrix(_ownRelativeShiftX,
+                                                              _ownRelativeShiftY,
+                                                              _ownRelativeShiftZ);
+    const Matrix4 parentShift = Matrix4::createTranslationMatrix(_parentRelativeShiftX,
+                                                                 _parentRelativeShiftY,
+                                                                 _parentRelativeShiftZ);
+    const Matrix4 combinedTransformation = ownShift * parentShift * _translationMatrix * _rotationMatrix;
 
     // Translation to bring back the object to its origin point
     const Matrix4 translationBackFromPivot = Matrix4::createTranslationMatrix(
@@ -82,7 +68,9 @@ BodyPart::BodyPart() : _rotationMatrix(Matrix4::identity()),
         _pivotPoint.getY(),
         _pivotPoint.getZ());
 
-    return translationBackFromPivot * combinedTransformation * translationToPivot;
+    const Matrix4 transformMatrix = translationBackFromPivot * combinedTransformation * translationToPivot;
+
+    return transformMatrix;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -138,45 +126,6 @@ BodyPart& BodyPart::resetColor()
 }
 
 /**
- * Set the depth of the body part.
- *
- * @param depth The new depth value
- *
- * @return itself
- */
-BodyPart& BodyPart::setDepth(const float depth)
-{
-    this->_depth = depth;
-    return *this;
-}
-
-/**
- * Set the height of the body part.
- *
- * @param height The new height value
- *
- * @return itself
- */
-BodyPart& BodyPart::setHeight(const float height)
-{
-    this->_height = height;
-    return *this;
-}
-
-/**
- * Set the width of the body part.
- *
- * @param width The new width value
- *
- * @return itself
- */
-BodyPart& BodyPart::setWidth(const float width)
-{
-    this->_width = width;
-    return *this;
-}
-
-/**
  * Set the parent of the body part.
  *
  * @param parent The new parent value
@@ -202,6 +151,124 @@ BodyPart& BodyPart::setPivotPoint(const Vector4& pivotPoint)
     return *this;
 }
 
+/**
+ * Set the X angle of the body part.
+ *
+ * @param angle The new angle value
+ *
+ * @return itself
+ */
+BodyPart& BodyPart::setXRotation(const float angle)
+{
+    _angleX = angle;
+    _rotationMatrix = Matrix4::createRotationMatrix(angle, _angleY, _angleZ);
+    return *this;
+}
+
+/**
+ * Set the Y angle of the body part.
+ *
+ * @param angle The new angle value
+ *
+ * @return itself
+ */
+BodyPart& BodyPart::setYRotation(const float angle)
+{
+    _angleY = angle;
+    _rotationMatrix = Matrix4::createRotationMatrix(_angleX, angle, _angleZ);
+    return *this;
+}
+
+/**
+ * Set the Z angle of the body part.
+ *
+ * @param angle The new angle value
+ *
+ * @return itself
+ */
+BodyPart& BodyPart::setZRotation(const float angle)
+{
+    _angleZ = angle;
+    _rotationMatrix = Matrix4::createRotationMatrix(_angleX, _angleY, angle);
+    return *this;
+}
+
+/**
+ * Set the X translation of the body part.
+ *
+ * @param x The new x value
+ *
+ * @return itself
+ */
+BodyPart& BodyPart::setTranslateX(const float x)
+{
+    _translateX = x;
+    _translationMatrix = Matrix4::createTranslationMatrix(x, _translateY, _translateZ);
+    return *this;
+}
+
+/**
+ * Set the Y translation of the body part.
+ *
+ * @param y The new y value
+ *
+ * @return itself
+ */
+BodyPart& BodyPart::setTranslateY(const float y)
+{
+    _translateY = y;
+    _translationMatrix = Matrix4::createTranslationMatrix(_translateX, y, _translateZ);
+    return *this;
+}
+
+/**
+ * Set the Z translation of the body part.
+ *
+ * @param z The new z value
+ *
+ * @return itself
+ */
+BodyPart& BodyPart::setTranslateZ(const float z)
+{
+    _translateZ = z;
+    _translationMatrix = Matrix4::createTranslationMatrix(_translateX, _translateY, z);
+    return *this;
+}
+
+/**
+ * Set the parent relative shift of the body part.
+ *
+ * @param x The new x value
+ * @param y The new y value
+ * @param z The new z value
+ *
+ * @return itself
+ */
+BodyPart& BodyPart::setParentRelativeShift(const float x, const float y, const float z)
+{
+    _parentRelativeShiftX = x;
+    _parentRelativeShiftY = y;
+    _parentRelativeShiftZ = z;
+    return *this;
+}
+
+/**
+ * Set the own relative shift of the body part.
+ *
+ * @param x The new x value
+ * @param y The new y value
+ * @param z The new z value
+ *
+ * @return itself
+ */
+BodyPart& BodyPart::setOwnRelativeShift(const float x, const float y, const float z)
+{
+    _ownRelativeShiftX = x;
+    _ownRelativeShiftY = y;
+    _ownRelativeShiftZ = z;
+    return *this;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Methods
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -215,6 +282,7 @@ BodyPart& BodyPart::setPivotPoint(const Vector4& pivotPoint)
  */
 BodyPart& BodyPart::rotateX(const float angle)
 {
+    _angleX += angle;
     _rotationMatrix = _rotationMatrix * Matrix4::createRotationXMatrix(angle);
     return *this;
 }
@@ -228,6 +296,7 @@ BodyPart& BodyPart::rotateX(const float angle)
  */
 BodyPart& BodyPart::rotateY(const float angle)
 {
+    _angleY += angle;
     _rotationMatrix = _rotationMatrix * Matrix4::createRotationYMatrix(angle);
     return *this;
 }
@@ -241,6 +310,7 @@ BodyPart& BodyPart::rotateY(const float angle)
  */
 BodyPart& BodyPart::rotateZ(const float angle)
 {
+    _angleZ += angle;
     _rotationMatrix = _rotationMatrix * Matrix4::createRotationZMatrix(angle);
     return *this;
 }
@@ -261,7 +331,38 @@ BodyPart& BodyPart::translate(const float x, const float y, const float z)
         Logger::warning("Cannot translate an axis that has a parent.");
         return *this;
     }
+    _translateX += x;
+    _translateY += y;
+    _translateZ += z;
     _translationMatrix = _translationMatrix * Matrix4::createTranslationMatrix(x, y, z);
+    return *this;
+}
+
+/**
+  * Apply a scaling to the body part.
+  *
+  * @param x The x scale
+  * @param y The y scale
+  * @param z The z scale
+  *
+  * @return itself
+  */
+BodyPart& BodyPart::scale(const float x, const float y, const float z)
+{
+    _scaleMatrix = _scaleMatrix * Matrix4::createScalingMatrix(x, y, z);
+    setOwnRelativeShift(_ownRelativeShiftX * x, _ownRelativeShiftY * y, _ownRelativeShiftZ * z);
+    const Vector4 scaledPivotPoint = Vector4(_pivotPoint.getX() * x,
+                                             _pivotPoint.getY() * y,
+                                             _pivotPoint.getZ() * z,
+                                             1.0f);
+    setPivotPoint(scaledPivotPoint);
+    for (auto& child: _children)
+    {
+        // Update translate to match the new scale
+        child->setParentRelativeShift(child->_parentRelativeShiftX * x,
+                                      child->_parentRelativeShiftY * y,
+                                      child->_parentRelativeShiftZ * z);
+    }
     return *this;
 }
 
@@ -329,9 +430,10 @@ void BodyPart::applyTransformation()
  */
 std::vector<float> BodyPart::_getTrianglesVerticesBuffer() const
 {
-    float halfWidth = _width / 2.0f;
-    float halfHeight = _height / 2.0f;
-    float halfDepth = _depth / 2.0f;
+    const Vector4 scaleVector = _scaleMatrix * Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+    float halfWidth = LENGTH_BASE_UNIT * scaleVector.getX() / 2.0f;
+    float halfHeight = LENGTH_BASE_UNIT * scaleVector.getY() / 2.0f;
+    float halfDepth = LENGTH_BASE_UNIT * scaleVector.getZ() / 2.0f;
 
     //@formatter:off
     return {

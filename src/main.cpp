@@ -1,67 +1,89 @@
+#include <Animation.hpp>
 #include <BodyPart.hpp>
+#include <BodyPartDefines.hpp>
 #include <BufferManager.hpp>
 #include <Camera.hpp>
 #include <cmath>
 #include <map>
+#include <Human.hpp>
 #include <Matrix4.hpp>
 #include <ShaderManager.hpp>
-#include <Vector4.hpp>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
+#include "AnimationManager.hpp"
 #include "Logger.hpp"
 #include "WindowDefines.hpp"
 
-BodyPart* torso;
-BodyPart* rightArm;
-BodyPart* leftArm;
-BodyPart* rightLowerArm;
-BodyPart* leftLowerArm;
-BodyPart* head;
-BodyPart* rightLeg;
-BodyPart* leftLeg;
-BodyPart* rightLowerLeg;
-BodyPart* leftLowerLeg;
-
-BodyPart* targetBodyPart;
-BodyPart* root;
-
-std::map<std::array<int, 3>, BodyPart*> bodypartMap;
-
-GLuint pickingFramebuffer, pickingTexture;
-
-void handleBodyPartKeys(GLFWwindow* window)
+void handleBodyPartKeys(GLFWwindow* window, Human* selectedHuman)
 {
     if (targetBodyPart == nullptr)
     {
         return;
     }
 
+    if (glfwGetKey(window, GLFW_KEY_KP_4) == GLFW_PRESS)
+    {
+        selectedHuman->getRoot()->scale(1.01f, 1.0f, 1.0f);
+    }
+    if (glfwGetKey(window, GLFW_KEY_KP_1) == GLFW_PRESS)
+    {
+        selectedHuman->getRoot()->scale(0.99f, 1.0f, 1.0f);
+    }
+    if (glfwGetKey(window, GLFW_KEY_KP_5) == GLFW_PRESS)
+    {
+        selectedHuman->getRoot()->scale(1.0f, 1.01f, 1.0f);
+    }
+    if (glfwGetKey(window, GLFW_KEY_KP_2) == GLFW_PRESS)
+    {
+        selectedHuman->getRoot()->scale(1.0f, 0.99f, 1.0f);
+    }
+    if (glfwGetKey(window, GLFW_KEY_KP_6) == GLFW_PRESS)
+    {
+        selectedHuman->getRoot()->scale(1.0f, 1.0f, 1.01f);
+    }
+    if (glfwGetKey(window, GLFW_KEY_KP_3) == GLFW_PRESS)
+    {
+        selectedHuman->getRoot()->scale(1.0f, 1.0f, 0.99f);
+    }
+    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+    {
+        AnimationManager::select(STAYING_PUT);
+    }
+    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+    {
+        AnimationManager::select(WALKING);
+    }
+    if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
+    {
+        AnimationManager::select(JUMPING);
+    }
     // Rotate the target body part on the positive x-axis
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
     {
-        targetBodyPart->rotateX(ROTATION_SPEED);
+        selectedHuman->getRoot()->rotateX(ROTATION_SPEED);
     }
     // Rotate the target body part on the negative x-axis
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
     {
-        targetBodyPart->rotateX(-ROTATION_SPEED);
+        selectedHuman->getRoot()->rotateX(-ROTATION_SPEED);
     }
     // Rotate the target body part on the positive y-axis
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
     {
-        targetBodyPart->rotateY(-ROTATION_SPEED);
+        selectedHuman->getRoot()->rotateY(-ROTATION_SPEED);
     }
     // Rotate the target body part on the negative y-axis
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
     {
-        targetBodyPart->rotateY(ROTATION_SPEED);
+        selectedHuman->getRoot()->rotateY(ROTATION_SPEED);
     }
     // Rotate the target body part on the z-axis
     if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
     {
         float speed = 0;
         speed = glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS ? -ROTATION_SPEED : ROTATION_SPEED;
-        targetBodyPart->rotateZ(speed);
+        selectedHuman->getLeftLowerArm()->rotateZ(speed);
     }
     // Move the camera forward
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -92,6 +114,16 @@ void handleBodyPartKeys(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
     {
         Camera::getInstance().updateCameraPos(UP);
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+    {
+        Camera::getInstance().resetCamera();
+        selectedHuman->resetTranslations();
+        selectedHuman->resetMemberRotations();
+        selectedHuman->getRoot()->setXRotation(0.0f);
+        selectedHuman->getRoot()->setYRotation(0.0f);
+        selectedHuman->getRoot()->setZRotation(0.0f);
     }
 }
 
@@ -137,12 +169,12 @@ static void key_callback(GLFWwindow* window, const int key, const int scancode, 
     }
 }
 
-static void render(GLFWwindow* window)
+void render(GLFWwindow* window, Human* selectedHuman)
 {
-    handleBodyPartKeys(window);
+    handleBodyPartKeys(window, selectedHuman);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    root->applyTransformation();
+    selectedHuman->getRoot()->applyTransformation();
 
     const Matrix4 finalMatrix = Camera::getFinalMatrix();
 
@@ -152,7 +184,8 @@ static void render(GLFWwindow* window)
         Logger::error("Uniform 'projection' not found in the shader program.");
     }
     glUniformMatrix4fv(projection, 1, GL_TRUE, finalMatrix.getData());
-    glUniform1i(glGetUniformLocation(ShaderManager::getProgramId(), "isPicked"), GL_FALSE);
+
+    AnimationManager::update();
 
     // Render here
     BufferManager::drawAll();
@@ -215,8 +248,10 @@ int main(const int argc, char** argv)
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
-    ShaderManager::init();
+    Human* steve = new Human();
+    AnimationManager::init(steve);
     BufferManager::init();
+    ShaderManager::init();
 
     glfwSetKeyCallback(window, key_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
@@ -224,113 +259,6 @@ int main(const int argc, char** argv)
     double lastRenderTime = glfwGetTime();
     double lastFpsCountTime = glfwGetTime();
     unsigned int frameCount = 0;
-
-    // TODO libérer mémoire
-    torso = new BodyPart();
-    torso->setWidth(0.1);
-    torso->setHeight(0.1);
-    torso->setDepth(0.1);
-    torso->setDefaultColor(TORSO_COLOR);
-
-    bodypartMap[{TORSO_COLOR}] = torso;
-
-    rightArm = new BodyPart();
-    rightArm->setWidth(0.3f);
-    rightArm->setHeight(0.05f);
-    rightArm->setDepth(0.05f);
-    rightArm->setDefaultColor(RIGHT_ARM_COLOR);
-
-    bodypartMap[{RIGHT_ARM_COLOR}] = rightArm;
-
-    leftArm = new BodyPart();
-    leftArm->setHeight(0.05f);
-    leftArm->setDepth(0.05f);
-    leftArm->setPivotPoint(Vector4(-0.10f, 0, 0, 1));
-    leftArm->translate(0.2f, 0.15f, 0.0f);
-    leftArm->setDefaultColor(LEFT_ARM_COLOR);
-
-    bodypartMap[{LEFT_ARM_COLOR}] = leftArm;
-
-    rightLowerArm = new BodyPart();
-    rightLowerArm->setHeight(rightArm->getHeight() / 2);
-    rightLowerArm->setDepth(rightArm->getDepth() / 2);
-    rightLowerArm->setPivotPoint(Vector4(0.10f, 0, 0, 1));
-    rightLowerArm->translate(-0.2f, 0, 0);
-    rightLowerArm->setDefaultColor(RIGHT_LOWER_ARM_COLOR);
-
-    bodypartMap[{RIGHT_LOWER_ARM_COLOR}] = rightLowerArm;
-
-    leftLowerArm = new BodyPart();
-    leftLowerArm->setHeight(leftArm->getHeight() / 2);
-    leftLowerArm->setDepth(leftArm->getDepth() / 2);
-    leftLowerArm->setPivotPoint(Vector4(-0.10f, 0, 0, 1));
-    leftLowerArm->translate(0.2f, 0, 0);
-    leftLowerArm->setDefaultColor(LEFT_LOWER_ARM_COLOR);
-
-    bodypartMap[{LEFT_LOWER_ARM_COLOR}] = leftLowerArm;
-
-    head = new BodyPart();
-    head->setHeight(0.1f);
-    head->setWidth(0.1f);
-    head->setDepth(0.1f);
-    head->setPivotPoint(Vector4(0, -0.05f, 0, 1));
-    head->translate(0.0f, 0.25f, 0.0f);
-    head->setDefaultColor(HEAD_COLOR);
-
-    bodypartMap[{HEAD_COLOR}] = head;
-
-    leftLeg = new BodyPart();
-    leftLeg->setHeight(0.2f);
-    leftLeg->setWidth(0.05f);
-    leftLeg->setDepth(0.05f);
-    leftLeg->setPivotPoint(Vector4(0, 0.1f, 0, 1));
-    leftLeg->translate(0.05f, -0.3f, 0.0f);
-    leftLeg->setDefaultColor(LEFT_LEG_COLOR);
-
-    bodypartMap[{LEFT_LEG_COLOR}] = leftLeg;
-
-    leftLowerLeg = new BodyPart();
-    leftLowerLeg->setHeight(0.2f);
-    leftLowerLeg->setWidth(0.05f / 2.0f);
-    leftLowerLeg->setDepth(0.05f / 2.0f);
-    leftLowerLeg->setPivotPoint(Vector4(0, 0.1f, 0, 1));
-    leftLowerLeg->translate(0.0f, -0.2f, 0.0f);
-    leftLowerLeg->setDefaultColor(LEFT_LOWER_LEG_COLOR);
-
-    bodypartMap[{LEFT_LOWER_LEG_COLOR}] = leftLowerLeg;
-
-    rightLeg = new BodyPart();
-    rightLeg->setHeight(0.2f);
-    rightLeg->setWidth(0.05f);
-    rightLeg->setDepth(0.05f);
-    rightLeg->setPivotPoint(Vector4(0, 0.1f, 0, 1));
-    rightLeg->translate(-0.05f, -0.3f, 0.0f);
-    rightLeg->setDefaultColor(RIGHT_LEG_COLOR);
-
-    bodypartMap[{RIGHT_LEG_COLOR}] = rightLeg;
-
-    rightLowerLeg = new BodyPart();
-    rightLowerLeg->setHeight(0.2f);
-    rightLowerLeg->setWidth(0.05f / 2.0f);
-    rightLowerLeg->setDepth(0.05f / 2.0f);
-    rightLowerLeg->setPivotPoint(Vector4(0, 0.1f, 0, 1));
-    rightLowerLeg->translate(0.0f, -0.2f, 0.0f);
-    rightLowerLeg->setDefaultColor(RIGHT_LOWER_LEG_COLOR);
-
-    bodypartMap[{RIGHT_LOWER_LEG_COLOR}] = rightLowerLeg;
-
-    torso->addChild(head);
-    torso->addChild(leftLeg);
-    leftLeg->addChild(leftLowerLeg);
-    torso->addChild(rightLeg);
-    rightLeg->addChild(rightLowerLeg);
-    torso->addChild(rightArm);
-    rightArm->addChild(rightLowerArm);
-    torso->addChild(leftArm);
-    leftArm->addChild(leftLowerArm);
-
-    root = torso;
-    targetBodyPart = torso;
 
     // Loop until the user closes the window
     while (!glfwWindowShouldClose(window))
@@ -340,7 +268,7 @@ int main(const int argc, char** argv)
         // Limit the frame rate to FPS_LIMIT
         if (now - lastRenderTime >= 1.0 / FPS_LIMIT)
         {
-            render(window);
+            render(window, steve);
             frameCount++;
             lastRenderTime = now;
         }
@@ -352,5 +280,10 @@ int main(const int argc, char** argv)
     }
     glfwTerminate();
     glfwDestroyWindow(window);
+    delete steve;
+    glDeleteProgram(ShaderManager::getProgramId());
+    BufferManager::clean();
+    Camera::deleteCamera();
+    AnimationManager::clean();
     return 0;
 }

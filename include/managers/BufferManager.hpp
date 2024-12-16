@@ -23,6 +23,7 @@ public:
 
  // Methods
  static void init();
+ static void clean();
  static void drawAll();
  static void drawTriangles();
  static void drawLines();
@@ -33,6 +34,11 @@ public:
                             const std::vector<float>& data);
 
 private:
+ /**
+ * The vertex array ID.
+ */
+ static GLuint _vertexArrayID;
+
  /**
   * Whether the buffer manager has been initialized.
   */
