@@ -9,8 +9,11 @@
 #include <ShaderManager.hpp>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
+#include "AnimationManager.hpp"
 #include "Logger.hpp"
 #include "WindowDefines.hpp"
+
 Animation stayingPutAnimation;
 Animation walkingAnimation;
 Animation jumpingAnimation;
@@ -46,18 +49,15 @@ void handleBodyPartKeys(GLFWwindow* window, Human* selectedHuman)
     }
     if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
     {
-        selectedAnimation = &stayingPutAnimation;
-        stayingPutAnimation.resetAnimation();
+        AnimationManager::select(0);
     }
     if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
     {
-        selectedAnimation = &walkingAnimation;
-        walkingAnimation.resetAnimation();
+        AnimationManager::select(1);
     }
     if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
     {
-        selectedAnimation = &jumpingAnimation;
-        jumpingAnimation.resetAnimation();
+        AnimationManager::select(2);
     }
     // Rotate the target body part on the positive x-axis
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
@@ -150,7 +150,7 @@ void render(GLFWwindow* window, Human* selectedHuman)
         Logger::error("Uniform 'projection' not found in the shader program.");
     }
     glUniformMatrix4fv(projection, 1, GL_TRUE, finalMatrix.getData());
-    selectedAnimation->update();
+    AnimationManager::update();
     // Render here
     BufferManager::drawAll();
 
@@ -394,8 +394,10 @@ int main(const int argc, char** argv)
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
-    ShaderManager::init();
+    Human* steve = new Human();
+    AnimationManager::init(steve);
     BufferManager::init();
+    ShaderManager::init();
 
     glfwSetKeyCallback(window, key_callback);
 
@@ -403,11 +405,9 @@ int main(const int argc, char** argv)
     double lastFpsCountTime = glfwGetTime();
     unsigned int frameCount = 0;
 
-    Human* steve = new Human();
-
-    generateWalkingKeyframes(steve);
-    generateJumpingKeyframes(steve);
-    generateStayingPutKeyframes(steve);
+    // generateWalkingKeyframes(steve);
+    // generateJumpingKeyframes(steve);
+    // generateStayingPutKeyframes(steve);
     // Loop until the user closes the window
     while (!glfwWindowShouldClose(window))
     {
@@ -431,6 +431,7 @@ int main(const int argc, char** argv)
     delete steve;
     glDeleteProgram(ShaderManager::getProgramId());
     BufferManager::clean();
-    // Camera::deleteCamera();
+    Camera::deleteCamera();
+    AnimationManager::clean();
     return 0;
 }

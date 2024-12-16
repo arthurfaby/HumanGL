@@ -32,8 +32,9 @@ set(CAMERA_SOURCE_FILES
 
 # Contain all cpp files within src/managers
 set(MANAGERS_SOURCE_FILES
-        src/managers/ShaderManager.cpp
+        src/managers/AnimationManager.cpp
         src/managers/BufferManager.cpp
+        src/managers/ShaderManager.cpp
 )
 
 # Contain all cpp files within src/maths
