@@ -169,6 +169,7 @@ int main(const int argc, char** argv)
         }
         if (now - lastFpsCountTime > 1.0)
         {
+            Logger::info("FPS : %.3f", frameCount / (now - lastFpsCountTime));
             frameCount = 0;
             lastFpsCountTime = now;
         }
