@@ -7,4 +7,4 @@
 #define FPS_LIMIT 60                                        // Frames per second limit
 #define PROJECTION_FORMULA (1 / tanf(ToRadian(FOV / 2)))    // Formula to create the frustum
 
-#endif //WINDOWDEFINES_HPP
+#endif // WINDOWDEFINES_HPP
