@@ -113,7 +113,7 @@ int main(const int argc, char** argv)
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
     // Create a windowed mode window and its OpenGL context
-    GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Hello World", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "El famoso Stevo", nullptr, nullptr);
     if (window == nullptr)
     {
         Logger::error("main::glfwCreateWindow(): Window creation failed %s. Terminating GLFW.", window);
