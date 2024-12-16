@@ -91,10 +91,10 @@ void Camera::updateCameraPos(const CameraDirection dir)
             _cameraPosition -= _cameraFront * _speed;
             break;
         case RIGHT:
-            _cameraPosition -= _cameraRight * _speed;
+            _cameraPosition += _cameraRight * _speed;
             break;
         case LEFT:
-            _cameraPosition += _cameraRight * _speed;
+            _cameraPosition -= _cameraRight * _speed;
             break;
         case UP:
             _cameraPosition += _cameraUp * _speed;
