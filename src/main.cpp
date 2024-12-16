@@ -1,134 +1,25 @@
-#include <Animation.hpp>
+#include <AnimationManager.hpp>
 #include <BodyPart.hpp>
 #include <BodyPartDefines.hpp>
 #include <BufferManager.hpp>
 #include <Camera.hpp>
-#include <cmath>
-#include <map>
 #include <Human.hpp>
-#include <Matrix4.hpp>
+#include <keybindings.hpp>
+#include <Logger.hpp>
 #include <ShaderManager.hpp>
-#include <GL/glew.h>
+#include <WindowDefines.hpp>
 #include <GLFW/glfw3.h>
-
-#include "AnimationManager.hpp"
-#include "Logger.hpp"
-#include "WindowDefines.hpp"
-
-void handleBodyPartKeys(GLFWwindow* window, Human* selectedHuman)
-{
-    if (targetBodyPart == nullptr)
-    {
-        return;
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_KP_4) == GLFW_PRESS)
-    {
-        selectedHuman->getRoot()->scale(1.01f, 1.0f, 1.0f);
-    }
-    if (glfwGetKey(window, GLFW_KEY_KP_1) == GLFW_PRESS)
-    {
-        selectedHuman->getRoot()->scale(0.99f, 1.0f, 1.0f);
-    }
-    if (glfwGetKey(window, GLFW_KEY_KP_5) == GLFW_PRESS)
-    {
-        selectedHuman->getRoot()->scale(1.0f, 1.01f, 1.0f);
-    }
-    if (glfwGetKey(window, GLFW_KEY_KP_2) == GLFW_PRESS)
-    {
-        selectedHuman->getRoot()->scale(1.0f, 0.99f, 1.0f);
-    }
-    if (glfwGetKey(window, GLFW_KEY_KP_6) == GLFW_PRESS)
-    {
-        selectedHuman->getRoot()->scale(1.0f, 1.0f, 1.01f);
-    }
-    if (glfwGetKey(window, GLFW_KEY_KP_3) == GLFW_PRESS)
-    {
-        selectedHuman->getRoot()->scale(1.0f, 1.0f, 0.99f);
-    }
-    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
-    {
-        AnimationManager::select(STAYING_PUT);
-    }
-    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
-    {
-        AnimationManager::select(WALKING);
-    }
-    if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
-    {
-        AnimationManager::select(JUMPING);
-    }
-    // Rotate the target body part on the positive x-axis
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-    {
-        selectedHuman->getRoot()->rotateX(ROTATION_SPEED);
-    }
-    // Rotate the target body part on the negative x-axis
-    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-    {
-        selectedHuman->getRoot()->rotateX(-ROTATION_SPEED);
-    }
-    // Rotate the target body part on the positive y-axis
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-    {
-        selectedHuman->getRoot()->rotateY(-ROTATION_SPEED);
-    }
-    // Rotate the target body part on the negative y-axis
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-    {
-        selectedHuman->getRoot()->rotateY(ROTATION_SPEED);
-    }
-    // Rotate the target body part on the z-axis
-    if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
-    {
-        float speed = 0;
-        speed = glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS ? -ROTATION_SPEED : ROTATION_SPEED;
-        selectedHuman->getLeftLowerArm()->rotateZ(speed);
-    }
-    // Move the camera forward
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-    {
-        Camera::getInstance().updateCameraPos(FORWARD);
-    }
-    // Move the camera backward
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-    {
-        Camera::getInstance().updateCameraPos(BACKWARD);
-    }
-    // Move the camera to the left
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-    {
-        Camera::getInstance().updateCameraPos(LEFT);
-    }
-    // Move the camera to the right
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-    {
-        Camera::getInstance().updateCameraPos(RIGHT);
-    }
-    // Move the camera downward
-    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-    {
-        Camera::getInstance().updateCameraPos(DOWN);
-    }
-    // Move the camera upward
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-    {
-        Camera::getInstance().updateCameraPos(UP);
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
-    {
-        Camera::getInstance().resetCamera();
-        selectedHuman->resetTranslations();
-        selectedHuman->resetMemberRotations();
-        selectedHuman->getRoot()->setXRotation(0.0f);
-        selectedHuman->getRoot()->setYRotation(0.0f);
-        selectedHuman->getRoot()->setZRotation(0.0f);
-    }
-}
 
 static void mouse_button_callback(GLFWwindow* window, const int button, const int action, const int mods)
 {
+    auto* selectedHuman = static_cast<Human*>(glfwGetWindowUserPointer(window));
+
+    if (selectedHuman == nullptr)
+    {
+        Logger::error("main.cpp::mouse_button_callback(): Steve is null.");
+        return;
+    }
+
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
     {
         double mouseX, mouseY;
@@ -141,22 +32,22 @@ static void mouse_button_callback(GLFWwindow* window, const int button, const in
         mouseY = WINDOW_HEIGHT - mouseY;
         glReadPixels(static_cast<int>(mouseX), static_cast<int>(mouseY), 1, 1, GL_RGB, GL_UNSIGNED_BYTE, &pixel);
 
-        if (bodypartMap.contains({pixel[0], pixel[1], pixel[2]}))
+        if (Human::getColorToBodyPartMap().contains({pixel[0], pixel[1], pixel[2]}))
         {
-            BodyPart* newTarget = bodypartMap.find({pixel[0], pixel[1], pixel[2]})->second;
+            BodyPart* newTarget = Human::getColorToBodyPartMap().find({pixel[0], pixel[1], pixel[2]})->second;
             // Reset the color of the previously targeted body part
-            targetBodyPart->resetColor();
+            selectedHuman->getTarget()->resetColor();
 
             // Update the targeted body part
-            targetBodyPart = newTarget;
+            selectedHuman->setTarget(newTarget);
 
             // Set the color of the new targeted body part
             newTarget->setColor(TARGET_COLOR);
         }
         else // If the user clicked on the background
         {
-            targetBodyPart->resetColor();
-            targetBodyPart = torso;
+            selectedHuman->getTarget()->resetColor();
+            selectedHuman->setTarget(selectedHuman->getTorso());
         }
     }
 }
@@ -254,6 +145,7 @@ int main(const int argc, char** argv)
     ShaderManager::init();
 
     glfwSetKeyCallback(window, key_callback);
+    glfwSetWindowUserPointer(window, steve);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
 
     double lastRenderTime = glfwGetTime();

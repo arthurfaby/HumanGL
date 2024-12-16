@@ -46,6 +46,7 @@ set(MATHS_SOURCE_FILES
 # Contain all cpp files within src/
 set(SOURCE_FILES
         src/main.cpp
+        src/keybindings.cpp
 )
 
 # Contain all cpp files within src/utils
