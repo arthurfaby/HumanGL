@@ -44,15 +44,15 @@ void handleBodyPartKeys(GLFWwindow* window, Human* selectedHuman)
     }
     if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
     {
-        AnimationManager::select(0);
+        AnimationManager::select(STAYING_PUT);
     }
     if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
     {
-        AnimationManager::select(1);
+        AnimationManager::select(WALKING);
     }
     if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
     {
-        AnimationManager::select(2);
+        AnimationManager::select(JUMPING);
     }
     // Rotate the target body part on the positive x-axis
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)

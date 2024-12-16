@@ -1,7 +1,15 @@
 #ifndef ANIMATION_MANAGER_HPP
 #define ANIMATION_MANAGER_HPP
+
 #include <Animation.hpp>
 #include <Human.hpp>
+
+enum AnimationType
+{
+    STAYING_PUT = 0,
+    WALKING = 1,
+    JUMPING = 2
+};
 
 class AnimationManager
 {
