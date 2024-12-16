@@ -7,13 +7,18 @@
 #include <functional>
 #include <vector>
 
-using TimePoint = std::chrono::high_resolution_clock::time_point;
-
 class Animation
 {
     class Keyframe
     {
     public:
+        // Constructors
+        Keyframe() = default;
+        Keyframe(float time, std::function<void(double)> action);
+
+        // Destructor
+        ~Keyframe() = default;
+
         /**
         * The timestamp of the keyframe in seconds.
         */
@@ -31,6 +36,9 @@ public:
     // Constructor
     Animation();
 
+    // Destructor
+    ~Animation() = default;
+
     // Methods
     void resetAnimation();
     void addKeyframe(float time, const std::function<void(double)>& action);
@@ -40,7 +48,7 @@ private:
     /**
     * The start time of the animation.
     */
-    TimePoint _startTime;
+    std::chrono::high_resolution_clock::time_point _startTime;
 
     /**
     * The keyframes of the animation.

@@ -1,7 +1,9 @@
 #include "Animation.hpp"
 
+#include <utility>
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Constructor
+// Constructors
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -9,6 +11,12 @@
  */
 Animation::Animation() : _startTime(std::chrono::high_resolution_clock::now())
 {
+}
+
+Animation::Keyframe::Keyframe(float _time, std::function<void(double)> _action)
+{
+    timestamp = _time;
+    action = std::move(_action);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -46,8 +54,7 @@ void Animation::addKeyframe(float time, const std::function<void(double)>& actio
  */
 void Animation::update()
 {
-    if (_keyframes.empty())
-        return;
+    if (_keyframes.empty()) return;
 
     auto now = std::chrono::high_resolution_clock::now();
     float elapsed = std::chrono::duration<float>(now - _startTime).count();
@@ -69,7 +76,9 @@ void Animation::update()
         {
             nextKeyframe = &_keyframes[i];
             if (i > 0)
+            {
                 prevKeyframe = &_keyframes[i - 1];
+            }
             break;
         }
     }
